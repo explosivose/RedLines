@@ -27,8 +27,8 @@ public class speed : MonoBehaviour {
 	void Update () {
 		if (player != null){
 			//Debug.Log();
-			int speedtmp = (int)Mathf.Round(player.currentSpeed);
-			speedText.text = speedtmp.ToString()+" α";
+			int speedtmp = (int)Mathf.Round(player.currentSpeed*10);
+			speedText.text = speedtmp.ToString();
 		}
 
 	}
