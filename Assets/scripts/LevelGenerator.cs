@@ -1,62 +1,155 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic; // required for List<T>
+
+public class SectionData
+{
+	private float dist = 0f;
+	private float center = 0f;
+	private float up = 0f;
+	private float down = 0f;
+	
+	private GameObject cube;
+	
+	private void Rescale(ref float value, float oldMax, float oldMin, float newMax, float newMin)
+	{
+		float oldRange = oldMax - oldMin;
+		float newRange = newMax - newMin;
+		value = (((value - oldMin)*newRange)/oldRange)+newMin;
+	}
+	
+	// constructors
+	public SectionData(float distance, float minGap, float maxGap)
+	{
+		Distance = distance;
+		up = Mathf.PerlinNoise(dist,1f);
+		Rescale(ref up, 1f, 0f, maxGap/2f, minGap/2f);
+		up = center + up;
+		
+		down = Mathf.PerlinNoise(dist,-1f);
+		Rescale(ref down, 1f, 0f, maxGap/2f, minGap/2f);
+		down = center - down;
+	}
+	
+	// destructor
+	~SectionData()
+	{
+		
+	}
+	
+	// generate data based on perlin noise using Distance as a lookup
+	public float Distance
+	{
+		get { return dist; }
+		set {
+			dist = value;
+			center = Mathf.PerlinNoise(dist, 0f);
+			up = center + Mathf.PerlinNoise(dist,1f);
+			down = center - Mathf.PerlinNoise(dist,-1f);
+		}
+	}
+	
+	// return vertices
+	public Vector3 Center 
+	{
+		get { return new Vector3(dist + center,center); }
+		set { center = value.x; }
+	}
+	public Vector3 Top
+	{
+		get { return new Vector3(dist + center, up); }
+		set { up = value.y; } // may need to protect against setting up < down and down > up
+	}
+	public Vector3 Bottom
+	{
+		get { return new Vector3(dist + center, down); }
+		set { down = value.y; }
+	}
+
+}
 
 public class LevelGenerator : MonoBehaviour 
 {
-	public Level[] levels = new Level[0];
-
-
-	private Vector3 head = Vector3.zero;
-
-	// Use this for initialization
-	void Start () 
+	public float levelLength;
+	public float minX; public float maxX;
+	public float minY; public float maxY;
+	public bool levelDebug;
+	
+	
+	private Player player;
+	private List<SectionData> data = new List<SectionData>();	// world positions for mesh data
+	
+	// alias the furthest and shortest distances in level data
+	private float head {
+		get { return data[data.Count-1].Distance; }
+	}
+	private float tail {
+		get { return data[0].Distance; }
+	}
+	
+	private void Start()
 	{
-		head = transform.position;
+		// get reference to player script
+		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+		if (player == null)
+			Debug.LogError("Could not find player!");
 		
 		
-		int pce = 0;
-		// Loop through each Level
-		for (int lvl = 0; lvl < levels.Length; lvl++) 
+		// if these are negative then you may be stuck in an inf loop
+		if (minX < 0f || maxX < 0f)
+			Debug.LogError("MinX and MaxX must be positive values");
+		
+		
+		// generate the first bits of data
+		data.Add(new SectionData(transform.position.x, minY, maxY));
+		while (head < player.transform.position.x + levelLength)
 		{
-			levels[lvl].LoadSections();
-			
-			// spawn level transition trigger
-			Instantiate(levels[lvl].Trigger, head, Quaternion.identity);
-			
-			// Loop through level sections (start, middle, end)
-			for (int stn = 0; stn < levels[lvl].sections.Length; stn++)
-			{
-				LevelSection section = levels[lvl].sections[stn];
-				for (int spawnCount = 0; spawnCount < section.numberOfPiecesToSpawn; spawnCount++)
-				{
-					// choose a random piece prefab to spawn
-					pce = Random.Range(0, section.Pieces.Length);
-					Transform piece = section.Pieces[pce];
-					
-					// rotate yes/no?
-					Quaternion rotation = Quaternion.identity;
-					float r = Random.value;
-					if (r > 0.5f)
-						rotation = Quaternion.Euler(180f, 0f, 0f);
-					
-					// spawn level piece
-					for (int i = 0; i < Random.Range(1,4); i++)
-					{
-						Vector3 offset = Vector3.forward * i * 10;
-						piece = Instantiate(piece, head + offset, rotation) as Transform;
-						piece.parent = transform;
-					}
-					
-					// move head to the end
-					Vector3 tail = piece.FindChild("Tail").position - piece.position;
-					head += tail;
-				}
-			}
-			
+			GenerateDataAtHead();
 		}
-
+	}
+	
+	private void FixedUpdate()
+	{
+		// keep generating stuff ahead of the player
+		if (head < player.transform.position.x + levelLength)
+		{
+			GenerateDataAtHead();
+		}
+		
+		// forget old level data
+		if (tail < player.transform.position.x - levelLength)
+		{
+			DestroyDataAtTail();
+		}
+		
+		if (levelDebug) DebugDrawLevel();
+	}
+	
+	private void GenerateDataAtHead()
+	{
+		data.Add(new SectionData(head + Random.Range(minX, maxX), minY, maxY ));
+		data.Add(data[data.Count-1]);
+	}
+	
+	private void DestroyDataAtTail()
+	{
+		data.RemoveAt(0);
+		data.RemoveAt(0);
+	}
+	
+	private void DebugDrawLevel()
+	{
+		for(int i = 0; i < data.Count - 1; i++)
+		{
+			Debug.DrawLine(data[i].Top, data[i+1].Top);
+			Debug.DrawLine(data[i].Bottom, data[i+1].Bottom);
+			Debug.DrawLine (data[i].Center, data[i].Top );
+			Debug.DrawLine (data[i].Center, data[i].Bottom );
+		}
 	}
 
+
+	
 }
 
 
