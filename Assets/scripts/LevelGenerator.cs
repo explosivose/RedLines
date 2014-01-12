@@ -11,8 +11,10 @@ public class LevelGenerator : MonoBehaviour
 
 
 
+	public Material levelMaterial;
 	public float levelLength;
 	public float xDetail; public float xVariation;
+	public float yVariation;
 	public float minGapSize; public float maxGapSize;
 	public bool levelDebug;
 	
@@ -21,7 +23,10 @@ public class LevelGenerator : MonoBehaviour
 	private static List<SectionData> data = new List<SectionData>();	// world positions for mesh data
 	private static float minX; private static float maxX;
 	private static float minY; private static float maxY;
+	private static float maxMidChange;
 	
+	private GameObject topMesh;
+	private GameObject botMesh;
 	
 	// alias the furthest and shortest distances in level data
 	private static float head {
@@ -31,14 +36,25 @@ public class LevelGenerator : MonoBehaviour
 		get { return data[0].Distance; }
 	}
 	
+	[System.Serializable]
 	private class SectionData
 	{
 		private float dist = 0f;
-		private float center = 0f;
 		private float up = 0f;
+		private float mid = 0f;
 		private float down = 0f;
 		
-		private GameObject cube;
+		private void Calculate()
+		{
+			up = Mathf.PerlinNoise(dist/50f, Random.value);
+			Rescale(ref up, 1f, 0f, maxY/2f, minY/2f);
+			
+			mid = Mathf.PerlinNoise(dist/50f, Random.value);
+			Rescale (ref mid, 1f, 0f, maxMidChange, 0f);
+			
+			down = Mathf.PerlinNoise(dist/50f, Random.value);
+			Rescale(ref down, 1f, 0f, maxY/2f, minY/2f);
+		}
 		
 		private void Rescale(ref float value, float oldMax, float oldMin, float newMax, float newMin)
 		{
@@ -48,28 +64,11 @@ public class LevelGenerator : MonoBehaviour
 		}
 		
 		// constructors
-		public SectionData()
-		{
-			Distance = 0f;
-			up = Mathf.PerlinNoise(dist,1f);
-			Rescale(ref up, 1f, 0f, maxY/2f, minY/2f);
-			up = center + up;
-			
-			down = Mathf.PerlinNoise(dist,-1f);
-			Rescale(ref down, 1f, 0f, maxY/2f, minY/2f);
-			down = center - down;
-		}
-		
 		public SectionData(float x)
 		{
-			Distance = x;
-			up = Mathf.PerlinNoise(dist,1f);
-			Rescale(ref up, 1f, 0f, maxY/2f, minY/2f);
-			up = center + up;
-			
-			down = Mathf.PerlinNoise(dist,-1f);
-			Rescale(ref down, 1f, 0f, maxY/2f, minY/2f);
-			down = center - down;
+			dist = x;
+			Calculate();
+
 		}
 		
 		// destructor
@@ -78,33 +77,28 @@ public class LevelGenerator : MonoBehaviour
 			
 		}
 		
-		// generate data based on perlin noise using Distance as a lookup
+
+		
 		public float Distance
 		{
 			get { return dist; }
-			set {
-				dist = value;
-				center = Mathf.PerlinNoise(dist, 0f);
-				up = center + Mathf.PerlinNoise(dist,1f);
-				down = center - Mathf.PerlinNoise(dist,-1f);
+			set { 
+				dist = value; 
+				Calculate();
 			}
 		}
 		
 		// return vertices
-		public Vector3 Center 
-		{
-			get { return new Vector3(dist + center,center); }
-			set { center = value.x; }
+		public Vector3 Center {
+			get { return new Vector3(dist, mid); }
 		}
-		public Vector3 Top
-		{
-			get { return new Vector3(dist + center, up); }
-			set { up = value.y; } // may need to protect against setting up < down and down > up
+		
+		public Vector3 Top {
+			get { return new Vector3(dist, mid + up); }
 		}
-		public Vector3 Bottom
-		{
-			get { return new Vector3(dist + center, down); }
-			set { down = value.y; }
+		
+		public Vector3 Bottom {
+			get { return new Vector3(dist, mid - down); }
 		}
 		
 	}
@@ -121,7 +115,21 @@ public class LevelGenerator : MonoBehaviour
 		maxX = xDetail + xVariation;
 		minY = minGapSize;
 		maxY = maxGapSize;
+		maxMidChange = yVariation;
 	
+		// make child objects for containing level meshes
+		topMesh = new GameObject("topMesh");
+		topMesh.transform.parent = transform;
+		topMesh.AddComponent<MeshFilter>();
+		topMesh.AddComponent<MeshRenderer>();
+		topMesh.GetComponent<MeshRenderer>().material = levelMaterial;
+		
+		botMesh = new GameObject("botMesh");
+		botMesh.transform.parent = transform;
+		botMesh.AddComponent<MeshFilter>();
+		botMesh.AddComponent<MeshRenderer>();
+		botMesh.GetComponent<MeshRenderer>().material = levelMaterial;
+		
 		// get reference to player script
 		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 		if (player == null)
@@ -143,32 +151,33 @@ public class LevelGenerator : MonoBehaviour
 	
 	private void FixedUpdate()
 	{
+		bool updateMesh = false;
 		// keep generating stuff ahead of the player
 		if (head < player.transform.position.x + levelLength)
 		{
 			GenerateDataAtHead();
+			updateMesh = true;
 		}
 		
 		// forget old level data
 		if (tail < player.transform.position.x - (levelLength/2f))
 		{
 			DestroyDataAtTail();
+			updateMesh = true;
 		}
 		
 		if (levelDebug) DebugDrawLevel();
 		
-		CreateMeshVertices();
+		if (updateMesh) UpdateMesh();
 	}
 	
 	private void GenerateDataAtHead()
 	{
-		data.Add(new SectionData(head + Random.Range(minX, maxX)));
-		data.Add(data[data.Count-1]);
+		data.Add(new SectionData(head + 10f));
 	}
 	
 	private void DestroyDataAtTail()
 	{
-		data.RemoveAt(0);
 		data.RemoveAt(0);
 	}
 	
@@ -181,15 +190,17 @@ public class LevelGenerator : MonoBehaviour
 			Debug.DrawLine (data[i].Center, data[i].Top );
 			Debug.DrawLine (data[i].Center, data[i].Bottom );
 		}
+		Debug.DrawLine (data[data.Count-1 ].Center, data[data.Count-1 ].Top );
+		Debug.DrawLine (data[data.Count-1 ].Center, data[data.Count-1 ].Bottom );
 	}
-	Vector3[] verts;
-	Vector2[] uvs;
-	int[] triangles;
-	private void CreateMeshVertices()
+
+	SectionData[] debugdata;
+	private void UpdateMesh()
 	{
-		verts = new Vector3[data.Count * 2];
-		uvs = new Vector2[data.Count * 2];
-		triangles = new int[(data.Count * 2 * 6) - 12];
+		//debugdata = data.ToArray();
+		Vector3[] verts = new Vector3[data.Count * 2];
+		Vector2[] uvs = new Vector2[data.Count * 2];
+		int[] triangles = new int[(data.Count * 2 * 6) - 12];
 		
 		// verts and uvs
 		int v = 0;
@@ -203,7 +214,7 @@ public class LevelGenerator : MonoBehaviour
 		
 		// mesh triangles
 		int t = 0;
-		for (v = 0; v < data.Count -1; v+=2)
+		for (v = 0; v < (data.Count*2) - 2 ; v+=2)
 		{
 			triangles[t++] = v;
 			triangles[t++] = v + 1;
@@ -214,72 +225,44 @@ public class LevelGenerator : MonoBehaviour
 			triangles[t++] = v + 1;
 		}
 		
-		Mesh m = GetComponent<MeshFilter>().mesh;
+		Mesh m = topMesh.GetComponent<MeshFilter>().mesh;
 		m.Clear();
 		m.vertices = verts;
 		m.uv = uvs;
 		m.triangles = triangles;
 		m.RecalculateNormals();
 		
-	}
-}
-
-
-
-[System.Serializable]
-public class Level
-{
-	public string folderName;
-	
-	// How much to increment player acceleraetion by for this level
-	public float thrustIncrease = 15f;
-	
-	// The colour gradients to use (actual color is dependant on player velocity)
-	public Color sunColour;
-	public Gradient flameGradient;
-	
-	private LevelTransitionTrigger trigger;
-	public Transform Trigger
-	{
-		get
+		// DO IT ALL AGAIN FOR BOTTOM MESH WOO
+		
+		// verts and uvs
+		v = 0;
+		for (int i = 0; i < data.Count; i++)
 		{
-			return trigger.transform;
+			verts[v] = data[i].Bottom; 
+			uvs[v++] = new Vector2(v,0);
+			verts[v] = data[i].Bottom - Vector3.up * 10f;
+			uvs[v++] = new Vector2(v,1);
 		}
-	}
-	
-	// Section data for this level (set in inspector)
-	public LevelSection[] sections = new LevelSection[0];
-
-	public void LoadSections()
-	{
-		foreach(LevelSection section in sections)
+		
+		// mesh triangles
+		t = 0;
+		for (v = 0; v < (data.Count*2) - 2 ; v+=2)
 		{
-			section.LoadPieces(folderName);
+			triangles[t++] = v + 1;
+			triangles[t++] = v;
+			triangles[t++] = v + 2;
+			
+			triangles[t++] = v + 1;
+			triangles[t++] = v + 2;
+			triangles[t++] = v + 3;
 		}
-		trigger = Resources.Load<Transform>("leveltrigger").GetComponent<LevelTransitionTrigger>();
-		trigger.thrustIncrease = thrustIncrease;
-		trigger.nextSunColour = sunColour;
-	}
-}
-
-[System.Serializable]
-public class LevelSection
-{
-	public string folderName;
-	public int numberOfPiecesToSpawn = 0;
-	
-	private Transform[] pieces;
-	public Transform[] Pieces
-	{ 
-		get
-		{
-			return pieces;
-		}
-	}
-	
-	public void LoadPieces(string levelFolderName)
-	{
-		Debug.Log ("Loading: Resources/" + levelFolderName + "/" + folderName);
-		pieces = Resources.LoadAll<Transform>(levelFolderName + "/" + folderName);
+		
+		m = botMesh.GetComponent<MeshFilter>().mesh;
+		m.Clear();
+		m.vertices = verts;
+		m.uv = uvs;
+		m.triangles = triangles;
+		m.RecalculateNormals();
+		
 	}
 }
