@@ -16,12 +16,9 @@ public class CameraFollowTarget : MonoBehaviour
 
 	private Vector3 lastPosition;
 	private Vector3 nextPosition;
-	private float lastMoveTime;
-
 
 	void Start ()
 	{
-		lastMoveTime = 0f;
 		lastPosition = transform.position;
 		nextPosition = target.transform.position;
 	}
@@ -67,10 +64,8 @@ public class CameraFollowTarget : MonoBehaviour
 			targetSpeed = minCameraDistance;
 		nextPosition = target.position + Vector3.back *  ((maxCameraDistance+minCameraDistance)-targetSpeed);
 		if (transform.position != lastPosition) 
-		{
 			lastPosition = transform.position;
-			lastMoveTime = Time.time;
-		}
+			
 		transform.position = Vector3.Slerp (lastPosition, nextPosition, Time.deltaTime * followSpeed);
 		Vector3 lookTarget = target.position + (transform.right * minLookOffset) + cameraShakeOffset;
 		Vector3 lookDirection = lookTarget - transform.position;
@@ -82,11 +77,9 @@ public class CameraFollowTarget : MonoBehaviour
 	{
 		nextPosition = target.position + Vector3.back * 50f;
 		if (transform.position != lastPosition) 
-		{
 			lastPosition = transform.position;
-			lastMoveTime = Time.time;
-		}
-		transform.position = Vector3.Slerp (lastPosition, nextPosition, (Time.time - lastMoveTime) * followSpeed);
+
+		transform.position = Vector3.Slerp (lastPosition, nextPosition, Time.deltaTime * followSpeed);
 		transform.LookAt (target.position);
 	}
 }
