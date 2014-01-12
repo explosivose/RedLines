@@ -123,12 +123,18 @@ public class LevelGenerator : MonoBehaviour
 		topMesh.AddComponent<MeshFilter>();
 		topMesh.AddComponent<MeshRenderer>();
 		topMesh.GetComponent<MeshRenderer>().material = levelMaterial;
+		topMesh.AddComponent<Rigidbody>();
+		topMesh.rigidbody.isKinematic = true;
+		topMesh.AddComponent<MeshCollider>();
 		
 		botMesh = new GameObject("botMesh");
 		botMesh.transform.parent = transform;
 		botMesh.AddComponent<MeshFilter>();
 		botMesh.AddComponent<MeshRenderer>();
 		botMesh.GetComponent<MeshRenderer>().material = levelMaterial;
+		botMesh.AddComponent<Rigidbody>();
+		botMesh.rigidbody.isKinematic = true;
+		botMesh.AddComponent<MeshCollider>();
 		
 		// get reference to player script
 		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
@@ -198,9 +204,9 @@ public class LevelGenerator : MonoBehaviour
 	private void UpdateMesh()
 	{
 		//debugdata = data.ToArray();
-		Vector3[] verts = new Vector3[data.Count * 2];
-		Vector2[] uvs = new Vector2[data.Count * 2];
-		int[] triangles = new int[(data.Count * 2 * 6) - 12];
+		Vector3[] verts = new Vector3[data.Count * 4];
+		Vector2[] uvs = new Vector2[data.Count * 4];
+		int[] triangles = new int[(data.Count * 4 * 6) - (4 * 3)];
 		
 		// verts and uvs
 		int v = 0;
@@ -210,19 +216,29 @@ public class LevelGenerator : MonoBehaviour
 			uvs[v++] = new Vector2(v,0);
 			verts[v] = data[i].Top + Vector3.up * 10f;
 			uvs[v++] = new Vector2(v,1);
+			verts[v] = data[i].Top + Vector3.forward * 10f;
+			uvs[v++] = new Vector2(v,1);
 		}
 		
 		// mesh triangles
 		int t = 0;
-		for (v = 0; v < (data.Count*2) - 2 ; v+=2)
+		for (v = 0; v < (data.Count*3) - 3 ; v+=3)
 		{
 			triangles[t++] = v;
 			triangles[t++] = v + 1;
-			triangles[t++] = v + 2;
+			triangles[t++] = v + 3;
 			
+			triangles[t++] = v + 4;
+			triangles[t++] = v + 3;
+			triangles[t++] = v + 1;
+			
+			triangles[t++] = v;
 			triangles[t++] = v + 3;
 			triangles[t++] = v + 2;
-			triangles[t++] = v + 1;
+			
+			triangles[t++] = v + 5;
+			triangles[t++] = v + 2;
+			triangles[t++] = v + 3;
 		}
 		
 		Mesh m = topMesh.GetComponent<MeshFilter>().mesh;
@@ -231,6 +247,8 @@ public class LevelGenerator : MonoBehaviour
 		m.uv = uvs;
 		m.triangles = triangles;
 		m.RecalculateNormals();
+		topMesh.GetComponent<MeshCollider>().sharedMesh = null;
+		topMesh.GetComponent<MeshCollider>().sharedMesh = m;
 		
 		// DO IT ALL AGAIN FOR BOTTOM MESH WOO
 		
@@ -242,18 +260,28 @@ public class LevelGenerator : MonoBehaviour
 			uvs[v++] = new Vector2(v,0);
 			verts[v] = data[i].Bottom - Vector3.up * 10f;
 			uvs[v++] = new Vector2(v,1);
+			verts[v] = data[i].Bottom + Vector3.forward * 10f;
+			uvs[v++] = new Vector2(v,1);
 		}
 		
 		// mesh triangles
 		t = 0;
-		for (v = 0; v < (data.Count*2) - 2 ; v+=2)
+		for (v = 0; v < (data.Count*3) - 3 ; v+=3)
 		{
-			triangles[t++] = v + 1;
 			triangles[t++] = v;
 			triangles[t++] = v + 2;
+			triangles[t++] = v + 3;
 			
-			triangles[t++] = v + 1;
+			triangles[t++] = v + 5;
+			triangles[t++] = v + 3;
 			triangles[t++] = v + 2;
+			
+			triangles[t++] = v;
+			triangles[t++] = v + 3;
+			triangles[t++] = v + 1;
+			
+			triangles[t++] = v + 4;
+			triangles[t++] = v + 1;
 			triangles[t++] = v + 3;
 		}
 		
@@ -263,6 +291,8 @@ public class LevelGenerator : MonoBehaviour
 		m.uv = uvs;
 		m.triangles = triangles;
 		m.RecalculateNormals();
+		botMesh.GetComponent<MeshCollider>().sharedMesh = null;
+		botMesh.GetComponent<MeshCollider>().sharedMesh = m;
 		
 	}
 }

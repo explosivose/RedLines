@@ -39,7 +39,7 @@ public class CameraFollowTarget : MonoBehaviour
 	Vector3 cameraShakeOffset = Vector3.zero;
 	void ChaseCam()
 	{
-		float targetSpeed = target.rigidbody2D.velocity.magnitude;
+		float targetSpeed = target.rigidbody.velocity.magnitude;
 		float targetDeltaSpeed = (targetSpeed - previousTargetSpeed) / Time.fixedDeltaTime;
 		previousTargetSpeed = targetSpeed;
 
@@ -49,12 +49,12 @@ public class CameraFollowTarget : MonoBehaviour
 
 		if (minLookOffset > 0f) 
 		{
-			if ( target.rigidbody2D.velocity.x < 0f)
+			if ( target.rigidbody.velocity.x < 0f)
 				minLookOffset = -minLookOffset;
 		}
 		if (minLookOffset < 0f) 
 		{
-			if ( target.rigidbody2D.velocity.x > 0f)
+			if ( target.rigidbody.velocity.x > 0f)
 				minLookOffset = -minLookOffset;
 		}
 
