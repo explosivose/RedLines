@@ -8,14 +8,14 @@ public class Player : MonoBehaviour
 	{
 		get 
 		{
-			return thrust / (rigidbody2D.mass * rigidbody2D.drag);
+			return thrust / (rigidbody.mass * rigidbody.drag);
 		}
 	}
 	public float currentSpeed
 	{
 		get
 		{
-			return rigidbody2D.velocity.magnitude;
+			return rigidbody.velocity.magnitude;
 		}
 	}
 	public float currentAcceleration
@@ -78,7 +78,7 @@ public class Player : MonoBehaviour
 		float dampedV = Input.GetAxis ("Vertical");
 		Vector3 rotation = Vector3.zero;
 		
-		if (rigidbody2D.velocity.x < 0f)
+		if (rigidbody.velocity.x < 0f)
 			rotation = new Vector3(dampedV * 10f,0f,180f - dampedV * 10f);
 		else
 			rotation = new Vector3(dampedV * 10f,0f,dampedV * 10f);
@@ -95,13 +95,13 @@ public class Player : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		rigidbody2D.AddForce(movement);
+		rigidbody.AddForce(movement);
 	}
 
-	void OnCollisionEnter2D(Collision2D info)
+	void OnCollisionEnter(Collision info)
 	{
 		if (info.relativeVelocity.magnitude > 10f && !isDead)
-						PlayerDeath();
+			PlayerDeath();
 	}
 
 	void PlayerDeath()
@@ -113,8 +113,7 @@ public class Player : MonoBehaviour
 
 		Instantiate (deathExplosion, transform.position + Vector3.back, Quaternion.LookRotation (Vector3.back));
 
-		rigidbody2D.fixedAngle = false;
-		rigidbody2D.drag = 2f;
+		rigidbody.drag = 2f;
 
 		Debug.Log ("You're brown bread!");
 
@@ -123,6 +122,6 @@ public class Player : MonoBehaviour
 	public void LevelUp(float thrustIncrease, Gradient flames)
 	{
 		thrust += thrustIncrease;
-		rigidbody2D.AddForce(movement * 2f);
+		rigidbody.AddForce(movement * 2f);
 	}
 }

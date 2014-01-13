@@ -1,120 +1,298 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic; // required for List<T>
+
+
+[RequireComponent(typeof(MeshFilter))]
+[RequireComponent(typeof(MeshRenderer))]
 
 public class LevelGenerator : MonoBehaviour 
 {
-	public Level[] levels = new Level[0];
 
 
-	private Vector3 head = Vector3.zero;
 
-	// Use this for initialization
-	void Start () 
+	public Material levelMaterial;
+	public float levelLength;
+	public float xDetail; public float xVariation;
+	public float yVariation;
+	public float minGapSize; public float maxGapSize;
+	public bool levelDebug;
+	
+	
+	private Player player;
+	private static List<SectionData> data = new List<SectionData>();	// world positions for mesh data
+	private static float minX; private static float maxX;
+	private static float minY; private static float maxY;
+	private static float maxMidChange;
+	
+	private GameObject topMesh;
+	private GameObject botMesh;
+	
+	// alias the furthest and shortest distances in level data
+	private static float head {
+		get { return data[data.Count-1].Distance; }
+	}
+	private static float tail {
+		get { return data[0].Distance; }
+	}
+	
+	[System.Serializable]
+	private class SectionData
 	{
-		head = transform.position;
+		private float dist = 0f;
+		private float up = 0f;
+		private float mid = 0f;
+		private float down = 0f;
 		
-		
-		int pce = 0;
-		// Loop through each Level
-		for (int lvl = 0; lvl < levels.Length; lvl++) 
+		private void Calculate()
 		{
-			levels[lvl].LoadSections();
+			up = Mathf.PerlinNoise(dist/50f, Random.value);
+			Rescale(ref up, 1f, 0f, maxY/2f, minY/2f);
 			
-			// spawn level transition trigger
-			Instantiate(levels[lvl].Trigger, head, Quaternion.identity);
+			mid = Mathf.PerlinNoise(dist/50f, Random.value);
+			Rescale (ref mid, 1f, 0f, maxMidChange, 0f);
 			
-			// Loop through level sections (start, middle, end)
-			for (int stn = 0; stn < levels[lvl].sections.Length; stn++)
-			{
-				LevelSection section = levels[lvl].sections[stn];
-				for (int spawnCount = 0; spawnCount < section.numberOfPiecesToSpawn; spawnCount++)
-				{
-					// choose a random piece prefab to spawn
-					pce = Random.Range(0, section.Pieces.Length);
-					Transform piece = section.Pieces[pce];
-					
-					// rotate yes/no?
-					Quaternion rotation = Quaternion.identity;
-					float r = Random.value;
-					if (r > 0.5f)
-						rotation = Quaternion.Euler(180f, 0f, 0f);
-					
-					// spawn level piece
-					for (int i = 0; i < Random.Range(1,4); i++)
-					{
-						Vector3 offset = Vector3.forward * i * 10;
-						piece = Instantiate(piece, head + offset, rotation) as Transform;
-						piece.parent = transform;
-					}
-					
-					// move head to the end
-					Vector3 tail = piece.FindChild("Tail").position - piece.position;
-					head += tail;
-				}
+			down = Mathf.PerlinNoise(dist/50f, Random.value);
+			Rescale(ref down, 1f, 0f, maxY/2f, minY/2f);
+		}
+		
+		private void Rescale(ref float value, float oldMax, float oldMin, float newMax, float newMin)
+		{
+			float oldRange = oldMax - oldMin;
+			float newRange = newMax - newMin;
+			value = (((value - oldMin)*newRange)/oldRange)+newMin;
+		}
+		
+		// constructors
+		public SectionData(float x)
+		{
+			dist = x;
+			Calculate();
+
+		}
+		
+		// destructor
+		~SectionData()
+		{
+			
+		}
+		
+
+		
+		public float Distance
+		{
+			get { return dist; }
+			set { 
+				dist = value; 
+				Calculate();
 			}
+		}
+		
+		// return vertices
+		public Vector3 Center {
+			get { return new Vector3(dist, mid); }
+		}
+		
+		public Vector3 Top {
+			get { return new Vector3(dist, mid + up); }
+		}
+		
+		public Vector3 Bottom {
+			get { return new Vector3(dist, mid - down); }
+		}
+		
+	}
+	
+	void OnLevelWasLoaded(int level)
+	{
+		data.Clear();
+	}
+	
+	private void Start()
+	{
+		// initialise static level data parameters
+		minX = xDetail - xVariation;
+		maxX = xDetail + xVariation;
+		minY = minGapSize;
+		maxY = maxGapSize;
+		maxMidChange = yVariation;
+	
+		// make child objects for containing level meshes
+		topMesh = new GameObject("topMesh");
+		topMesh.transform.parent = transform;
+		topMesh.AddComponent<MeshFilter>();
+		topMesh.AddComponent<MeshRenderer>();
+		topMesh.GetComponent<MeshRenderer>().material = levelMaterial;
+		topMesh.AddComponent<Rigidbody>();
+		topMesh.rigidbody.isKinematic = true;
+		topMesh.AddComponent<MeshCollider>();
+		
+		botMesh = new GameObject("botMesh");
+		botMesh.transform.parent = transform;
+		botMesh.AddComponent<MeshFilter>();
+		botMesh.AddComponent<MeshRenderer>();
+		botMesh.GetComponent<MeshRenderer>().material = levelMaterial;
+		botMesh.AddComponent<Rigidbody>();
+		botMesh.rigidbody.isKinematic = true;
+		botMesh.AddComponent<MeshCollider>();
+		
+		// get reference to player script
+		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+		if (player == null)
+			Debug.LogError("Could not find player!");
+		
+		
+		// if these are negative then you may be stuck in an inf loop
+		if (minX < 0f || maxX < 0f)
+			Debug.LogError("MinX and MaxX must be positive values");
+		
+		
+		// generate the first bits of data
+		data.Add(new SectionData(transform.position.x));
+		while (head < player.transform.position.x + levelLength)
+		{
+			GenerateDataAtHead();
+		}
+	}
+	
+	private void FixedUpdate()
+	{
+		bool updateMesh = false;
+		// keep generating stuff ahead of the player
+		if (head < player.transform.position.x + levelLength)
+		{
+			GenerateDataAtHead();
+			updateMesh = true;
+		}
+		
+		// forget old level data
+		if (tail < player.transform.position.x - (levelLength/2f))
+		{
+			DestroyDataAtTail();
+			updateMesh = true;
+		}
+		
+		if (levelDebug) DebugDrawLevel();
+		
+		if (updateMesh) UpdateMesh();
+	}
+	
+	private void GenerateDataAtHead()
+	{
+		data.Add(new SectionData(head + 10f));
+	}
+	
+	private void DestroyDataAtTail()
+	{
+		data.RemoveAt(0);
+	}
+	
+	private void DebugDrawLevel()
+	{
+		for(int i = 0; i < data.Count - 1; i++)
+		{
+			Debug.DrawLine(data[i].Top, data[i+1].Top);
+			Debug.DrawLine(data[i].Bottom, data[i+1].Bottom);
+			Debug.DrawLine (data[i].Center, data[i].Top );
+			Debug.DrawLine (data[i].Center, data[i].Bottom );
+		}
+		Debug.DrawLine (data[data.Count-1 ].Center, data[data.Count-1 ].Top );
+		Debug.DrawLine (data[data.Count-1 ].Center, data[data.Count-1 ].Bottom );
+	}
+
+	SectionData[] debugdata;
+	private void UpdateMesh()
+	{
+		//debugdata = data.ToArray();
+		Vector3[] verts = new Vector3[data.Count * 4];
+		Vector2[] uvs = new Vector2[data.Count * 4];
+		int[] triangles = new int[(data.Count * 4 * 6) - (4 * 3)];
+		
+		// verts and uvs
+		int v = 0;
+		for (int i = 0; i < data.Count; i++)
+		{
+			verts[v] = data[i].Top; 
+			uvs[v++] = new Vector2(v,0);
+			verts[v] = data[i].Top + Vector3.up * 10f;
+			uvs[v++] = new Vector2(v,1);
+			verts[v] = data[i].Top + Vector3.forward * 10f;
+			uvs[v++] = new Vector2(v,1);
+		}
+		
+		// mesh triangles
+		int t = 0;
+		for (v = 0; v < (data.Count*3) - 3 ; v+=3)
+		{
+			triangles[t++] = v;
+			triangles[t++] = v + 1;
+			triangles[t++] = v + 3;
 			
+			triangles[t++] = v + 4;
+			triangles[t++] = v + 3;
+			triangles[t++] = v + 1;
+			
+			triangles[t++] = v;
+			triangles[t++] = v + 3;
+			triangles[t++] = v + 2;
+			
+			triangles[t++] = v + 5;
+			triangles[t++] = v + 2;
+			triangles[t++] = v + 3;
 		}
-
-	}
-
-}
-
-
-
-[System.Serializable]
-public class Level
-{
-	public string folderName;
-	
-	// How much to increment player acceleraetion by for this level
-	public float thrustIncrease = 15f;
-	
-	// The colour gradients to use (actual color is dependant on player velocity)
-	public Color sunColour;
-	public Gradient flameGradient;
-	
-	private LevelTransitionTrigger trigger;
-	public Transform Trigger
-	{
-		get
+		
+		Mesh m = topMesh.GetComponent<MeshFilter>().mesh;
+		m.Clear();
+		m.vertices = verts;
+		m.uv = uvs;
+		m.triangles = triangles;
+		m.RecalculateNormals();
+		topMesh.GetComponent<MeshCollider>().sharedMesh = null;
+		topMesh.GetComponent<MeshCollider>().sharedMesh = m;
+		
+		// DO IT ALL AGAIN FOR BOTTOM MESH WOO
+		
+		// verts and uvs
+		v = 0;
+		for (int i = 0; i < data.Count; i++)
 		{
-			return trigger.transform;
+			verts[v] = data[i].Bottom; 
+			uvs[v++] = new Vector2(v,0);
+			verts[v] = data[i].Bottom - Vector3.up * 10f;
+			uvs[v++] = new Vector2(v,1);
+			verts[v] = data[i].Bottom + Vector3.forward * 10f;
+			uvs[v++] = new Vector2(v,1);
 		}
-	}
-	
-	// Section data for this level (set in inspector)
-	public LevelSection[] sections = new LevelSection[0];
-
-	public void LoadSections()
-	{
-		foreach(LevelSection section in sections)
+		
+		// mesh triangles
+		t = 0;
+		for (v = 0; v < (data.Count*3) - 3 ; v+=3)
 		{
-			section.LoadPieces(folderName);
+			triangles[t++] = v;
+			triangles[t++] = v + 2;
+			triangles[t++] = v + 3;
+			
+			triangles[t++] = v + 5;
+			triangles[t++] = v + 3;
+			triangles[t++] = v + 2;
+			
+			triangles[t++] = v;
+			triangles[t++] = v + 3;
+			triangles[t++] = v + 1;
+			
+			triangles[t++] = v + 4;
+			triangles[t++] = v + 1;
+			triangles[t++] = v + 3;
 		}
-		trigger = Resources.Load<Transform>("leveltrigger").GetComponent<LevelTransitionTrigger>();
-		trigger.thrustIncrease = thrustIncrease;
-		trigger.nextSunColour = sunColour;
-	}
-}
-
-[System.Serializable]
-public class LevelSection
-{
-	public string folderName;
-	public int numberOfPiecesToSpawn = 0;
-	
-	private Transform[] pieces;
-	public Transform[] Pieces
-	{ 
-		get
-		{
-			return pieces;
-		}
-	}
-	
-	public void LoadPieces(string levelFolderName)
-	{
-		Debug.Log ("Loading: Resources/" + levelFolderName + "/" + folderName);
-		pieces = Resources.LoadAll<Transform>(levelFolderName + "/" + folderName);
+		
+		m = botMesh.GetComponent<MeshFilter>().mesh;
+		m.Clear();
+		m.vertices = verts;
+		m.uv = uvs;
+		m.triangles = triangles;
+		m.RecalculateNormals();
+		botMesh.GetComponent<MeshCollider>().sharedMesh = null;
+		botMesh.GetComponent<MeshCollider>().sharedMesh = m;
+		
 	}
 }

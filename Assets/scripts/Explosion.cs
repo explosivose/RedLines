@@ -35,7 +35,7 @@ public class Explosion : MonoBehaviour {
 		playerOrigin.y = player.position.y;
 
 		if (Vector2.Distance (origin, playerOrigin) < scale)
-			player.rigidbody2D.AddForce ((playerOrigin - origin) * endSize);
+			player.rigidbody.AddForce ((playerOrigin - origin) * endSize);
 
 		Collider2D[] hits = Physics2D.OverlapCircleAll (origin, scale);
 		foreach (Collider2D hit in hits) 

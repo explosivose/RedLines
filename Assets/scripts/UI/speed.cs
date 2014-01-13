@@ -8,7 +8,7 @@ public class speed : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		GameObject playerObj = GameObject.Find("Player2");
+		GameObject playerObj = GameObject.Find("Player3D");
 		if (playerObj != null) 
 		{
 			player = (Player)playerObj.GetComponent (typeof(Player));
