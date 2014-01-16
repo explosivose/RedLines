@@ -4,6 +4,7 @@ using System.Collections;
 public class Player : MonoBehaviour 
 {
 	public float thrust = 15f;
+	public float verticalThrust = 100f;
 	public float maxSpeed
 	{
 		get 
@@ -61,7 +62,7 @@ public class Player : MonoBehaviour
 		float horizontal = Input.GetAxisRaw ("Horizontal");
 		float vertical = Input.GetAxisRaw ("Vertical");
 		movement.x = horizontal * thrust;
-		movement.y = vertical * thrust * 2f;
+		movement.y = vertical * verticalThrust;
 		
 		
 		if (!nukeUsed) 
@@ -86,11 +87,17 @@ public class Player : MonoBehaviour
 		transform.rotation = Quaternion.Euler(rotation);
 	}
 
+	private float prevSpeed = 0f;
+
 	void Aesthetics()
 	{		
 		// player audio pitch is dependent on speed
 		audio.pitch = currentSpeed / (maxSpeed/12f);
-
+		
+		float deltaSpeed = (currentSpeed - prevSpeed)/Time.fixedDeltaTime;
+		prevSpeed = currentSpeed;
+		if (deltaSpeed < 0f) deltaSpeed = 0f;
+		audio.volume = deltaSpeed * 0.02f;
 	}
 
 	void FixedUpdate()

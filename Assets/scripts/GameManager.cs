@@ -91,6 +91,17 @@ public class GameManager : Singleton<GameManager>
 		}
 	}
 
+	public float HyperLerp
+	{
+		get
+		{
+			if (player != null)
+				return player.currentSpeed / player.maxSpeed;
+			else
+				return 0f;
+		}
+	}	
+	
 	public void NewGame(int level)
 	{
 		Application.LoadLevel (level);
