@@ -79,12 +79,12 @@ public class Player : MonoBehaviour
 		float dampedV = Input.GetAxis ("Vertical");
 		Vector3 rotation = Vector3.zero;
 		
-		if (rigidbody.velocity.x < 0f)
-			rotation = new Vector3(dampedV * 10f,0f,180f - dampedV * 10f);
-		else
-			rotation = new Vector3(dampedV * 10f,0f,dampedV * 10f);
-			
-		transform.rotation = Quaternion.Euler(rotation);
+		rotation = new Vector3(dampedV * 20f,0f,dampedV * 20f);
+		
+		Quaternion newRot = Quaternion.Euler(rotation);
+		transform.rotation = Quaternion.Lerp (transform.rotation, newRot, Time.deltaTime * 16f);
+		
+		
 	}
 
 	private float prevSpeed = 0f;
