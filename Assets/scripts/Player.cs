@@ -117,13 +117,14 @@ public class Player : MonoBehaviour
 		GameManager.Instance.State = GameManager.GameState.GameOver;
 		GameManager.Instance.StartDialogue("Commander:", "Well, shit.",1.5f);
 		audio.Stop();
-
+		
 		Instantiate (deathExplosion, transform.position + Vector3.back, Quaternion.LookRotation (Vector3.back));
 
 		rigidbody.drag = 2f;
 
 		Debug.Log ("You're brown bread!");
-
+		
+		ScoreManager.Instance.NewScore(transform.position.x);
 	}
 	
 	public void LevelUp(float thrustIncrease, Gradient flames)

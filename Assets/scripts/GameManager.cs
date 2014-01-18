@@ -3,12 +3,21 @@ using System.Collections;
 
 public class GameManager : Singleton<GameManager>  
 {
-	/*GUIManager changes:
-	 * no longer a singleton because any instances created by 
-	 * the singleton pattern do not preserve settings that 
-	 * we need in the prefab (stuff like window sizes / alignments)
-	 * Move all GUIManager.Instance functionality to GameManager.Instance 
-	 */
+	/* GameManager info
+	
+	This class is in charge of:
+		*Pausing the game (State = GameState.Pause)
+		*Passing messages from the GUI to the game
+			load level via NewGame()
+			setting audio volume (NOT YET IMPLEMENTED)
+			
+		*Passing messages from the game to the GUI
+			counts number of hypermatter collected
+			keeps track of hyperstate
+			coordinates hyperspace transitions
+	
+	This class is a singleton (can only be instantiated once) 	
+	*/
 
 	public enum GameState
 	{
@@ -77,7 +86,7 @@ public class GameManager : Singleton<GameManager>
 				break;
 			case GameState.Pause:
 				state = GameState.Pause;
-				Time.timeScale = 0.01f;
+				Time.timeScale = 0f;
 				GUIMan.ShowMainMenu();
 				break;
 			case GameState.GameOver:
