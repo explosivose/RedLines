@@ -187,6 +187,67 @@ public class LevelGenerator : MonoBehaviour
 	}
 
 	SectionData[] debugdata;
+	
+	private void SquareUpdateMesh()
+	{
+		Vector3[] verts = new Vector3[data.Count * 4];
+		Vector2[] uvs = new Vector2[data.Count * 4];
+		int[] triangles = new int[(data.Count * 2) * 3];
+		
+		// verts and UVs
+		int v = 0;
+		for (int i = 1; i < data.Count - 1; i++)
+		{
+			float x = data[i-1].Top.x + (data[i].Top.x - data[i-1].Top.x)/2f;
+			float y = Mathf.Max(data[i].Top.y, data[i-1].Top.y);
+			verts[v] = new Vector3(x,y);
+			uvs[v++] = new Vector2(0,1);
+			
+			y = Mathf.Min (data[i].Top.y, data[i-1].Top.y);
+			verts[v] = new Vector3(x,y);
+			uvs[v++] = new Vector2(0,0);
+			
+			x = data[i].Top.x + (data[i+1].Top.x - data[i].Top.x)/2f;
+			y = Mathf.Max(data[i].Top.y, data[i-1].Top.y);
+			verts[v] = new Vector3(x,y);
+			uvs[v++] = new Vector2(1,1);
+			
+			y = Mathf.Min (data[i].Top.y, data[i-1].Top.y);
+			verts[v] = new Vector3(x,y);
+			uvs[v++] = new Vector2(1,0);
+			
+			if (levelDebug)
+			{
+				Debug.DrawLine(verts[v-4], verts[v-3], Color.red,1f);
+				Debug.DrawLine(verts[v-3],verts[v-1],Color.red,1f);
+				Debug.DrawLine(verts[v-1],verts[v-2],Color.red,1f);
+				Debug.DrawLine(verts[v-2],verts[v-4],Color.red,1f);
+			}
+		}
+		
+		// triangles
+		int t = 0;
+		for (v = 0; v < verts.Length; v+=4)
+		{
+			triangles[t++] = v;
+			triangles[t++] = v + 2;
+			triangles[t++] = v + 1;
+			
+			triangles[t++] = v + 3;
+			triangles[t++] = v + 1;
+			triangles[t++] = v + 2;
+		}
+		
+		Mesh m = topMesh.GetComponent<MeshFilter>().mesh;
+		m.Clear();
+		m.vertices = verts;
+		m.uv = uvs;
+		m.triangles = triangles;
+		m.RecalculateNormals();
+		//topMesh.GetComponent<MeshCollider>().sharedMesh = null;
+		//topMesh.GetComponent<MeshCollider>().sharedMesh = m;
+	}
+	
 	private void UpdateMesh()
 	{
 		//debugdata = data.ToArray();
