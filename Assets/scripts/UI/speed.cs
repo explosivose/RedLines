@@ -6,9 +6,10 @@ public class speed : MonoBehaviour {
 	private Player player;
 	private TextMesh speedText;
 
-	// Use this for initialization
+	public float speedMultiplier;
+
 	void Start () {
-		GameObject playerObj = GameObject.Find("Player3D");
+		GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
 		if (playerObj != null) 
 		{
 			player = (Player)playerObj.GetComponent (typeof(Player));
@@ -17,17 +18,15 @@ public class speed : MonoBehaviour {
 		else 
 		{
 			player = null;
-			Debug.Log("UI Error: Speed counter: Player game object not found!");
+			Debug.LogError("UI Error: Speed counter: Player game object not found!");
 		}
 
 
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
 		if (player != null){
-			//Debug.Log();
-			int speedtmp = (int)Mathf.Round(player.currentSpeed*10);
+			int speedtmp = (int)Mathf.Round(player.currentSpeed*speedMultiplier);
 			speedText.text = speedtmp.ToString();
 		}
 
