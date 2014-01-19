@@ -20,18 +20,48 @@ public class GameManager : Singleton<GameManager>
 	*/
 	
 	
-	private class HyperSpaceMaker
+	private static class HyperSpaceMaker
 	{
-		/* HyperSpaceMaker infro
+		/* HyperSpaceMaker info
 		this class generates data for hyperspace transitions
 		*/
-		private string[] hyperSpacePrefix = new string[5]
+		private static string[] hyperSpacePrefix = new string[5]
 		{"sub","super","hyper","ultra","extra"};
 		
-		private string[] hyperSpaceSuffix = new string[5]
+		private static string[] hyperSpaceSuffix = new string[5]
 		{"sonic","focus","core","flow","zone"};
 		
+		private static int prefix = 0;
+		private static int suffix = 0;
 		
+	
+		public static HyperSpace nextHyperSpace
+		{
+			get
+			{
+				HyperSpace temp = new HyperSpace();
+				temp.name = hyperSpacePrefix[prefix++] + hyperSpaceSuffix[suffix];
+				
+				if (prefix >= hyperSpacePrefix.Length)
+				{
+					prefix = 0;
+					suffix++;
+					if (suffix >= hyperSpaceSuffix.Length)
+						suffix = 0;
+				}
+				
+				temp.maxMidChange = Random.Range(0f, 100f);
+				temp.midSampleRate = Random.value;
+				temp.minTop = Random.Range(0f,10f);
+				temp.maxTop = Random.Range(temp.minTop, 50f);
+				temp.topSampleRate = Random.value;
+				temp.minBot = Random.Range(0f,10f);
+				temp.maxBot = Random.Range(temp.minBot, 50f);
+				temp.botSampleRate = Random.value;
+				
+				return temp;
+			}
+		}
 	}
 	
 	public enum GameState
@@ -46,7 +76,7 @@ public class GameManager : Singleton<GameManager>
 	private GUIManager GUIMan;
 	private Player player;
 	private Sun sun;
-	
+	private LevelGenerator level;
 
 	
 	void Awake()
@@ -57,7 +87,7 @@ public class GameManager : Singleton<GameManager>
 		GUIManagerPrefab = Instantiate(GUIManagerPrefab, Vector3.zero, Quaternion.identity) as GameObject;
 		DontDestroyOnLoad(GUIManagerPrefab);
 		GUIMan = GUIManagerPrefab.GetComponent<GUIManager> ();
-
+		level = GameObject.FindGameObjectWithTag("Level").GetComponent<LevelGenerator>();
 	}
 
 	
@@ -74,7 +104,11 @@ public class GameManager : Singleton<GameManager>
 			if (player != null)
 				GUIMan.playerSpeed = player.currentSpeed;
 		}
-			
+		if (Input.GetKey(KeyCode.Space))
+		{
+			Debug.Log("penis");
+			level.hyperSpace = HyperSpaceMaker.nextHyperSpace;
+		}
 	}
 	
 	/* Public GameManager interfaces
