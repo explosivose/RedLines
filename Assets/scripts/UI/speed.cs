@@ -8,7 +8,7 @@ public class speed : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		GameObject playerObj = GameObject.Find("Player3D");
+		GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
 		if (playerObj != null) 
 		{
 			player = (Player)playerObj.GetComponent (typeof(Player));
@@ -17,7 +17,7 @@ public class speed : MonoBehaviour {
 		else 
 		{
 			player = null;
-			Debug.Log("UI Error: Speed counter: Player game object not found!");
+			Debug.LogError("UI Error: Speed counter: Player game object not found!");
 		}
 
 
