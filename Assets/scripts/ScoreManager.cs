@@ -38,7 +38,8 @@ public class Score
 	}
 }
 
-public class ScoreManager : Singleton<ScoreManager> {
+public class ScoreManager : Singleton<ScoreManager> 
+{
 	
 	/* ScoreManager info
 	
@@ -71,6 +72,8 @@ public class ScoreManager : Singleton<ScoreManager> {
 			}
 		}
 		
+		Debug.Log("Retrieved " + scores.Count + " saved scores.");
+		
 		return scores;
 	}
 	
@@ -98,24 +101,53 @@ public class ScoreManager : Singleton<ScoreManager> {
 	public void NewScore(float score)
 	{
 		List<Score> scores = GetScores();
+		bool scoreAdded = false;
 		
-		// Insert new score if it exceeds any of the stored scores
-		for(int i = 0; i < scores.Count; i++)
+		if (scores.Count == 0)
 		{
-			if ( score > scores[i].Distance )
+			scores.Add(new Score(score));
+			scoreAdded = true;
+		}
+		else
+		{
+			// Insert new score in the correct position (if its high enough)
+			for(int i = 0; i < scores.Count; i++)
 			{
-				scores.Insert(i, new Score(score));
-				i = scores.Count;
-				scores.RemoveAt(i); 
+				if ( score > scores[i].Distance)
+				{
+					scores.Insert(i, new Score(score));
+					scoreAdded = true;
+					i = scores.Count;
+				}
 			}
 		}
 		
+		// add new score to the end if it hasn't already been added.
+		if (!scoreAdded)
+		{
+			scores.Add(new Score(score));
+			scoreAdded = true;
+		}
+		
 		// Store scores
-		for (int i = 0; i < scores.Count; i++)
+		for (int i = 0; i < Math.Min(scores.Count,numberOfScores); i++)
 		{
 			PlayerPrefs.SetString(i+"ScoreName", scores[i].PlayerName);
 			PlayerPrefs.SetFloat (i+"ScoreDist", scores[i].Distance);
 			PlayerPrefs.GetString(i+"ScoreTime", scores[i].TimeSet);
+		}
+	}
+	
+	public void DeleteHighScores()
+	{
+		for (int i = 0; i < numberOfScores; i++)
+		{
+			if (PlayerPrefs.HasKey(i + "ScoreDist"))
+			{
+				PlayerPrefs.DeleteKey(i+"ScoreDist");
+				PlayerPrefs.DeleteKey(i+"ScoreName");
+				PlayerPrefs.DeleteKey(i+"ScoreTime");
+			}
 		}
 	}
 	

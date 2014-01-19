@@ -1,9 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class GUIWindow
 {
+	/* GUIWindow info
+	* This class is serializable for the designer to choose window settings
+	* from within the unity inspector. Settings include position and size.
+	*/
 	public enum DimensionMode
 	{
 		PercentageOfScreen,
@@ -140,6 +145,7 @@ public class GUIManager : MonoBehaviour
 	public int buttonHeight = 25;
 	public GUIWindow mainMenu = new GUIWindow();
 	public GUIWindow levelSelect = new GUIWindow();
+	public GUIWindow scoreBoard = new GUIWindow();
 	public GUIWindow options = new GUIWindow();
 	public GUIWindow credits = new GUIWindow();
 	public GUIWindow dialogue = new GUIWindow();
@@ -155,6 +161,11 @@ public class GUIManager : MonoBehaviour
 	public void ShowOptions()
 	{
 		state = GUIState.Options;
+	}
+
+	public void ShowScoreBoard()
+	{
+		state = GUIState.ScoreBoard;
 	}
 
 	public void ShowCredits()
@@ -175,6 +186,7 @@ public class GUIManager : MonoBehaviour
 	{
 		MainMenu,
 		LevelSelect,
+		ScoreBoard,
 		Options,
 		Credits,
 		ShowDialogue,
@@ -183,7 +195,8 @@ public class GUIManager : MonoBehaviour
 
 	private GUIState state = GUIState.MainMenu;
 	private string playerName = "Player 1";
-
+	private List<Score> scores;
+	private bool scoresAreUpdated = false;
 
 	private bool showDialogue = false;
 	private string dialogueCharacter = "";
@@ -253,7 +266,12 @@ public class GUIManager : MonoBehaviour
 				state = GUIState.LevelSelect;
 			}
 		}
-
+		
+		// Scoreboard
+		GUILayout.Space(5);
+		if (GUILayout.Button("High Scores", menuSkin.button, GUILayout.Height(buttonHeight)))
+			state = GUIState.ScoreBoard;
+			
 		// Options
 		GUILayout.Space(5);
 		if ( GUILayout.Button ("Options", menuSkin.button, GUILayout.Height (buttonHeight)) )
@@ -290,6 +308,42 @@ public class GUIManager : MonoBehaviour
 		GUILayout.Space(20);
 		if ( GUILayout.Button ("Main Menu", menuSkin.button, GUILayout.Height(buttonHeight)) )
 			state = GUIState.MainMenu;
+	}
+
+	void wScoreBoard(int windowID)
+	{
+		GUILayout.Space(15);
+		
+		if (!scoresAreUpdated)
+		{
+			scores = ScoreManager.Instance.GetScores();
+			scoresAreUpdated = true;
+		}
+		
+		
+		GUILayout.Label ("There are " + scores.Count + " scores stored.");
+		// score list
+		for(int i = 0; i < scores.Count; i++)
+		{
+			GUILayout.Label(scores[i].PlayerName + ": " + scores[i].Distance);
+		}
+		
+		// delete high scores button
+		GUILayout.Space(20);
+		if ( GUILayout.Button ("Wipe Scores", menuSkin.button, GUILayout.Height(buttonHeight)) )
+		{
+			ScoreManager.Instance.DeleteHighScores();
+			scoresAreUpdated = false;
+		}
+		
+		// back to main menu
+		GUILayout.Space(20);
+		if ( GUILayout.Button ("Main Menu", menuSkin.button, GUILayout.Height(buttonHeight)) )
+		{
+			state = GUIState.MainMenu;
+			scoresAreUpdated = false;
+		}
+			
 	}
 
 	void wOptions(int windowID)
@@ -412,6 +466,9 @@ public class GUIManager : MonoBehaviour
 		case GUIState.LevelSelect:
 			thisWindow = levelSelect;
 			break;
+		case GUIState.ScoreBoard:
+			thisWindow = scoreBoard;
+			break;
 		case GUIState.Options:
 			thisWindow = options;
 			break;
@@ -436,6 +493,9 @@ public class GUIManager : MonoBehaviour
 			break;
 		case GUIState.LevelSelect:
 			GUILayout.Window (1, windowSize, wLevelSelect, "Choose a level", menuSkin.window);
+			break;
+		case GUIState.ScoreBoard:
+			GUILayout.Window (1, windowSize, wScoreBoard, "High Scores", menuSkin.window);
 			break;
 		case GUIState.Options:
 			GUILayout.Window (1, windowSize, wOptions, "Options", menuSkin.window);

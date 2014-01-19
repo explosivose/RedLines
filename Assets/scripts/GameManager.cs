@@ -60,8 +60,8 @@ public class GameManager : Singleton<GameManager>
 			
 	}
 	
-	/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	 * Public GameManager interfaces
+	/* Public GameManager interfaces
+	 * 
 	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	 */
 	public GameState State 

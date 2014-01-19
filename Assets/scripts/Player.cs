@@ -81,7 +81,8 @@ public class Player : MonoBehaviour
 		
 		rotation = new Vector3(dampedV * 20f,0f,dampedV * 20f);
 		
-		Quaternion newRot = Quaternion.Euler(rotation);
+		
+		Quaternion newRot = Quaternion.Euler(rotation) * Quaternion.LookRotation(rigidbody.velocity);
 		transform.rotation = Quaternion.Lerp (transform.rotation, newRot, Time.deltaTime * 16f);
 		
 		
