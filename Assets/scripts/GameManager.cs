@@ -18,7 +18,22 @@ public class GameManager : Singleton<GameManager>
 	
 	This class is a singleton (can only be instantiated once) 	
 	*/
-
+	
+	
+	private class HyperSpaceMaker
+	{
+		/* HyperSpaceMaker infro
+		this class generates data for hyperspace transitions
+		*/
+		private string[] hyperSpacePrefix = new string[5]
+		{"sub","super","hyper","ultra","extra"};
+		
+		private string[] hyperSpaceSuffix = new string[5]
+		{"sonic","focus","core","flow","zone"};
+		
+		
+	}
+	
 	public enum GameState
 	{
 		MainMenu,
@@ -31,7 +46,9 @@ public class GameManager : Singleton<GameManager>
 	private GUIManager GUIMan;
 	private Player player;
 	private Sun sun;
+	
 
+	
 	void Awake()
 	{
 		DontDestroyOnLoad (this);

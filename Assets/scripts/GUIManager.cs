@@ -453,8 +453,6 @@ public class GUIManager : MonoBehaviour
 	/// </summary>
 	void OnGUI()
 	{
-		GUI.Label (new Rect(5,5,200,20), "Current Speed: " + playerSpeed.ToString());
-
 		GUIWindow thisWindow = new GUIWindow();
 
 		// Copy GUIWindow settings to thisWindow

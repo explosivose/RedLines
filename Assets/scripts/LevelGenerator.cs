@@ -3,13 +3,8 @@ using System.Collections;
 using System.Collections.Generic; // required for List<T>
 
 
-[RequireComponent(typeof(MeshFilter))]
-[RequireComponent(typeof(MeshRenderer))]
-
 public class LevelGenerator : MonoBehaviour 
 {
-
-
 
 	public Material levelMaterial;
 	public float levelLength;
@@ -46,13 +41,13 @@ public class LevelGenerator : MonoBehaviour
 		
 		private void Calculate()
 		{
-			up = Mathf.PerlinNoise(dist/50f, Random.value);
+			up = Mathf.PerlinNoise(dist/100f, -0.1f);
 			Rescale(ref up, 1f, 0f, maxY/2f, minY/2f);
 			
-			mid = Mathf.PerlinNoise(dist/50f, Random.value);
+			mid = Mathf.PerlinNoise(dist/100f, 0f);
 			Rescale (ref mid, 1f, 0f, maxMidChange, 0f);
 			
-			down = Mathf.PerlinNoise(dist/50f, Random.value);
+			down = Mathf.PerlinNoise(dist/100f, 0.1f);
 			Rescale(ref down, 1f, 0f, maxY/2f, minY/2f);
 		}
 		
@@ -68,16 +63,7 @@ public class LevelGenerator : MonoBehaviour
 		{
 			dist = x;
 			Calculate();
-
 		}
-		
-		// destructor
-		~SectionData()
-		{
-			
-		}
-		
-
 		
 		public float Distance
 		{
@@ -207,6 +193,8 @@ public class LevelGenerator : MonoBehaviour
 		Vector3[] verts = new Vector3[data.Count * 4];
 		Vector2[] uvs = new Vector2[data.Count * 4];
 		int[] triangles = new int[(data.Count * 4 * 6) - (4 * 3)];
+		
+		// TOP MESH
 		
 		// verts and uvs
 		int v = 0;
