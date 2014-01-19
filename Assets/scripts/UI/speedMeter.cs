@@ -3,11 +3,14 @@ using System.Collections;
 
 public class speedMeter : MonoBehaviour {
 
+	public float speedBarFactor;
+
 	private Player player;
 
-	// Use this for initialization
-	void Start () {
-		GameObject playerObj = GameObject.Find("Player3D");
+
+	void Start () 
+	{
+		GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
 		if (playerObj != null) 
 		{
 			player = (Player)playerObj.GetComponent (typeof(Player));
@@ -15,13 +18,14 @@ public class speedMeter : MonoBehaviour {
 		else 
 		{
 			player = null;
-			Debug.Log("UI Error: Speed Meter: Player game object not found!");
+			Debug.LogError("UI Error: Speed Meter: Player game object not found!");
 		}
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		if (player != null){
+
+	void Update () 
+	{
+		if (player != null)
+		{
 			
 			int speedtmp = (int)Mathf.Round(player.currentSpeed);
 			
@@ -29,21 +33,15 @@ public class speedMeter : MonoBehaviour {
 			{
 				int childnum;
 				if (!int.TryParse(child.name, out childnum))
-					Debug.Log ("UI Error: Can't parse string to int");
+					Debug.LogError ("UI Error: Can't parse string to int");
 				else
-					if(childnum <= speedtmp/10f)
-					{
+					if(childnum <= speedtmp/speedBarFactor)
 						child.renderer.material.color = new Color(0.5f,1,1);
-					}
 					else
 						child.renderer.material.color = Color.black;
-
-
-				//child is your child transform
-			}
-			
+			}	
 		}
-		
-
 	}
+
+
 }

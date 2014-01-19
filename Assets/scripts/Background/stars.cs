@@ -5,7 +5,11 @@ public class stars : MonoBehaviour {
 
 	private Player player;
 	private ParticleSystem starSystem;
-	public float speedFactor;
+	private ParticleSystemRenderer starRenderer;
+
+	public float particleExpSpeedFactor;
+	public float particleExpScaleFactor;
+	public float particleScaleShift;
 
 	// Use this for initialization
 	void Start () {
@@ -14,6 +18,7 @@ public class stars : MonoBehaviour {
 		{
 			player = (Player)playerObj.GetComponent (typeof(Player));
 			starSystem = (ParticleSystem)gameObject.GetComponent(typeof(ParticleSystem));
+			starRenderer = (ParticleSystemRenderer)starSystem.renderer;
 		}
 		else 
 		{
@@ -24,23 +29,17 @@ public class stars : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (player != null){
-
-			//ParticleSystemRenderer pr = (ParticleSystemRenderer)someGameObject.particleSystem.renderer;
-			//pr.renderMode = ParticleSystemRenderMode.VerticalBillboard;
-			//pr.material.Color = Color.Blue;
-
+		if (player != null)
+		{
 			int speedValue = (int)Mathf.Round(player.currentSpeed);
-			Debug.Log((Mathf.Exp(speedValue/15f)));
 
-			starSystem.particleSystem.startSpeed = (Mathf.Exp(speedValue/15f));
+			// Particles Speed
+			starSystem.particleSystem.startSpeed = (Mathf.Exp(speedValue/particleExpSpeedFactor));
 
-			ParticleSystemRenderer pr = (ParticleSystemRenderer)starSystem.renderer;
-
-			float x = (Mathf.Exp(speedValue/100f)-1.4f);
+			// Particles Scale
+			float x = (Mathf.Exp(speedValue/particleExpScaleFactor)-particleScaleShift);
 			x = Mathf.Clamp(x, 0f, 5f);
-
-			pr.velocityScale = x;
+			starRenderer.velocityScale = x;
 		}
 	}
 }
