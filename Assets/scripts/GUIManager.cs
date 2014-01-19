@@ -321,11 +321,11 @@ public class GUIManager : MonoBehaviour
 		}
 		
 		
-		GUILayout.Label ("There are " + scores.Count + " scores stored.");
+		GUILayout.Label ("There are " + scores.Count + " scores stored.", menuSkin.label);
 		// score list
 		for(int i = 0; i < scores.Count; i++)
 		{
-			GUILayout.Label(scores[i].PlayerName + ": " + scores[i].Distance);
+			GUILayout.Label(scores[i].PlayerName + ": " + scores[i].Distance, menuSkin.label);
 		}
 		
 		// delete high scores button
