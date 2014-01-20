@@ -143,8 +143,9 @@ public class GUIWindow
 public class GUIManager : MonoBehaviour
 {
 	public int buttonHeight = 25;
+	// these are window properties for the designer to edit 
+	// using the unity inspector
 	public GUIWindow mainMenu = new GUIWindow();
-	public GUIWindow levelSelect = new GUIWindow();
 	public GUIWindow scoreBoard = new GUIWindow();
 	public GUIWindow options = new GUIWindow();
 	public GUIWindow credits = new GUIWindow();
@@ -185,7 +186,6 @@ public class GUIManager : MonoBehaviour
 	private enum GUIState
 	{
 		MainMenu,
-		LevelSelect,
 		ScoreBoard,
 		Options,
 		Credits,
@@ -227,7 +227,7 @@ public class GUIManager : MonoBehaviour
 		{
 			if (GUILayout.Button ("New Game", menuSkin.button, GUILayout.Height (buttonHeight))) 
 			{
-				state = GUIState.LevelSelect;
+				GameManager.Instance.NewGame("scene1");
 			}
 		}
 
@@ -237,13 +237,9 @@ public class GUIManager : MonoBehaviour
 		{
 			if (GUILayout.Button ("Retry", menuSkin.button, GUILayout.Height (buttonHeight))) 
 			{
-				GameManager.Instance.NewGame(Application.loadedLevel);
+				GameManager.Instance.NewGame("scene1");
 			}
 			GUILayout.Space(20);
-			if (GUILayout.Button ("New Game", menuSkin.button, GUILayout.Height (buttonHeight))) 
-			{
-				state = GUIState.LevelSelect;
-			}
 		}
 
 
@@ -258,13 +254,9 @@ public class GUIManager : MonoBehaviour
 			GUILayout.Space(20);
 			if (GUILayout.Button ("Retry", menuSkin.button, GUILayout.Height (buttonHeight))) 
 			{
-				GameManager.Instance.NewGame(Application.loadedLevel);
+				GameManager.Instance.NewGame("scene1");
 			}
 			GUILayout.Space(5);
-			if (GUILayout.Button ("New Game", menuSkin.button, GUILayout.Height (buttonHeight))) 
-			{
-				state = GUIState.LevelSelect;
-			}
 		}
 		
 		// Scoreboard
@@ -286,28 +278,6 @@ public class GUIManager : MonoBehaviour
 		GUILayout.Space(5);
 		if ( GUILayout.Button ("Quit", menuSkin.button, GUILayout.Height (buttonHeight)) )
 			Application.Quit();
-	}
-
-	void wLevelSelect(int windowID)
-	{
-		GUILayout.Space (15);
-		// level 1
-		if (GUILayout.Button ("Stage 1", menuSkin.button, GUILayout.Height (buttonHeight))) 
-		{
-			GameManager.Instance.NewGame("scene1");
-		}
-
-		// level 2
-		GUILayout.Space(5);
-		if (GUILayout.Button ("Stage 2", menuSkin.button, GUILayout.Height (buttonHeight))) 
-		{
-			GameManager.Instance.NewGame("scene2");
-		}
-
-		// back to main menu
-		GUILayout.Space(20);
-		if ( GUILayout.Button ("Main Menu", menuSkin.button, GUILayout.Height(buttonHeight)) )
-			state = GUIState.MainMenu;
 	}
 
 	void wScoreBoard(int windowID)
@@ -461,9 +431,6 @@ public class GUIManager : MonoBehaviour
 		case GUIState.MainMenu:
 			thisWindow = mainMenu;
 			break;
-		case GUIState.LevelSelect:
-			thisWindow = levelSelect;
-			break;
 		case GUIState.ScoreBoard:
 			thisWindow = scoreBoard;
 			break;
@@ -488,9 +455,6 @@ public class GUIManager : MonoBehaviour
 		case GUIState.MainMenu:
 
 			GUILayout.Window (1, windowSize, wMainMenu, "RedLines", menuSkin.window);
-			break;
-		case GUIState.LevelSelect:
-			GUILayout.Window (1, windowSize, wLevelSelect, "Choose a level", menuSkin.window);
 			break;
 		case GUIState.ScoreBoard:
 			GUILayout.Window (1, windowSize, wScoreBoard, "High Scores", menuSkin.window);
