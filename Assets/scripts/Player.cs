@@ -37,6 +37,7 @@ public class Player : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
+		transform.position = LevelGenerator.tail;
 		isDead = false;
 		tag = "Player";
 	}
@@ -59,23 +60,13 @@ public class Player : MonoBehaviour
 	void Movement()
 	{
 		// player controls
-		float horizontal = Input.GetAxisRaw ("Horizontal");
+		float horizontal = 1f;//Input.GetAxisRaw ("Horizontal");
 		float vertical = Input.GetAxisRaw ("Vertical");
 		movement.x = horizontal * thrust;
 		movement.y = vertical * verticalThrust;
 		
 		
-		if (!nukeUsed) 
-		{
-			if (Input.GetKey(KeyCode.Space))
-			{
-				nukeUsed = true;
-				Instantiate (nuke, transform.position + Vector3.back, transform.rotation);
-				GameManager.Instance.StartDialogue("Commander:", "TURN AROUND AND GET OUTTA THERE! NUKE AWAY!",10f);
-			}
-		}
-
-		// player rotation is dependent on velocity
+		// ship rotation
 		float dampedV = Input.GetAxis ("Vertical");
 		Vector3 rotation = Vector3.zero;
 		
@@ -126,11 +117,5 @@ public class Player : MonoBehaviour
 		Debug.Log ("You're brown bread!");
 		
 		ScoreManager.Instance.NewScore(transform.position.x);
-	}
-	
-	public void LevelUp(float thrustIncrease, Gradient flames)
-	{
-		thrust += thrustIncrease;
-		rigidbody.AddForce(movement * 2f);
 	}
 }

@@ -15,6 +15,8 @@ public class Sun : MonoBehaviour {
 
 	void Update () 
 	{
+		slowColor = GameManager.Instance.ColourSecondary;
+		fastColor = GameManager.Instance.ColourPrimary;
 		light.color = Color.Lerp (slowColor, fastColor, player.currentSpeed / player.maxSpeed);
 		Color background = light.color;
 		background.r = (1f - background.r)/4f;

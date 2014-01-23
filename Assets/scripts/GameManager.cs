@@ -34,8 +34,40 @@ public class GameManager : Singleton<GameManager>
 		private static int prefix = 0;
 		private static int suffix = 0;
 		
-	
-		public static HyperSpace nextHyperSpace
+		private static HyperSpace currentHyperSpace;
+		
+		
+		public static HyperSpace CurrentHyperSpace
+		{
+			get
+			{
+				return currentHyperSpace;
+			}
+			private set 
+			{
+				currentHyperSpace = value;
+			}
+		}
+		
+		public static HyperSpace FlatSpace
+		{
+			get 
+			{
+				HyperSpace temp = new HyperSpace();
+				temp.name = "";
+				temp.maxMidChange = currentHyperSpace.maxMidChange;
+				temp.midSampleRate = 0f;
+				temp.maxTop = 5f;
+				temp.minTop = 5f;
+				temp.topSampleRate = currentHyperSpace.topSampleRate;
+				temp.maxBot = 5f;
+				temp.minBot = 5f;
+				temp.botSampleRate = currentHyperSpace.botSampleRate;
+				return temp;
+			}
+		}
+		
+		public static HyperSpace NewHyperSpace
 		{
 			get
 			{
@@ -50,18 +82,23 @@ public class GameManager : Singleton<GameManager>
 						suffix = 0;
 				}
 				
-				temp.maxMidChange = Random.Range(0f, 100f);
-				temp.midSampleRate = Random.value;
-				temp.minTop = Random.Range(0f,10f);
-				temp.maxTop = Random.Range(temp.minTop, 50f);
-				temp.topSampleRate = Random.value;
-				temp.minBot = Random.Range(0f,10f);
-				temp.maxBot = Random.Range(temp.minBot, 50f);
-				temp.botSampleRate = Random.value;
+				temp.maxMidChange = Random.Range(50f,100f);
+				temp.midSampleRate = Random.value/1000f;
+				temp.minTop = Random.Range(5f,10f);
+				temp.maxTop = Random.Range(temp.minTop, 20f);
+				temp.topSampleRate = Random.value/100f;
+				temp.minBot = Random.Range(5f,10f);
+				temp.maxBot = Random.Range(temp.minBot, 20f);
+				temp.botSampleRate = Random.value/100f;
 				
+				temp.RandomSeeds();
+				
+				currentHyperSpace = temp;
 				return temp;
 			}
 		}
+		
+
 	}
 	
 	public enum GameState
@@ -77,7 +114,10 @@ public class GameManager : Singleton<GameManager>
 	private Player player;
 	private Sun sun;
 	private LevelGenerator level;
-
+	
+	private Color colour1 = Color.green;
+	private Color colour2 = Color.red;
+	private bool changingHyperSpace = false;
 	
 	void Awake()
 	{
@@ -87,27 +127,33 @@ public class GameManager : Singleton<GameManager>
 		GUIManagerPrefab = Instantiate(GUIManagerPrefab, Vector3.zero, Quaternion.identity) as GameObject;
 		DontDestroyOnLoad(GUIManagerPrefab);
 		GUIMan = GUIManagerPrefab.GetComponent<GUIManager> ();
-		level = GameObject.FindGameObjectWithTag("Level").GetComponent<LevelGenerator>();
+
+	}
+	
+	void Start()
+	{
+
 	}
 
+	void OnLevelWasLoaded()
+	{
+		level = GameObject.FindGameObjectWithTag("Level").GetComponent<LevelGenerator>();
+		level.hyperSpace = HyperSpaceMaker.NewHyperSpace;
+		
+		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+		sun = GameObject.FindGameObjectWithTag("Sun").GetComponent<Sun>();
+	}
 	
 	void Update()
 	{
 		if (state == GameState.Play)
 		{
-			if (player == null)
-				player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-			
-			if (sun == null)
-				sun = GameObject.FindGameObjectWithTag("Sun").GetComponent<Sun>();
 			
 			if (player != null)
 				GUIMan.playerSpeed = player.currentSpeed;
-		}
-		if (Input.GetKey(KeyCode.Space))
-		{
-			Debug.Log("penis");
-			level.hyperSpace = HyperSpaceMaker.nextHyperSpace;
+				
+			if (Input.GetKey(KeyCode.Space))
+				HyperSpaceIncrement();
 		}
 	}
 	
@@ -160,7 +206,74 @@ public class GameManager : Singleton<GameManager>
 			else
 				return 0f;
 		}
+	}
+	
+	public Color ColourPrimary
+	{
+		get { return colour1; }
 	}	
+	
+	public Color ColourSecondary
+	{
+		get { return colour2; }
+	}
+	
+	public void HyperSpaceIncrement()
+	{
+		if (!changingHyperSpace)
+			StartCoroutine("HyperSpaceTransition");
+	}
+	
+	private IEnumerator HyperSpaceTransition()
+	{
+		changingHyperSpace = true;
+		Debug.Log("Current HyperSpace: " + HyperSpaceMaker.CurrentHyperSpace.name);
+		
+		// flatten out the level
+		Debug.Log ("Flattening level...");
+		level.SetHyperSpace(HyperSpaceMaker.FlatSpace);
+		yield return new WaitForSeconds(1f);
+		
+		// explosive accel
+		Debug.Log("Explosive accel!");
+		player.rigidbody.AddForce (Vector3.right * 100f, ForceMode.VelocityChange);
+		// increase player thrust
+		StartCoroutine(ChangeThrust (4f, player.thrust + 5f) );
+		
+		
+		// change colours!
+		StartCoroutine("ChangeColours",5f);
+		
+		// new level geometry
+		level.SetHyperSpace(HyperSpaceMaker.NewHyperSpace);
+		Debug.Log ("New HyperSpace: " + HyperSpaceMaker.CurrentHyperSpace.name);
+		yield return new WaitForSeconds(2f);
+		changingHyperSpace = false;
+	}
+	
+	private IEnumerator ChangeThrust(float t, float newThrust)
+	{
+		float start = Time.time;
+		
+		while(Time.time < start + t)
+		{
+			player.thrust = Mathf.Lerp (player.thrust, newThrust,  Time.time - start);
+			yield return new WaitForFixedUpdate();
+		}
+	}
+	
+	private IEnumerator ChangeColours(float t)
+	{
+		float start = Time.time;
+		Color P = new Color(Random.value, Random.value, Random.value);
+		Color S = new Color(Random.value, Random.value, Random.value);
+		while(Time.time < start + t)
+		{
+			colour1 = Color.Lerp(colour1, P, Time.time - start);
+			colour2 = Color.Lerp(colour2, S, Time.time - start);
+			yield return new WaitForFixedUpdate();
+		}
+	}
 	
 	public void NewGame(int level)
 	{

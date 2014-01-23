@@ -5,15 +5,40 @@ using System.Collections.Generic; // required for List<T>
 [System.Serializable]
 public class HyperSpace
 {
-	public string name;
-	public float maxMidChange;
-	public float midSampleRate;
-	public float maxTop;
-	public float minTop;
-	public float topSampleRate;
-	public float maxBot;
-	public float minBot;
-	public float botSampleRate;
+	public string name = "";
+	
+	private float topSeed = 0f;
+	public float topSampleRate = 0f;
+	public float maxTop = 0f;
+	public float minTop = 0f;
+	public float TopSeed
+	{
+		get { return topSeed; }
+	}
+	
+	public float maxMidChange = 0f;
+	public float midSampleRate = 0f;
+	private float midSeed = 0f;
+	public float MidSeed
+	{
+		get { return midSeed; }
+	}
+	
+	public float minBot = 0f;
+	public float maxBot = 0f;
+	public float botSampleRate = 0f;
+	private float botSeed = 0f;
+	public float BotSeed
+	{
+		get { return botSeed; }
+	}
+	
+	public void RandomSeeds()
+	{
+		midSeed = Random.value;
+		topSeed = Random.value;
+		botSeed = Random.value;
+	}
 }
 
 public class LevelGenerator : MonoBehaviour 
@@ -25,7 +50,13 @@ public class LevelGenerator : MonoBehaviour
 	// public variables that can be edited in the inspectorrrr
 	public HyperSpace hyperSpace;
 	
-	public float xGap;
+	public void SetHyperSpace(HyperSpace newHyperSpace)
+	{
+		hyperSpace = newHyperSpace;
+		hyperTime = Time.time;
+	}
+	
+	private float hyperTime = 0f;
 	
 	private Player player;
 	
@@ -34,57 +65,40 @@ public class LevelGenerator : MonoBehaviour
 	
 	// basically a copy of the public floats above because static shit can't be
 	// easily exposed for the unity inspector
-	private static float maxMidChange;
-	private static float midSampleRate;
+
 	private static float minTop;
 	private static float maxTop;
 	private static float topSampleRate;
+	private static float topSeed;
+	
+	private static float maxMidChange;
+	private static float midSampleRate;
+	private static float midSeed;
+	
 	private static float minBot;
 	private static float maxBot;
 	private static float botSampleRate;
+	private static float botSeed;
 	
 	private GameObject topMesh;
 	private GameObject botMesh;
 	
 	// alias the furthest and shortest distances in level data
-	private static float head {
-		get { return data[data.Count-1].Distance; }
+	public static Vector3 head {
+		get { return data[data.Count-1].Center; }
 	}
-	private static float tail {
-		get { return data[0].Distance; }
+	public static Vector3 tail {
+		get { return data[0].Center; }
 	}
 	
 	[System.Serializable]
 	private class SectionData
 	{
-		private float dist = 0f;
-		private float up = 0f;
-		private float mid = 0f;
-		private float down = 0f;
-		
-		private void Calculate()
-		{
-			up = Mathf.PerlinNoise(dist*topSampleRate, -0.1f);
-			Rescale(ref up, 1f, 0f, maxTop, minTop);
-			
-			mid = Mathf.PerlinNoise(dist*midSampleRate, 0f);
-			Rescale (ref mid, 1f, 0f, maxMidChange, 0f);
-			
-			down = Mathf.PerlinNoise(dist*botSampleRate, 0.1f);
-			Rescale(ref down, 1f, 0f, maxBot, minBot);
-		}
-		
-		private void Rescale(ref float value, float oldMax, float oldMin, float newMax, float newMin)
-		{
-			float oldRange = oldMax - oldMin;
-			float newRange = newMax - newMin;
-			value = (((value - oldMin)*newRange)/oldRange)+newMin;
-		}
-		
 		// constructors
-		public SectionData(float x)
+		public SectionData(float distance, float previousHeight)
 		{
-			dist = x;
+			dist = distance;
+			prevY = previousHeight;
 			Calculate();
 		}
 		
@@ -110,6 +124,31 @@ public class LevelGenerator : MonoBehaviour
 			get { return new Vector3(dist, mid - down); }
 		}
 		
+		private float prevY = 0f;
+		private float dist = 0f;
+		private float up = 0f;
+		private float mid = 0f;
+		private float down = 0f;
+		
+		private void Calculate()
+		{
+			up = Mathf.PerlinNoise(dist*topSampleRate, -0.1f);
+			Rescale(ref up, 1f, 0f, maxTop, minTop);
+			
+			mid = Mathf.PerlinNoise(dist*midSampleRate, 0f);
+			Rescale (ref mid, 1f, 0f, maxMidChange, 0f);
+			
+			down = Mathf.PerlinNoise(dist*botSampleRate, 0.1f);
+			Rescale(ref down, 1f, 0f, maxBot, minBot);
+		}
+		
+		private void Rescale(ref float value, float oldMax, float oldMin, float newMax, float newMin)
+		{
+			float oldRange = oldMax - oldMin;
+			float newRange = newMax - newMin;
+			value = (((value - oldMin)*newRange)/oldRange)+newMin;
+		}
+		
 	}
 	
 	void OnLevelWasLoaded(int level)
@@ -128,6 +167,8 @@ public class LevelGenerator : MonoBehaviour
 		maxTop = hyperSpace.maxTop;
 		minTop = hyperSpace.minTop;
 		topSampleRate = hyperSpace.topSampleRate;
+		
+
 		
 		// make child objects for containing level meshes
 		topMesh = new GameObject("topMesh");
@@ -154,8 +195,8 @@ public class LevelGenerator : MonoBehaviour
 			Debug.LogError("Could not find player!");
 		
 		// generate the first bits of data
-		data.Add(new SectionData(transform.position.x));
-		while (head < player.transform.position.x + levelLength)
+		data.Add(new SectionData(transform.position.x, 0f));
+		while (head.x < player.transform.position.x + levelLength)
 		{
 			GenerateDataAtHead();
 		}
@@ -167,26 +208,33 @@ public class LevelGenerator : MonoBehaviour
 		// they're private because public statics are not easily exposed to the Unity inspector
 		// public floats are exposed in the Unity inspector (useful)
 		// this is dirty but easy getaround for realtime updates to level generator parameters
-		maxMidChange = hyperSpace.maxMidChange;
-		midSampleRate = hyperSpace.midSampleRate;
-		maxBot = hyperSpace.maxBot;
-		minBot = hyperSpace.minBot;
-		botSampleRate = hyperSpace.botSampleRate;
-		maxTop = hyperSpace.maxTop;
-		minTop = hyperSpace.minTop;
-		topSampleRate = hyperSpace.topSampleRate;
+		float t = (Time.time - hyperTime) / 10000f;
+		
+		maxTop = Mathf.Lerp(maxTop, hyperSpace.maxTop, t );
+		minTop = Mathf.Lerp(minTop, hyperSpace.minTop, t );
+		topSampleRate = Mathf.Lerp(topSampleRate, hyperSpace.topSampleRate, t);
+		topSeed = Mathf.Lerp (topSeed, hyperSpace.TopSeed, t);
+		
+		maxMidChange = Mathf.Lerp (maxMidChange, hyperSpace.maxMidChange, t);
+		midSampleRate = Mathf.Lerp (midSampleRate, hyperSpace.midSampleRate, t);
+		midSeed = Mathf.Lerp(midSeed, hyperSpace.MidSeed, t);
+				
+		maxBot = Mathf.Lerp(maxBot, hyperSpace.maxBot, t);
+		minBot = Mathf.Lerp(minBot, hyperSpace.minBot, t);
+		botSampleRate = Mathf.Lerp (botSampleRate, hyperSpace.botSampleRate, t);
+		botSeed = Mathf.Lerp (botSeed, hyperSpace.BotSeed, t);
 		
 		bool updateMesh = false;
 		
 		// keep generating stuff ahead of the player
-		if (head < player.transform.position.x + levelLength)
+		if (head.x < player.transform.position.x + levelLength)
 		{
 			GenerateDataAtHead();
 			updateMesh = true;
 		}
 		
 		// forget old level data
-		if (tail < player.transform.position.x - levelLength)
+		if (tail.x < player.transform.position.x - levelLength)
 		{
 			DestroyDataAtTail();
 			updateMesh = true;
@@ -199,7 +247,7 @@ public class LevelGenerator : MonoBehaviour
 	
 	private void GenerateDataAtHead()
 	{
-		data.Add(new SectionData(head + 10f));
+		data.Add(new SectionData(head.x + player.thrust, head.y));
 	}
 	
 	private void DestroyDataAtTail()

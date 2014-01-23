@@ -22,5 +22,6 @@ public class HighScoreDistanceMeter : MonoBehaviour
 	void Update()
 	{
 		uiText.text = Mathf.RoundToInt(player.transform.position.x - highScore) + " KM";
+		uiText.color = GameManager.Instance.ColourPrimary;
 	}
 }

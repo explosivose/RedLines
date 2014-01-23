@@ -44,7 +44,7 @@ public class CameraFollowPlayer : MonoBehaviour
 	{
 		// player speed as a percentage of the maximum attainable speed
 		// note that the maximum attainable speed can change... hence need for "hyperlerp" var
-		pc = GameManager.Instance.HyperLerp;
+		pc =  GameManager.Instance.HyperLerp;
 		
 		// returns  1 if the player is on the positive side of the Z axis
 		// returns -1 if the player is on the negative side of the Z axis

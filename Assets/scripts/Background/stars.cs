@@ -34,12 +34,15 @@ public class stars : MonoBehaviour {
 			int speedValue = (int)Mathf.Round(player.currentSpeed);
 
 			// Particles Speed
-			starSystem.particleSystem.startSpeed = (Mathf.Exp(speedValue/particleExpSpeedFactor));
+			starSystem.particleSystem.startSpeed = (Mathf.Exp(speedValue/player.thrust));
 
 			// Particles Scale
 			float x = (Mathf.Exp(speedValue/particleExpScaleFactor)-particleScaleShift);
 			x = Mathf.Clamp(x, 0f, 5f);
 			starRenderer.velocityScale = x;
+			
+			// particles colour
+			starRenderer.particleSystem.startColor = GameManager.Instance.ColourSecondary;
 		}
 	}
 }

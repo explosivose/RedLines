@@ -28,6 +28,7 @@ public class speed : MonoBehaviour {
 		if (player != null){
 			int speedtmp = (int)Mathf.Round(player.currentSpeed*speedMultiplier);
 			speedText.text = speedtmp.ToString();
+			speedText.color = GameManager.Instance.ColourPrimary;
 		}
 
 	}

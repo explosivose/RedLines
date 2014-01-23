@@ -36,7 +36,7 @@ public class speedMeter : MonoBehaviour {
 					Debug.LogError ("UI Error: Can't parse string to int");
 				else
 					if(childnum <= speedtmp/speedBarFactor)
-						child.renderer.material.color = new Color(0.5f,1,1);
+						child.renderer.material.color = GameManager.Instance.ColourSecondary;
 					else
 						child.renderer.material.color = Color.black;
 			}	
