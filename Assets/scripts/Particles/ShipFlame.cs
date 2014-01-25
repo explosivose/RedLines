@@ -34,6 +34,7 @@ public class ShipFlame : MonoBehaviour {
 			particleSys.startLifetime = 0.1f+player.currentSpeed/speedFactor + player.currentAcceleration/accelerationFactor;
 			particleSys.gravityModifier = Input.GetAxisRaw ("Vertical")/16;
 		}
+		particleSys.startColor = GameManager.Instance.ColourPrimary;
 
 	}
 }

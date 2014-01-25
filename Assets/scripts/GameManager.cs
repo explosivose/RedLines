@@ -1,6 +1,89 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public static class HyperSpaceMaker
+{
+	/* HyperSpaceMaker info
+		this class generates data for hyperspace transitions
+		*/
+	private static string[] hyperSpacePrefix = new string[5]
+	{"sub","super","hyper","ultra","extra"};
+	
+	private static string[] hyperSpaceSuffix = new string[5]
+	{"sonic","focus","core","flow","zone"};
+	
+	private static int prefix = 0;
+	private static int suffix = 0;
+	
+	private static HyperSpace currentHyperSpace;
+	
+	
+	public static HyperSpace CurrentHyperSpace
+	{
+		get
+		{
+			if ( currentHyperSpace == null )
+				currentHyperSpace = new HyperSpace();
+			return currentHyperSpace;
+		}
+		private set 
+		{
+			currentHyperSpace = value;
+		}
+	}
+	
+	public static HyperSpace FlatSpace
+	{
+		get 
+		{
+			HyperSpace temp = new HyperSpace();
+			temp.name = "";
+			temp.maxMidChange = CurrentHyperSpace.maxMidChange;
+			temp.midSampleRate = 0f;
+			temp.maxTop = 5f;
+			temp.minTop = 5f;
+			temp.topSampleRate = CurrentHyperSpace.topSampleRate;
+			temp.maxBot = 5f;
+			temp.minBot = 5f;
+			temp.botSampleRate = CurrentHyperSpace.botSampleRate;
+			return temp;
+		}
+	}
+	
+	public static HyperSpace NewHyperSpace
+	{
+		get
+		{
+			HyperSpace temp = new HyperSpace();
+			temp.name = hyperSpacePrefix[prefix++] + hyperSpaceSuffix[suffix];
+			
+			if (prefix >= hyperSpacePrefix.Length)
+			{
+				prefix = 0;
+				suffix++;
+				if (suffix >= hyperSpaceSuffix.Length)
+					suffix = 0;
+			}
+			
+			temp.maxMidChange = Random.Range(50f,500f);
+			temp.midSampleRate = Random.value/5000f;
+			temp.minTop = Random.Range(2f,10f);
+			temp.maxTop = Random.Range(temp.minTop, 40f);
+			temp.topSampleRate = Random.value/50f;
+			temp.minBot = Random.Range(2f,10f);
+			temp.maxBot = Random.Range(temp.minBot, 40f);
+			temp.botSampleRate = Random.value/50f;
+			
+			temp.RandomSeeds();
+			
+			currentHyperSpace = temp;
+			return temp;
+		}
+	}
+	
+	
+}
+
 public class GameManager : Singleton<GameManager>  
 {
 	/* GameManager info
@@ -20,86 +103,7 @@ public class GameManager : Singleton<GameManager>
 	*/
 	
 	
-	private static class HyperSpaceMaker
-	{
-		/* HyperSpaceMaker info
-		this class generates data for hyperspace transitions
-		*/
-		private static string[] hyperSpacePrefix = new string[5]
-		{"sub","super","hyper","ultra","extra"};
-		
-		private static string[] hyperSpaceSuffix = new string[5]
-		{"sonic","focus","core","flow","zone"};
-		
-		private static int prefix = 0;
-		private static int suffix = 0;
-		
-		private static HyperSpace currentHyperSpace;
-		
-		
-		public static HyperSpace CurrentHyperSpace
-		{
-			get
-			{
-				return currentHyperSpace;
-			}
-			private set 
-			{
-				currentHyperSpace = value;
-			}
-		}
-		
-		public static HyperSpace FlatSpace
-		{
-			get 
-			{
-				HyperSpace temp = new HyperSpace();
-				temp.name = "";
-				temp.maxMidChange = currentHyperSpace.maxMidChange;
-				temp.midSampleRate = 0f;
-				temp.maxTop = 5f;
-				temp.minTop = 5f;
-				temp.topSampleRate = currentHyperSpace.topSampleRate;
-				temp.maxBot = 5f;
-				temp.minBot = 5f;
-				temp.botSampleRate = currentHyperSpace.botSampleRate;
-				return temp;
-			}
-		}
-		
-		public static HyperSpace NewHyperSpace
-		{
-			get
-			{
-				HyperSpace temp = new HyperSpace();
-				temp.name = hyperSpacePrefix[prefix++] + hyperSpaceSuffix[suffix];
-				
-				if (prefix >= hyperSpacePrefix.Length)
-				{
-					prefix = 0;
-					suffix++;
-					if (suffix >= hyperSpaceSuffix.Length)
-						suffix = 0;
-				}
-				
-				temp.maxMidChange = Random.Range(50f,100f);
-				temp.midSampleRate = Random.value/1000f;
-				temp.minTop = Random.Range(5f,10f);
-				temp.maxTop = Random.Range(temp.minTop, 20f);
-				temp.topSampleRate = Random.value/100f;
-				temp.minBot = Random.Range(5f,10f);
-				temp.maxBot = Random.Range(temp.minBot, 20f);
-				temp.botSampleRate = Random.value/100f;
-				
-				temp.RandomSeeds();
-				
-				currentHyperSpace = temp;
-				return temp;
-			}
-		}
-		
 
-	}
 	
 	public enum GameState
 	{
@@ -115,8 +119,8 @@ public class GameManager : Singleton<GameManager>
 	private Sun sun;
 	private LevelGenerator level;
 	
-	private Color colour1 = Color.green;
-	private Color colour2 = Color.red;
+	private Color colour1 = Color.red;
+	private Color colour2 = Color.green;
 	private bool changingHyperSpace = false;
 	
 	void Awake()
@@ -138,7 +142,7 @@ public class GameManager : Singleton<GameManager>
 	void OnLevelWasLoaded()
 	{
 		level = GameObject.FindGameObjectWithTag("Level").GetComponent<LevelGenerator>();
-		level.hyperSpace = HyperSpaceMaker.NewHyperSpace;
+		//level.SetHyperSpace(HyperSpaceMaker.NewHyperSpace);
 		
 		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 		sun = GameObject.FindGameObjectWithTag("Sun").GetComponent<Sun>();
@@ -229,35 +233,43 @@ public class GameManager : Singleton<GameManager>
 		changingHyperSpace = true;
 		Debug.Log("Current HyperSpace: " + HyperSpaceMaker.CurrentHyperSpace.name);
 		
+		float thrustIncrease = 10f;
+		
+		// temporary slow
+		StartCoroutine( ChangeThrust(1f, player.thrust - thrustIncrease) );
+		
 		// flatten out the level
 		Debug.Log ("Flattening level...");
 		level.SetHyperSpace(HyperSpaceMaker.FlatSpace);
-		yield return new WaitForSeconds(1f);
+		yield return new WaitForSeconds(5f);
 		
-		// explosive accel
+		// explosive accel!
 		Debug.Log("Explosive accel!");
-		player.rigidbody.AddForce (Vector3.right * 100f, ForceMode.VelocityChange);
-		// increase player thrust
-		StartCoroutine(ChangeThrust (4f, player.thrust + 5f) );
-		
+		player.rigidbody.AddForce (Vector3.right * player.maxSpeed, ForceMode.Impulse);
 		
 		// change colours!
 		StartCoroutine("ChangeColours",5f);
 		
+		// increase player thrust (removing the temporary slow, also)
+		StartCoroutine( ChangeThrust(4f, player.thrust + 2f * thrustIncrease) );
+		
+		// wait for speed to settle in flat-mode
+		yield return new WaitForSeconds(5f);
+		
 		// new level geometry
 		level.SetHyperSpace(HyperSpaceMaker.NewHyperSpace);
 		Debug.Log ("New HyperSpace: " + HyperSpaceMaker.CurrentHyperSpace.name);
-		yield return new WaitForSeconds(2f);
+		yield return new WaitForSeconds(1f);
 		changingHyperSpace = false;
 	}
 	
 	private IEnumerator ChangeThrust(float t, float newThrust)
 	{
 		float start = Time.time;
-		
+		float oldThrust = player.thrust;
 		while(Time.time < start + t)
 		{
-			player.thrust = Mathf.Lerp (player.thrust, newThrust,  Time.time - start);
+			player.thrust = Mathf.Lerp (oldThrust, newThrust,  (Time.time - start)/t );
 			yield return new WaitForFixedUpdate();
 		}
 	}
@@ -265,12 +277,14 @@ public class GameManager : Singleton<GameManager>
 	private IEnumerator ChangeColours(float t)
 	{
 		float start = Time.time;
-		Color P = new Color(Random.value, Random.value, Random.value);
-		Color S = new Color(Random.value, Random.value, Random.value);
+		Color P_old = colour1;
+		Color S_old = colour2;
+		Color P_new = new Color(Random.value, Random.value, Random.value);
+		Color S_new = new Color(Random.value, Random.value, Random.value);
 		while(Time.time < start + t)
 		{
-			colour1 = Color.Lerp(colour1, P, Time.time - start);
-			colour2 = Color.Lerp(colour2, S, Time.time - start);
+			colour1 = Color.Lerp(P_old, P_new, (Time.time - start)/t );
+			colour2 = Color.Lerp(S_old, S_new, (Time.time - start)/t );
 			yield return new WaitForFixedUpdate();
 		}
 	}
@@ -292,10 +306,4 @@ public class GameManager : Singleton<GameManager>
 		GUIMan.ShowDialogue (character, message, showTime);
 	}
 	
-	public void LevelUp(Color fastColour)
-	{
-		
-		sun.slowColor = sun.fastColor;
-		sun.fastColor = fastColour;
-	}
 }

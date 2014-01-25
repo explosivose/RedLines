@@ -32,7 +32,6 @@ public class Player : MonoBehaviour
 
 	private Vector2 movement;
 
-	private bool nukeUsed = false;
 	private bool isDead = false;
 	// Use this for initialization
 	void Start () 
@@ -59,6 +58,7 @@ public class Player : MonoBehaviour
 
 	void Movement()
 	{
+		verticalThrust = 2f * thrust;
 		// player controls
 		float horizontal = 1f;//Input.GetAxisRaw ("Horizontal");
 		float vertical = Input.GetAxisRaw ("Vertical");

@@ -42,6 +42,8 @@ public class CameraFollowPlayer : MonoBehaviour
 	float pc;
 	void ChaseCam()
 	{
+		posDamping = player.GetComponent<Player>().thrust;
+		
 		// player speed as a percentage of the maximum attainable speed
 		// note that the maximum attainable speed can change... hence need for "hyperlerp" var
 		pc =  GameManager.Instance.HyperLerp;
@@ -55,7 +57,7 @@ public class CameraFollowPlayer : MonoBehaviour
 		Vector3 furthest = player.position + maxPositionOffset * lr;
 		nextPosition = Vector3.Lerp (closest, furthest, pc);
 		
-		transform.position = nextPosition;
+		transform.position = Vector3.Slerp (lastPosition, nextPosition, Time.deltaTime * posDamping);
 		lastPosition = transform.position;
 
 		// calculate camera angle
