@@ -318,17 +318,25 @@ public class GUIManager : MonoBehaviour
 
 	void wOptions(int windowID)
 	{
+		float audioVol = AudioListener.volume;
+		
 		// Gap for header
 		GUILayout.Space(15);
 
 		GUILayout.Label("Player Name:");
 		playerName = GUILayout.TextField(playerName);
-
+		
+		GUILayout.Space (5);
+		
+		GUILayout.Label("Audio Volume:");
+		AudioListener.volume = GUILayout.HorizontalSlider(audioVol, 0f, 1f);
+		
 		// Back to main menu button
 		GUILayout.Space(5);
 		if ( GUILayout.Button ("Main Menu", menuSkin.button, GUILayout.Height(buttonHeight)) )
 		{
 			PlayerPrefs.SetString("playerName", playerName);
+			PlayerPrefs.SetFloat("audioVolume", audioVol);
 			state = GUIState.MainMenu;
 		}
 	}

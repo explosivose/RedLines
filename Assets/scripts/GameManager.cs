@@ -132,6 +132,9 @@ public class GameManager : Singleton<GameManager>
 		DontDestroyOnLoad(GUIManagerPrefab);
 		GUIMan = GUIManagerPrefab.GetComponent<GUIManager> ();
 
+
+		if (PlayerPrefs.HasKey("audioVolume"))
+			AudioListener.volume = PlayerPrefs.GetFloat("audioVolume");
 	}
 	
 	void Start()
