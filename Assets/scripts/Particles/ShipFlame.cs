@@ -31,9 +31,20 @@ public class ShipFlame : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (player != null){
-			particleSys.startLifetime = 0.1f+player.currentSpeed/speedFactor + player.currentAcceleration/accelerationFactor;
-			particleSys.gravityModifier = Input.GetAxisRaw ("Vertical")/16;
+			if (GameManager.Instance.ChangingHyperSpace)
+			{
+				particleSys.startLifetime = (player.currentSpeed * 2)/player.maxSpeed;
+				particleSys.startSize = (player.currentSpeed * 1.5f)/player.maxSpeed;
+				particleSys.startSpeed = (player.currentSpeed * 2)/player.maxSpeed;
+			}
+			else
+			{
+				particleSys.startLifetime = player.currentSpeed/player.maxSpeed;
+				particleSys.startSize = player.currentSpeed/player.maxSpeed;
+				particleSys.startSpeed = player.currentSpeed/player.maxSpeed;
+			}
 		}
+		particleSys.gravityModifier = Input.GetAxisRaw ("Vertical")/8;
 		particleSys.startColor = GameManager.Instance.ColourPrimary;
 
 	}

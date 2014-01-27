@@ -4,41 +4,37 @@ using System.Collections;
 public class Player : MonoBehaviour 
 {
 	public float thrust = 15f;
-	public float verticalThrust = 100f;
+	public Transform deathExplosion;
+
+	public AudioClip hyperJump;
+
 	public float maxSpeed
 	{
-		get 
-		{
-			return thrust / (rigidbody.mass * rigidbody.drag);
-		}
+		get { return thrust / (rigidbody.mass * rigidbody.drag); }
 	}
 	public float currentSpeed
 	{
-		get
-		{
-			return rigidbody.velocity.magnitude;
-		}
+		get { return rigidbody.velocity.magnitude; }
 	}
 	public float currentAcceleration
 	{
-		get 
-		{
-			return movement.magnitude;
-		}
+		get { return movement.magnitude; }
 	}
-
-	public Transform deathExplosion;
-	public Transform nuke;
-
+	
+	private float verticalThrust = 100f;
 	private Vector2 movement;
-
 	private bool isDead = false;
+	
+	private Transform light_back;
+	
 	// Use this for initialization
 	void Start () 
 	{
 		transform.position = LevelGenerator.tail;
 		isDead = false;
 		tag = "Player";
+		
+		light_back = transform.FindChild("light_back");
 	}
 
 	// Update is called once per frame
@@ -51,8 +47,8 @@ public class Player : MonoBehaviour
 			return;
 		}
 
-		Movement ();
-		Aesthetics ();
+		Movement();
+		Aesthetics();
 		
 	}
 
@@ -72,7 +68,6 @@ public class Player : MonoBehaviour
 		
 		rotation = new Vector3(dampedV * 20f,0f,dampedV * 20f);
 		
-		
 		Quaternion newRot = Quaternion.Euler(rotation) * Quaternion.LookRotation(rigidbody.velocity);
 		transform.rotation = Quaternion.Lerp (transform.rotation, newRot, Time.deltaTime * 16f);
 		
@@ -90,6 +85,9 @@ public class Player : MonoBehaviour
 		prevSpeed = currentSpeed;
 		if (deltaSpeed < 0f) deltaSpeed = 0f;
 		audio.volume = deltaSpeed * 0.02f;
+		
+		light_back.light.color = GameManager.Instance.ColourPrimary;
+		light_back.light.intensity = 8 * (currentSpeed/maxSpeed);
 	}
 
 	void FixedUpdate()
@@ -108,6 +106,7 @@ public class Player : MonoBehaviour
 		if(info.tag == "HyperMatter")
 		{
 			GameManager.Instance.HyperSpaceIncrement();
+			AudioSource.PlayClipAtPoint(hyperJump, transform.position);
 		}
 	}
 

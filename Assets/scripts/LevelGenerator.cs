@@ -259,7 +259,7 @@ public class LevelGenerator : MonoBehaviour
 		if (!GameManager.Instance.ChangingHyperSpace)
 		{
 			float r = Random.value;
-			if (r < 0.025f) Instantiate (hyperMatter, head, Random.rotation);
+			if (r < 0.1f) Instantiate (hyperMatter, head, Random.rotation);
 		}
 
 	}

@@ -102,9 +102,6 @@ public class GameManager : Singleton<GameManager>
 	This class is a singleton (can only be instantiated once) 	
 	*/
 	
-	
-
-	
 	public enum GameState
 	{
 		MainMenu,
@@ -114,9 +111,9 @@ public class GameManager : Singleton<GameManager>
 	}
 	
 	private GameState state = GameState.MainMenu;
+	
 	private GUIManager GUIMan;
 	private Player player;
-	private Sun sun;
 	private LevelGenerator level;
 	
 	private Color colour1 = Color.red;
@@ -144,11 +141,12 @@ public class GameManager : Singleton<GameManager>
 
 	void OnLevelWasLoaded()
 	{
+		StopAllCoroutines();
+		changingHyperSpace = false;
 		level = GameObject.FindGameObjectWithTag("Level").GetComponent<LevelGenerator>();
 		//level.SetHyperSpace(HyperSpaceMaker.NewHyperSpace);
 		
 		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-		sun = GameObject.FindGameObjectWithTag("Sun").GetComponent<Sun>();
 	}
 	
 	void Update()
@@ -236,6 +234,7 @@ public class GameManager : Singleton<GameManager>
 		{
 			Destroy (h);
 		}
+		//AudioSource.PlayClipAtPoint();
 	}
 	
 	private IEnumerator HyperSpaceTransition()
@@ -254,7 +253,7 @@ public class GameManager : Singleton<GameManager>
 		
 		// explosive accel!
 		Debug.Log("Explosive accel!");
-		player.rigidbody.AddForce (Vector3.right * player.maxSpeed, ForceMode.Impulse);
+		player.rigidbody.AddForce (Vector3.right * player.maxSpeed * 0.5f, ForceMode.Impulse);
 		StartDialogue ("Commander", HyperSpaceMaker.CurrentHyperSpace.name + new string('!', Random.Range (1, 10)), 5f);
 		
 		// change colours!
