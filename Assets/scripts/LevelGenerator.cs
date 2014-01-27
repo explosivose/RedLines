@@ -47,6 +47,7 @@ public class HyperSpace
 public class LevelGenerator : MonoBehaviour 
 {
 	public bool levelDebug;
+	public Transform hyperMatter;
 	public Material levelMaterial;
 	public float levelLength;
 	
@@ -212,7 +213,7 @@ public class LevelGenerator : MonoBehaviour
 		// they're private because public statics are not easily exposed to the Unity inspector
 		// public floats are exposed in the Unity inspector (useful)
 		// this is dirty but easy getaround for realtime updates to level generator parameters
-		t = (Time.time - hyperTime) / 5f;
+		t = (Time.time - hyperTime) / 10f;
 		
 		currentHyperSpace = hyperSpace;
 		
@@ -255,6 +256,8 @@ public class LevelGenerator : MonoBehaviour
 	private void GenerateDataAtHead()
 	{
 		data.Add(new SectionData(head.x + player.thrust));
+		float r = Random.value;
+		if (r < 0.1f) Instantiate (hyperMatter, head, Random.rotation);
 	}
 	
 	private void DestroyDataAtTail()

@@ -155,9 +155,6 @@ public class GameManager : Singleton<GameManager>
 			
 			if (player != null)
 				GUIMan.playerSpeed = player.currentSpeed;
-				
-			if (Input.GetKey(KeyCode.Space))
-				HyperSpaceIncrement();
 		}
 	}
 	
@@ -234,14 +231,11 @@ public class GameManager : Singleton<GameManager>
 		Debug.Log("Current HyperSpace: " + HyperSpaceMaker.CurrentHyperSpace.name);
 		
 		float thrustIncrease = 10f;
-		
-		// temporary slow
-		StartCoroutine( ChangeThrust(1f, player.thrust - thrustIncrease) );
-		
+			
 		// flatten out the level
 		Debug.Log ("Flattening level...");
 		level.SetHyperSpace(HyperSpaceMaker.FlatSpace);
-		yield return new WaitForSeconds(5f);
+		yield return new WaitForSeconds(10f);
 		
 		// explosive accel!
 		Debug.Log("Explosive accel!");
@@ -251,7 +245,7 @@ public class GameManager : Singleton<GameManager>
 		StartCoroutine("ChangeColours",5f);
 		
 		// increase player thrust (removing the temporary slow, also)
-		StartCoroutine( ChangeThrust(4f, player.thrust + 2f * thrustIncrease) );
+		StartCoroutine( ChangeThrust(4f, player.thrust + thrustIncrease) );
 		
 		// wait for speed to settle in flat-mode
 		yield return new WaitForSeconds(5f);

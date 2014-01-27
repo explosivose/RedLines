@@ -102,6 +102,14 @@ public class Player : MonoBehaviour
 		if (info.relativeVelocity.magnitude > 10f && !isDead)
 			PlayerDeath();
 	}
+	
+	void OnTriggerEnter(Collider info)
+	{
+		if(info.tag == "HyperMatter")
+		{
+			GameManager.Instance.HyperSpaceIncrement();
+		}
+	}
 
 	void PlayerDeath()
 	{
