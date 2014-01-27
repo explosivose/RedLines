@@ -414,6 +414,9 @@ public class GUIManager : MonoBehaviour
 			GameManager.Instance.State = GameManager.GameState.Pause;
 		}
 		
+		if (GameManager.Instance.State == GameManager.GameState.GameOver)
+			state = GUIState.MainMenu;
+		
 		if (state == GUIState.NoWindows || state == GUIState.ShowDialogue)
 		{
 			Screen.lockCursor = true;	// hide cursor whilst no GUI is shown

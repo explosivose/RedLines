@@ -240,10 +240,12 @@ public class GameManager : Singleton<GameManager>
 	
 	private IEnumerator HyperSpaceTransition()
 	{
+		float thrustIncrease = 10f;
+		
 		changingHyperSpace = true;
 		Debug.Log("Current HyperSpace: " + HyperSpaceMaker.CurrentHyperSpace.name);
 		StartDialogue ("Commander", "Preparing to jump" + new string('.', Random.Range (3,20)), 5f);
-		float thrustIncrease = 10f;
+		
 			
 		// flatten out the level
 		Debug.Log ("Flattening level...");
@@ -256,8 +258,13 @@ public class GameManager : Singleton<GameManager>
 		StartDialogue ("Commander", HyperSpaceMaker.CurrentHyperSpace.name + new string('!', Random.Range (1, 10)), 5f);
 		
 		// change colours!
+		StartCoroutine("ChangeColours",0.5f);
+		yield return new WaitForSeconds(0.5f);
+		StartCoroutine("ChangeColours",0.5f);
+		yield return new WaitForSeconds(0.5f);
+		StartCoroutine("ChangeColours",0.5f);
+		yield return new WaitForSeconds(0.5f);
 		StartCoroutine("ChangeColours",5f);
-		
 		// increase player thrust (removing the temporary slow, also)
 		StartCoroutine( ChangeThrust(4f, player.thrust + thrustIncrease) );
 		
