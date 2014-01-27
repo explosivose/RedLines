@@ -7,10 +7,10 @@ public static class HyperSpaceMaker
 		this class generates data for hyperspace transitions
 		*/
 	private static string[] hyperSpacePrefix = new string[5]
-	{"sub","super","hyper","ultra","extra"};
+	{"SUB","SUPER","HYPER","ULTRA","EXTRA"};
 	
 	private static string[] hyperSpaceSuffix = new string[5]
-	{"sonic","focus","core","flow","zone"};
+	{"SONIC","FOCUS","CORE","FLOW","ZONE"};
 	
 	private static int prefix = 0;
 	private static int suffix = 0;
@@ -222,17 +222,27 @@ public class GameManager : Singleton<GameManager>
 		get { return colour2; }
 	}
 	
+	public bool ChangingHyperSpace
+	{
+		get { return changingHyperSpace; }
+	}
+	
 	public void HyperSpaceIncrement()
 	{
 		if (!changingHyperSpace)
 			StartCoroutine("HyperSpaceTransition");
+		GameObject[] hyperm = GameObject.FindGameObjectsWithTag("HyperMatter");
+		foreach (GameObject h in hyperm)
+		{
+			Destroy (h);
+		}
 	}
 	
 	private IEnumerator HyperSpaceTransition()
 	{
 		changingHyperSpace = true;
 		Debug.Log("Current HyperSpace: " + HyperSpaceMaker.CurrentHyperSpace.name);
-		
+		StartDialogue ("Commander", "Preparing to jump" + new string('.', Random.Range (3,20)), 5f);
 		float thrustIncrease = 10f;
 			
 		// flatten out the level
@@ -243,6 +253,7 @@ public class GameManager : Singleton<GameManager>
 		// explosive accel!
 		Debug.Log("Explosive accel!");
 		player.rigidbody.AddForce (Vector3.right * player.maxSpeed, ForceMode.Impulse);
+		StartDialogue ("Commander", HyperSpaceMaker.CurrentHyperSpace.name + new string('!', Random.Range (1, 10)), 5f);
 		
 		// change colours!
 		StartCoroutine("ChangeColours",5f);
@@ -256,6 +267,7 @@ public class GameManager : Singleton<GameManager>
 		// new level geometry
 		level.SetHyperSpace(HyperSpaceMaker.NewHyperSpace);
 		Debug.Log ("New HyperSpace: " + HyperSpaceMaker.CurrentHyperSpace.name);
+		
 		yield return new WaitForSeconds(1f);
 		changingHyperSpace = false;
 	}

@@ -50,7 +50,7 @@ public class LevelGenerator : MonoBehaviour
 	public Transform hyperMatter;
 	public Material levelMaterial;
 	public float levelLength;
-	
+	public bool spawnHyperMatter = true;
 	private float t;
 	// public variables that can be edited in the inspectorrrr
 	public HyperSpace currentHyperSpace;
@@ -256,8 +256,12 @@ public class LevelGenerator : MonoBehaviour
 	private void GenerateDataAtHead()
 	{
 		data.Add(new SectionData(head.x + player.thrust));
-		float r = Random.value;
-		if (r < 0.1f) Instantiate (hyperMatter, head, Random.rotation);
+		if (!GameManager.Instance.ChangingHyperSpace)
+		{
+			float r = Random.value;
+			if (r < 0.01f) Instantiate (hyperMatter, head, Random.rotation);
+		}
+
 	}
 	
 	private void DestroyDataAtTail()
