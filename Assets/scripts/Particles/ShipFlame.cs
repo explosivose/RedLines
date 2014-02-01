@@ -34,17 +34,14 @@ public class ShipFlame : MonoBehaviour {
 			if (player.currentSpeed > player.maxSpeed)
 			{
 				particleSys.startLifetime = (player.currentSpeed * 2)/player.maxSpeed;
-				particleSys.startSize = (player.currentSpeed * 1.5f)/player.maxSpeed;
 				particleSys.startSpeed = (player.currentSpeed * 2)/player.maxSpeed;
 			}
 			else
 			{
 				particleSys.startLifetime = player.currentSpeed/player.maxSpeed;
-				particleSys.startSize = player.currentSpeed/player.maxSpeed;
 				particleSys.startSpeed = player.currentSpeed/player.maxSpeed;
 			}
 		}
-		particleSys.gravityModifier = Input.GetAxisRaw ("Vertical")/8;
 		particleSys.startColor = GameManager.Instance.ColourPrimary;
 
 	}
