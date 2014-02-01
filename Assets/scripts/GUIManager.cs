@@ -151,6 +151,8 @@ public class GUIManager : MonoBehaviour
 	public GUIWindow credits = new GUIWindow();
 	public GUIWindow dialogue = new GUIWindow();
 
+	public Texture commander;
+
 	public float playerSpeed;
 
 
@@ -276,8 +278,11 @@ public class GUIManager : MonoBehaviour
 
 		// Quit
 		GUILayout.Space(5);
-		if ( GUILayout.Button ("Quit", menuSkin.button, GUILayout.Height (buttonHeight)) )
-			Application.Quit();
+		if ( !Application.isWebPlayer )
+		{
+			if ( GUILayout.Button ("Quit", menuSkin.button, GUILayout.Height (buttonHeight)) )
+				Application.Quit();
+		}
 	}
 
 	void wScoreBoard(int windowID)
@@ -379,11 +384,21 @@ public class GUIManager : MonoBehaviour
 
 	IEnumerator ShowDialogueMessage()
 	{
-		GUIState previousState = state;
 		showDialogue = true;
-		state = GUIState.ShowDialogue;
+		GUIState previousState = state;
+		
+		while ( state != GUIState.ShowDialogue )
+		{
+			if (state == GUIState.NoWindows)
+				state = GUIState.ShowDialogue;
+			yield return new WaitForFixedUpdate();
+		}
+				
 		yield return new WaitForSeconds (dialogueTime);
-		state = previousState;
+		
+		if ( state == GUIState.ShowDialogue)
+			state = previousState;
+			
 		showDialogue = false;
 	}
 
@@ -414,9 +429,6 @@ public class GUIManager : MonoBehaviour
 			GameManager.Instance.State = GameManager.GameState.Pause;
 		}
 		
-		if (GameManager.Instance.State == GameManager.GameState.GameOver)
-			state = GUIState.MainMenu;
-		
 		if (state == GUIState.NoWindows || state == GUIState.ShowDialogue)
 		{
 			Screen.lockCursor = true;	// hide cursor whilst no GUI is shown
@@ -427,7 +439,7 @@ public class GUIManager : MonoBehaviour
 		}
 	}
 
-	public Texture commander;
+	
 
 	/// <summary>
 	/// Draws the window.
