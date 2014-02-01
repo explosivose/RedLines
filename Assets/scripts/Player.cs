@@ -6,8 +6,9 @@ public class Player : MonoBehaviour
 	public float thrust = 15f;
 	public Transform deathExplosion;
 
+	public AudioClip powerUp;
 	public AudioClip hyperJump;
-
+	
 	public float maxSpeed
 	{
 		get { return thrust / (rigidbody.mass * rigidbody.drag); }
@@ -106,7 +107,7 @@ public class Player : MonoBehaviour
 		if(info.tag == "HyperMatter")
 		{
 			GameManager.Instance.HyperSpaceIncrement();
-			AudioSource.PlayClipAtPoint(hyperJump, transform.position);
+			AudioSource.PlayClipAtPoint(powerUp, transform.position);
 		}
 	}
 

@@ -161,20 +161,23 @@ public class GameManager : Singleton<GameManager>
 		
 		changingHyperSpace = true;
 		Debug.Log("Current HyperSpace: " + HyperSpaceMaker.CurrentHyperSpace.name);
-		StartDialogue ("Commander", "Preparing to jump" + new string('.', Random.Range (3,20)), 5f);
+		
 		
 			
 		// flatten out the level
 		Debug.Log ("Flattening level...");
 		level.SetHyperSpace(HyperSpaceMaker.FlatSpace);
 		float wait = 0.25f + level.hyperSpaceLerpTime + (level.levelLength/player.currentSpeed);
-		Debug.Log ("waiting for " + wait + " seconds");
+		StartDialogue ("Commander", "HyperSpace Jump in " + wait + " seconds " +
+		               new string('.', Random.Range (3,10)), 5f);
+		
 		yield return new WaitForSeconds(wait);
 		
 		// explosive accel!
 		Debug.Log("Explosive accel!");
 		player.rigidbody.AddForce (Vector3.right * player.maxSpeed * 0.5f, ForceMode.Impulse);
-		StartDialogue ("Commander", HyperSpaceMaker.CurrentHyperSpace.name + new string('!', Random.Range (1, 10)), 5f);
+		AudioSource.PlayClipAtPoint(player.hyperJump,player.transform.position);
+		StartDialogue ("Commander", "HYPERJUMP" + new string('!', Random.Range (1, 50)), 5f);
 		
 		// change colours!
 		StartCoroutine("ChangeColours",0.5f);
