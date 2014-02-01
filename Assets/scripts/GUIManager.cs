@@ -434,6 +434,9 @@ public class GUIManager : MonoBehaviour
 	/// </summary>
 	void OnGUI()
 	{
+		GUI.Label (new Rect(0,0,100,30),HyperSpaceMaker.CurrentHyperSpace.name);
+	
+	
 		GUIWindow thisWindow = new GUIWindow();
 
 		// Copy GUIWindow settings to thisWindow

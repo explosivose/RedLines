@@ -1,88 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public static class HyperSpaceMaker
-{
-	/* HyperSpaceMaker info
-		this class generates data for hyperspace transitions
-		*/
-	private static string[] hyperSpacePrefix = new string[5]
-	{"SUB","SUPER","HYPER","ULTRA","EXTRA"};
-	
-	private static string[] hyperSpaceSuffix = new string[5]
-	{"SONIC","FOCUS","CORE","FLOW","ZONE"};
-	
-	private static int prefix = 0;
-	private static int suffix = 0;
-	
-	private static HyperSpace currentHyperSpace;
-	
-	
-	public static HyperSpace CurrentHyperSpace
-	{
-		get
-		{
-			if ( currentHyperSpace == null )
-				currentHyperSpace = new HyperSpace();
-			return currentHyperSpace;
-		}
-		private set 
-		{
-			currentHyperSpace = value;
-		}
-	}
-	
-	public static HyperSpace FlatSpace
-	{
-		get 
-		{
-			HyperSpace temp = new HyperSpace();
-			temp.name = "";
-			temp.maxMidChange = CurrentHyperSpace.maxMidChange;
-			temp.midSampleRate = 0f;
-			temp.maxTop = 5f;
-			temp.minTop = 5f;
-			temp.topSampleRate = CurrentHyperSpace.topSampleRate;
-			temp.maxBot = 5f;
-			temp.minBot = 5f;
-			temp.botSampleRate = CurrentHyperSpace.botSampleRate;
-			return temp;
-		}
-	}
-	
-	public static HyperSpace NewHyperSpace
-	{
-		get
-		{
-			HyperSpace temp = new HyperSpace();
-			temp.name = hyperSpacePrefix[prefix++] + hyperSpaceSuffix[suffix];
-			
-			if (prefix >= hyperSpacePrefix.Length)
-			{
-				prefix = 0;
-				suffix++;
-				if (suffix >= hyperSpaceSuffix.Length)
-					suffix = 0;
-			}
-			
-			temp.maxMidChange = Random.Range(50f,500f);
-			temp.midSampleRate = Random.value/5000f;
-			temp.minTop = Random.Range(2f,10f);
-			temp.maxTop = Random.Range(temp.minTop, 40f);
-			temp.topSampleRate = Random.value/50f;
-			temp.minBot = Random.Range(2f,10f);
-			temp.maxBot = Random.Range(temp.minBot, 40f);
-			temp.botSampleRate = Random.value/50f;
-			
-			temp.RandomSeeds();
-			
-			currentHyperSpace = temp;
-			return temp;
-		}
-	}
-	
-	
-}
+
 
 public class GameManager : Singleton<GameManager>  
 {
@@ -144,7 +63,6 @@ public class GameManager : Singleton<GameManager>
 		StopAllCoroutines();
 		changingHyperSpace = false;
 		level = GameObject.FindGameObjectWithTag("Level").GetComponent<LevelGenerator>();
-		//level.SetHyperSpace(HyperSpaceMaker.NewHyperSpace);
 		
 		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 	}
@@ -239,7 +157,7 @@ public class GameManager : Singleton<GameManager>
 	
 	private IEnumerator HyperSpaceTransition()
 	{
-		float thrustIncrease = 10f;
+		float thrustIncrease = 7.5f;
 		
 		changingHyperSpace = true;
 		Debug.Log("Current HyperSpace: " + HyperSpaceMaker.CurrentHyperSpace.name);
@@ -249,7 +167,9 @@ public class GameManager : Singleton<GameManager>
 		// flatten out the level
 		Debug.Log ("Flattening level...");
 		level.SetHyperSpace(HyperSpaceMaker.FlatSpace);
-		yield return new WaitForSeconds(10f);
+		float wait = 0.25f + level.hyperSpaceLerpTime + (level.levelLength/player.currentSpeed);
+		Debug.Log ("waiting for " + wait + " seconds");
+		yield return new WaitForSeconds(wait);
 		
 		// explosive accel!
 		Debug.Log("Explosive accel!");
@@ -266,9 +186,6 @@ public class GameManager : Singleton<GameManager>
 		StartCoroutine("ChangeColours",5f);
 		// increase player thrust (removing the temporary slow, also)
 		StartCoroutine( ChangeThrust(4f, player.thrust + thrustIncrease) );
-		
-		// wait for speed to settle in flat-mode
-		yield return new WaitForSeconds(5f);
 		
 		// new level geometry
 		level.SetHyperSpace(HyperSpaceMaker.NewHyperSpace);
@@ -294,8 +211,8 @@ public class GameManager : Singleton<GameManager>
 		float start = Time.time;
 		Color P_old = colour1;
 		Color S_old = colour2;
-		Color P_new = new Color(Random.value, Random.value, Random.value);
-		Color S_new = new Color(Random.value, Random.value, Random.value);
+		Color P_new = new Color(Random.Range(0.5f,1f), Random.Range(0.5f,1f), Random.Range(0.5f,1f));
+		Color S_new = new Color(Random.Range(0.5f,1f), Random.Range(0.5f,1f), Random.Range(0.5f,1f));
 		while(Time.time < start + t)
 		{
 			colour1 = Color.Lerp(P_old, P_new, (Time.time - start)/t );

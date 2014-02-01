@@ -31,7 +31,7 @@ public class ShipFlame : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (player != null){
-			if (GameManager.Instance.ChangingHyperSpace)
+			if (player.currentSpeed > player.maxSpeed)
 			{
 				particleSys.startLifetime = (player.currentSpeed * 2)/player.maxSpeed;
 				particleSys.startSize = (player.currentSpeed * 1.5f)/player.maxSpeed;
