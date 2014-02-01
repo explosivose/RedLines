@@ -350,7 +350,7 @@ public class GUIManager : MonoBehaviour
 	{
 		GUILayout.Space (15);
 
-		GUILayout.Label ("Primary author: Matt 'explosivose' Blickem");
+		GUILayout.Label ("Authors: Matt 'explosivose' Blickem, Sami Tanbouz");
 		GUILayout.Space (5);
 		GUILayout.Label ("Music: 'The Life and Death of a Certain K. Zabriskie, Patriarch'" +
 						" by Chris Zabriskie");
@@ -359,13 +359,16 @@ public class GUIManager : MonoBehaviour
 		GUILayout.Space (5);
 		GUILayout.Label ("Ship models and flame effects: Tanbouz");
 		GUILayout.Space (5);
-		GUILayout.Label ("This game was originally created for Ludum Dare 28 (December 2013). " + 
-						"The author would like to thank the organisers of Ludum Dare, " + 
-						"the developers of the Unity Engine, and all those helpful people " +
-						"that answer questions / cries for help on the internet. Special " +
-		                "thanks to friends that gave feedback and inspiration!"); 
+		GUILayout.Label ("Font 'Akashi' by Ten by Twenty");
 		GUILayout.Space (5);
-		GUILayout.Label ("No barrel rolls were done during the making of this game."); 
+		GUILayout.Label ("RedLines 2 - Finding The Line is a fast side scrolling game with " +
+		                 "endless procedural levels and a goal of going further than you’ve " +
+		                 "ever gone before.");
+		GUILayout.Space (5);
+		GUILayout.Label ("Thanks to everyone that helped make this game without being hands on " + 
+		                 "and huge thanks to you for playing!");
+		GUILayout.Space (5);
+		
 		// Back to main menu button
 		GUILayout.Space(20);
 		if ( GUILayout.Button ("Main Menu", menuSkin.button, GUILayout.Height(buttonHeight)) )
