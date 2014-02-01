@@ -49,8 +49,53 @@ public class ScoreManager : Singleton<ScoreManager>
 	This class is a singleton (can only be instantiated once) 	
 	*/
 	
+
 	// maximum number of scores to store
 	private const int numberOfScores = 8;
+	private Transform player;
+	private float highScore;
+	private bool highScoreSet = false;
+	
+	private string[] highScoreMessages = new string[10]
+	{
+		"UNCHARTED TERRITORY",		//1
+		"BOLD",						//2
+		"BRAVE",					//3
+		"WOW",						//4
+		"NO WAY",					//5
+		"YOU'RE THE MAN NOW DOG",	//6
+		"SWEET",					//7
+		"LOOK OUT",					//8
+		"HEY YOU'RE NOT DEAD YET?",	//9
+		"THIS GAME IS FUN RIGHT?"	//10	
+	};
+	
+	void Start()
+	{
+		player = GameObject.FindGameObjectWithTag("Player").transform;
+		highScore = HighScore.Distance;
+	}
+	
+	void OnLevelWasLoaded()
+	{
+		player = GameObject.FindGameObjectWithTag("Player").transform;
+		highScore = HighScore.Distance;
+		highScoreSet = false;
+	}
+	
+	void Update()
+	{
+		if (player!=null)
+		{
+			if ( player.transform.position.x > highScore && highScore > 0f && !highScoreSet)
+			{
+				int i = UnityEngine.Random.Range(0, highScoreMessages.Length-1);
+				string grats = highScoreMessages[i];
+				GameManager.Instance.StartDialogue("Commander: ", grats, 2f);
+				highScoreSet = true;
+			}
+		}
+	}
 	
 	// return a list of all the stored scores
 	public List<Score> GetScores()
@@ -140,6 +185,7 @@ public class ScoreManager : Singleton<ScoreManager>
 	
 	public void DeleteHighScores()
 	{
+		highScore = 0f;
 		for (int i = 0; i < numberOfScores; i++)
 		{
 			if (PlayerPrefs.HasKey(i + "ScoreDist"))
