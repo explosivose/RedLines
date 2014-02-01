@@ -33,7 +33,7 @@ public class CameraFollowPlayer : MonoBehaviour
 	void FixedUpdate () 
 	{
 		realOffset = player.position - transform.position;
-		if (GameManager.Instance.State == GameManager.GameState.GameOver )
+		if (player.GetComponent<Player>().IsDead )
 			DeathCam ();
 		else
 			ChaseCam ();

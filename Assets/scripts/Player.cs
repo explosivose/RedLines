@@ -21,6 +21,11 @@ public class Player : MonoBehaviour
 	{
 		get { return movement.magnitude; }
 	}
+	public bool IsDead
+	{
+		get { return isDead; }
+	}
+	
 	
 	private float verticalThrust = 100f;
 	private Vector2 movement;
@@ -99,7 +104,7 @@ public class Player : MonoBehaviour
 	void OnCollisionEnter(Collision info)
 	{
 		if (info.relativeVelocity.magnitude > 10f && !isDead)
-			PlayerDeath();
+			StartCoroutine( PlayerDeath() );
 	}
 	
 	void OnTriggerEnter(Collider info)
@@ -111,19 +116,18 @@ public class Player : MonoBehaviour
 		}
 	}
 
-	void PlayerDeath()
+	IEnumerator PlayerDeath()
 	{
 		isDead = true;
-		GameManager.Instance.State = GameManager.GameState.GameOver;
-		GameManager.Instance.StartDialogue("Commander:", "Well, shit.",1.5f);
+		ScoreManager.Instance.NewScore(transform.position.x);
 		audio.Stop();
-		
-		Instantiate (deathExplosion, transform.position + Vector3.back, Quaternion.LookRotation (Vector3.back));
-
 		rigidbody.drag = 2f;
-
+		Instantiate (deathExplosion, transform.position + Vector3.back, Quaternion.LookRotation (Vector3.back));
 		Debug.Log ("You're brown bread!");
 		
-		ScoreManager.Instance.NewScore(transform.position.x);
+		GameManager.Instance.StartDialogue("Commander:", "Well, shit.",1.5f);
+		yield return new WaitForSeconds(1.5f);
+		GameManager.Instance.State = GameManager.GameState.GameOver;
 	}
+	
 }
