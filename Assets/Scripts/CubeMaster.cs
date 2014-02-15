@@ -23,7 +23,7 @@ public class CubeMaster : MonoBehaviour {
 	
 	
 	void Start () {
-		StartCoroutine("ImageMapReader");
+		//StartCoroutine("ImageMapReader");
 		samples = new float[1024];
 	}
 	
@@ -69,7 +69,7 @@ public class CubeMaster : MonoBehaviour {
 
 
 
-	void LineMaker(List<CubeMeta> allCubes)
+	public void LineMaker(List<CubeMeta> allCubes)
 	{
 		foreach(CubeMeta oneCube in allCubes){
 			// Create new cube at starting position
