@@ -6,6 +6,9 @@ public class Player : MonoBehaviour
 
 	public float maxSpeed     = 10f;
 	public float currentSpeed = 0f;
+	
+	public static bool isDead = false;
+	
 	// Use this for initialization
 	void Start () 
 	{
@@ -15,20 +18,28 @@ public class Player : MonoBehaviour
 	void FixedUpdate () 
 	{
 		float thrust = maxSpeed * rigidbody.mass * rigidbody.drag;
+		float V = Input.GetAxisRaw("Vertical");
 		
-		Vector3 direction = new Vector3(0f, Input.GetAxisRaw("Vertical")).normalized;
-		
+		Vector3 direction = new Vector3(0f, V).normalized;
 		
 		rigidbody.AddForce(direction * thrust);
+		
+		Vector3 vector3Rotation = new Vector3 (0f, 0f, -V * 45f);
+		Quaternion rotation = Quaternion.Euler(vector3Rotation);
+		//rotation *= Quaternion.LookRotation(rigidbody.velocity);
+		transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime);
+		
 		
 		currentSpeed = rigidbody.velocity.magnitude;
 	}
 	
-	void OnTriggerEnter(Collider col)
+	void OnCollisionEnter(Collision col)
 	{
-		if (col.tag == "Death")
+		if (col.gameObject.tag == "Death" && !isDead)
 		{
 			maxSpeed = 0f;
+			rigidbody.useGravity = true;
+			isDead = true;
 		}
 	}
 }

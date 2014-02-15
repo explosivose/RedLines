@@ -4,7 +4,6 @@ using System.Collections;
 public class CameraFollowPlayer : MonoBehaviour 
 {
 	public Vector3 offset;
-	
 	private Transform player;
 	
 	
@@ -16,8 +15,16 @@ public class CameraFollowPlayer : MonoBehaviour
 	
 	void FixedUpdate () 
 	{
-		Vector3 playerPosition = player.position;
-		transform.position = playerPosition + offset;
+		if (Player.isDead)
+		{
+			transform.LookAt(player.position);
+		}
+		else
+		{
+			Vector3 playerPosition = player.position;
+			transform.position = playerPosition + offset;
+		}
+
 	}
 	
 }
