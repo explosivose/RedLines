@@ -4,9 +4,7 @@ using System.Collections.Generic;
 
 public class LevelGenerator : MonoBehaviour 
 {
-	
-	
-	
+
 	private enum moving
 	{
 		up,
@@ -55,7 +53,7 @@ public class LevelGenerator : MonoBehaviour
 				{
 					CubeMeta tempCube = new CubeMeta();
 					tempCube.targetPosition = currentPosition + (Vector3.up * i);
-					tempCube.startPosition = tempCube.targetPosition + (Vector3.forward * Random.Range(-10, 10));
+					tempCube.startPosition = tempCube.targetPosition + (Vector3.forward * Random.Range(-20, 20));
 					tempCube.positionOffset = Vector3.zero;
 					tempCube.audioBeat = 1f;
 					cubes.Add(tempCube);
