@@ -23,4 +23,12 @@ public class Player : MonoBehaviour
 		
 		currentSpeed = rigidbody.velocity.magnitude;
 	}
+	
+	void OnTriggerEnter(Collider col)
+	{
+		if (col.tag == "Death")
+		{
+			maxSpeed = 0f;
+		}
+	}
 }
