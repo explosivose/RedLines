@@ -16,6 +16,9 @@ public class LevelGenerator : MonoBehaviour
 	
 	public bool generating = true;
 	public float iterationTime = 0.1f;
+	public int minimumGap = 8;
+	public int minWallWidth = 4;
+	public int maxWallWidth = 8;
 	private moving state = moving.straight;
 	private Vector3 currentPosition = Vector3.zero;
 	private CubeMaster master;
@@ -42,12 +45,9 @@ public class LevelGenerator : MonoBehaviour
 			
 			List<CubeMeta> cubes = new List<CubeMeta>();
 			
-			int minGap = 5;
-			int minWidth = 5;
-			int maxWidth = 15;
-			int total = (maxWidth * 2) + minGap;
-			int topCubes = Random.Range(minWidth, maxWidth);
-			int botCubes = total - Random.Range(minWidth, maxWidth);
+			int total = (maxWallWidth * 2) + minimumGap;
+			int topCubes = Random.Range(minWallWidth, maxWallWidth);
+			int botCubes = total - Random.Range(minWallWidth, maxWallWidth);
 			
 			for (int i = 1; i < total; i++)
 			{
