@@ -16,22 +16,19 @@ public class Player : MonoBehaviour
 	
 	}
 	
-	void FixedUpdate () 
+	void Update () 
 	{
-		float thrust = maxSpeed * rigidbody.mass * rigidbody.drag;
 		float V = Input.GetAxisRaw("Vertical");
 		
-		Vector3 direction = new Vector3(0f, V).normalized;
+		Vector3 direction = new Vector3(0f, V);
 		
-		rigidbody.AddForce(direction * thrust);
+		transform.position += direction * maxSpeed * Time.deltaTime;
 		
 		Vector3 vector3Rotation = new Vector3 (0f, 0f, -V * 45f);
 		Quaternion rotation = Quaternion.Euler(vector3Rotation);
-		//rotation *= Quaternion.LookRotation(rigidbody.velocity);
-		transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime);
+		transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime * 8f);
 		
 		
-		currentSpeed = rigidbody.velocity.magnitude;
 	}
 	
 	void OnCollisionEnter(Collision col)

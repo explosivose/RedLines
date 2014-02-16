@@ -14,7 +14,7 @@ public class CameraFollowPlayer : MonoBehaviour
 	}
 	
 	
-	void FixedUpdate () 
+	void Update () 
 	{
 		if (Player.isDead)
 		{
@@ -24,16 +24,17 @@ public class CameraFollowPlayer : MonoBehaviour
 		else
 		{
 			Vector3 target = player.position + offset;
-			transform.position = Vector3.Lerp (transform.position, target, Time.deltaTime * 8f);
+			//transform.position = Vector3.Lerp (transform.position, target, Time.deltaTime * 2f);
+			transform.position = target;
 			
 			float V = Input.GetAxis("Vertical");
 			Player playerScript = player.GetComponent<Player>();
 			//float V = player.rigidbody.velocity.magnitude / playerScript.maxSpeed;
 			
 			Quaternion rotation = Quaternion.Euler(defaultRotation);
-			rotation *= Quaternion.AngleAxis(-V * 22.5f, player.transform.forward);
-			rotation *= Quaternion.AngleAxis(V * 60f, transform.right);
-			transform.rotation = Quaternion.Lerp (transform.rotation, rotation, Time.deltaTime);
+			rotation *= Quaternion.AngleAxis(V * 45f, player.transform.forward);
+			rotation *= Quaternion.AngleAxis(V * 22.5f, transform.right);
+			transform.rotation = Quaternion.Lerp (transform.rotation, rotation, Time.deltaTime / 8f);
 			
 		}
 
