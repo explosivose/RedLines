@@ -44,8 +44,8 @@ public class CubeMaster : MonoBehaviour {
 					if(levelMap.GetPixel(i,h).a == 1)
 					{
 						CubeMeta tempCube = new CubeMeta();
-						tempCube.targetPosition = new Vector3(0,h,0);
-						tempCube.startPosition = new Vector3(0f, Random.Range(-20,20), Random.Range(10,20));
+						tempCube.targetPosition = new Vector3(-50,h,0);
+						tempCube.startPosition = new Vector3(-50, Random.Range(-20,20), Random.Range(10,20));
 						tempCube.positionOffset = new Vector3(0,0,0);
 						tempCube.audioBeat = levelMap.GetPixel(i,h).r;
 						line.Add(tempCube);
@@ -54,8 +54,8 @@ public class CubeMaster : MonoBehaviour {
 					if(levelMap.GetPixel(i,h).a == 1)
 					{
 						CubeMeta tempCube = new CubeMeta();
-						tempCube.targetPosition = new Vector3(0,h,0);
-						tempCube.startPosition = new Vector3(0f, Random.Range(-20,20), Random.Range(-10,-20));
+						tempCube.targetPosition = new Vector3(-50,h,0);
+						tempCube.startPosition = new Vector3(-50, Random.Range(-20,20), Random.Range(-10,-20));
 						tempCube.positionOffset = new Vector3(0,0,1);
 						tempCube.audioBeat = levelMap.GetPixel(i,h).r;
 						line2.Add(tempCube);

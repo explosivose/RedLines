@@ -7,9 +7,11 @@ public class LevelGenerator : MonoBehaviour
 
 	private enum moving
 	{
+		upSteep,
 		up,
 		straight,
-		down
+		down,
+		downSteep
 	}
 	
 	public bool generating = true;
@@ -55,7 +57,9 @@ public class LevelGenerator : MonoBehaviour
 					tempCube.targetPosition = currentPosition + (Vector3.up * i);
 					tempCube.startPosition = tempCube.targetPosition + (Vector3.forward * Random.Range(-20, 20));
 					tempCube.positionOffset = Vector3.zero;
-					tempCube.audioBeat = 1f;
+					float beat = Mathf.Abs(i - (total/2f));
+					Rescale(ref beat, total/2f, 0f, 0.5f, 0f);
+					tempCube.audioBeat = 0f;
 					cubes.Add(tempCube);
 				}
 			}
@@ -73,10 +77,15 @@ public class LevelGenerator : MonoBehaviour
 		// Determine new state
 		switch (state)
 		{
+		case moving.upSteep:
+			if      (roll > 0.75f) state = moving.up;
+			else                   state = moving.upSteep;
+			break;
+		
 		case moving.up:
-			if      (roll > 0.75f) state = moving.straight;
-			else if (roll > 0.00f) state = moving.up;
-			else                   state = moving.down;
+			if      (roll > 0.75f) state = moving.upSteep;
+			else if (roll > 0.25f) state = moving.up;
+			else                   state = moving.straight;
 			break;
 			
 		case moving.straight:
@@ -86,21 +95,41 @@ public class LevelGenerator : MonoBehaviour
 			break;
 			
 		case moving.down:
-			if      (roll > 0.75f) state = moving.straight;
-			else if (roll > 0.00f) state = moving.down;
-			else                   state = moving.up;
+			if      (roll > 0.75f) state = moving.downSteep;
+			else if (roll > 0.25f) state = moving.down;
+			else                   state = moving.straight;
+			break;
+			
+		case moving.downSteep:
+			if      (roll > 0.75f) state = moving.down;
+			else                   state = moving.downSteep;
 			break;
 		}
 		
 		switch (state)
 		{
+		case moving.upSteep:
+			currentPosition += Vector3.up * 1f;
+			break;
+		
 		case moving.up:
-			currentPosition += Vector3.up;
+			currentPosition += Vector3.up * 0.5f;
 			break;
 			
 		case moving.down:
-			currentPosition += Vector3.down;
+			currentPosition += Vector3.down * 0.5f;
+			break;
+			
+		case moving.downSteep:
+			currentPosition += Vector3.down * 1f;
 			break;
 		}
+	}
+	
+	private void Rescale(ref float value, float oldMax, float oldMin, float newMax, float newMin)
+	{
+		float oldRange = oldMax - oldMin;
+		float newRange = newMax - newMin;
+		value = (((value - oldMin)*newRange)/oldRange)+newMin;
 	}
 }

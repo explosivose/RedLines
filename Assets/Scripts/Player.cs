@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
 
 	public float maxSpeed     = 10f;
 	public float currentSpeed = 0f;
+	public Transform deathsplosion;
 	
 	public static bool isDead = false;
 	
@@ -37,9 +38,15 @@ public class Player : MonoBehaviour
 	{
 		if (col.gameObject.tag == "Death" && !isDead)
 		{
-			maxSpeed = 0f;
-			rigidbody.useGravity = true;
-			isDead = true;
+			Death();
 		}
+	}
+	
+	void Death()
+	{
+		Instantiate(deathsplosion, transform.position, transform.rotation);
+		maxSpeed = 0f;
+		//rigidbody.useGravity = true;
+		isDead = true;
 	}
 }

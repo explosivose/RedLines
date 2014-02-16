@@ -21,7 +21,7 @@ public class Cube : MonoBehaviour {
 	}
 
 
-	void Update () {
+	void FixedUpdate () {
 		// Target position is not the actual final position. 
 		// Final position is affected by position shifts introduced by special effects.
 		// Add forward motion along x-axis to move level
