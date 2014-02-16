@@ -9,9 +9,10 @@ public class LevelGenerator
 	{
 		get { return state; }
 	}
-
+	
 	private static Vector3 currentPosition = Vector3.zero;
 	private static moving state = moving.straight;
+	private static int ticker = 0;
 	
 	public enum moving
 	{
@@ -22,21 +23,32 @@ public class LevelGenerator
 		downSteep
 	}
 	
-	public static List<CubeMeta> Generate(int minimumGap, int minimumWallWidth, int maximumWallWidth)
+	public static void Reset()
+	{
+		ticker = 0;
+		state = moving.straight;
+	}
+	
+	public static List<CubeMeta> Generate(int gap, int minimumWallWidth, int maximumWallWidth)
 	{	
-
+		
 		// Set the next position
 		NextPosition();
 		
 		// Create list of meta data for cube spawning
 		List<CubeMeta> cubes = new List<CubeMeta>();
 		
-		// number of cubes (and gaps) in this column
-		int total = (maximumWallWidth * 2) + minimumGap;
-		// indexes of cubes on the top
+		int mid = gap - 20;
+		if (mid < 0) mid = 0;
+		
+		// number of cubes on the top
 		int topCubes = Random.Range(minimumWallWidth, maximumWallWidth);
-		// indexes of cubes on the bottom
-		int botCubes = total - Random.Range(minimumWallWidth, maximumWallWidth);
+		
+		// number of cubes on the bottom
+		int botCubes = Random.Range(minimumWallWidth, maximumWallWidth);
+		
+		// number of cubes (and gaps) in this column
+		int total = topCubes + botCubes + gap + mid;
 		
 		for (int i = 1; i < total; i++)
 		{
@@ -44,15 +56,34 @@ public class LevelGenerator
 			*	gaps (no cubes)
 			*	i > bot cubes
 			*/
-			if (i < topCubes || i > botCubes)
+			if (i < topCubes || i > total - botCubes)
 			{
 				CubeMeta tempCube = new CubeMeta();
 				// target position is height determined by i
 				tempCube.targetPosition = currentPosition + (Vector3.up * i);
 				// start offset is some Z offset
-				tempCube.startPosition = tempCube.targetPosition + (Vector3.forward * Random.Range(-20, 20));
+				tempCube.startPosition = tempCube.targetPosition + (Vector3.back * Random.Range(-20, 20));
 				// additional offset is just zero here
-				tempCube.positionOffset = Vector3.zero;
+				tempCube.positionOffset = Vector3.zero;//Vector3.forward * Mathf.Abs(i - (total/2f)) * 0.25f;
+				
+				// audio beat value should be less than 1
+				float beat = Mathf.Abs(i - (total/2f));
+				Rescale(ref beat, total/2f, 0f, 0.5f, 0f);
+				tempCube.audioBeat = 0f;
+				
+				// add metadata to list
+				cubes.Add(tempCube);
+			}
+			
+			if (i > topCubes + gap/2f && i < total - botCubes - gap/2f )
+			{
+				CubeMeta tempCube = new CubeMeta();
+				// target position is height determined by i
+				tempCube.targetPosition = currentPosition + (Vector3.up * i);
+				// start offset is some Z offset
+				tempCube.startPosition = tempCube.targetPosition + (Vector3.back * Random.Range(-20, 20));
+				// additional offset is just zero here
+				tempCube.positionOffset = Vector3.forward * Mathf.Abs(i - (total/2f)) * 0.25f;
 				
 				// audio beat value should be less than 1
 				float beat = Mathf.Abs(i - (total/2f));
@@ -75,6 +106,7 @@ public class LevelGenerator
 		// 
 
 		float roll = Random.value; // random float between 0 and 1
+		ticker++;
 		
 		// Determine new state
 		switch (state)

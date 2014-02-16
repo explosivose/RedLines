@@ -34,7 +34,7 @@ public class CameraFollowPlayer : MonoBehaviour
 			Quaternion rotation = Quaternion.Euler(defaultRotation);
 			rotation *= Quaternion.AngleAxis(V * 45f, player.transform.forward);
 			rotation *= Quaternion.AngleAxis(V * 22.5f, transform.right);
-			transform.rotation = Quaternion.Lerp (transform.rotation, rotation, Time.deltaTime / 8f);
+			transform.rotation = Quaternion.Lerp (transform.rotation, rotation, Time.deltaTime / 1f);
 			
 		}
 

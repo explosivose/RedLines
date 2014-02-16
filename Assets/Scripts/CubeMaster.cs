@@ -16,7 +16,7 @@ public class CubeMaster : MonoBehaviour {
 	public int mapRepeatCount = 0;
 	public int cubeYMotionSmoothness;
 	public int cubeZMotionSmoothness;
-	public int minGap = 8;
+	public int gap = 8;
 	public int minWall = 4;
 	public int maxWall = 8;
 
@@ -74,7 +74,8 @@ public class CubeMaster : MonoBehaviour {
 	{
 		while(true)
 		{
-			LineMaker(LevelGenerator.Generate(minGap, minWall, maxWall));
+			int sinGap = Mathf.RoundToInt( gap * ( Mathf.Sin (Time.time/2f) + 2f ) );
+			LineMaker(LevelGenerator.Generate(sinGap, minWall, maxWall));
 			yield return new WaitForSeconds(1f/cubeRatePerSecond);
 		}
 	}

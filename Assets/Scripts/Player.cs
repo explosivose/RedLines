@@ -19,7 +19,7 @@ public class Player : MonoBehaviour
 	void Update () 
 	{
 		float V = Input.GetAxisRaw("Vertical");
-		
+		if (Input.GetButton("Fire1") ) V *= 1.5f;
 		Vector3 direction = new Vector3(0f, V);
 		
 		transform.position += direction * maxSpeed * Time.deltaTime;
