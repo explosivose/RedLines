@@ -16,6 +16,9 @@ public class CubeMaster : MonoBehaviour {
 	public int mapRepeatCount = 0;
 	public int cubeYMotionSmoothness;
 	public int cubeZMotionSmoothness;
+	public int minGap = 8;
+	public int minWall = 4;
+	public int maxWall = 8;
 
 	// Audio
 	public float audioBeat = 0f;
@@ -23,7 +26,7 @@ public class CubeMaster : MonoBehaviour {
 	
 	
 	void Start () {
-		//StartCoroutine("ImageMapReader");
+		StartCoroutine( MakeLevel() );
 		samples = new float[1024];
 	}
 	
@@ -67,18 +70,26 @@ public class CubeMaster : MonoBehaviour {
 		}
 	}
 
-
+	IEnumerator MakeLevel()
+	{
+		while(true)
+		{
+			LineMaker(LevelGenerator.Generate(minGap, minWall, maxWall));
+			yield return new WaitForSeconds(1f/cubeRatePerSecond);
+		}
+	}
 
 	public void LineMaker(List<CubeMeta> allCubes)
 	{
 		foreach(CubeMeta oneCube in allCubes){
 			// Create new cube at starting position
+			oneCube.startPosition += transform.position;
 			GameObject newCube = (GameObject)Instantiate(cube, oneCube.startPosition, Quaternion.identity);
 			newCube.transform.parent = this.transform;
 			Cube cubeScript = newCube.GetComponent<Cube>();
 
 			// Initialize cube 
-			cubeScript.targetPosition = oneCube.targetPosition + oneCube.positionOffset;
+			cubeScript.targetPosition = oneCube.targetPosition + oneCube.positionOffset + transform.position;
 			cubeScript.audioBeat = oneCube.audioBeat;
 			cubeScript.SetMotionSmooth(new Vector3(0f, cubeYMotionSmoothness, cubeZMotionSmoothness));
 		}

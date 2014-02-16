@@ -2,20 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class LevelGenerator : MonoBehaviour 
+public class LevelGenerator 
 {
 
-	public bool generating = true;
-	public float iterationTime = 0.1f;
-	public int minimumGap = 8;
-	public int minWallWidth = 4;
-	public int maxWallWidth = 8;
+	public static moving State
+	{
+		get { return state; }
+	}
+
+	private static Vector3 currentPosition = Vector3.zero;
+	private static moving state = moving.straight;
 	
-	private moving state = moving.straight;
-	private Vector3 currentPosition = Vector3.zero;
-	private CubeMaster master;
-	
-	private enum moving
+	public enum moving
 	{
 		upSteep,
 		up,
@@ -24,78 +22,53 @@ public class LevelGenerator : MonoBehaviour
 		downSteep
 	}
 	
-	void Start () 
-	{
-		master = GameObject.FindWithTag("CubeMaster").GetComponent<CubeMaster>();
-		currentPosition = transform.position;
-		StartCoroutine( Generate() );
-		StartCoroutine( ChangeStuff() );
-	}
-	
-
-	IEnumerator ChangeStuff()
-	{
-		while (generating)
-		{
-			yield return new WaitForSeconds(2f);
-			minimumGap += Random.Range(-2,2);
-			minimumGap = Mathf.Clamp(minimumGap, 3, 8);
-		}
-	}
-	
-	
-	IEnumerator Generate()
+	public static List<CubeMeta> Generate(int minimumGap, int minimumWallWidth, int maximumWallWidth)
 	{	
-		while (generating)
+
+		// Set the next position
+		NextPosition();
+		
+		// Create list of meta data for cube spawning
+		List<CubeMeta> cubes = new List<CubeMeta>();
+		
+		// number of cubes (and gaps) in this column
+		int total = (maximumWallWidth * 2) + minimumGap;
+		// indexes of cubes on the top
+		int topCubes = Random.Range(minimumWallWidth, maximumWallWidth);
+		// indexes of cubes on the bottom
+		int botCubes = total - Random.Range(minimumWallWidth, maximumWallWidth);
+		
+		for (int i = 1; i < total; i++)
 		{
-			// Set the next position
-			NextPosition();
-			
-			// Create list of meta data for cube spawning
-			List<CubeMeta> cubes = new List<CubeMeta>();
-			
-			// number of cubes (and gaps) in this column
-			int total = (maxWallWidth * 2) + minimumGap;
-			// indexes of cubes on the top
-			int topCubes = Random.Range(minWallWidth, maxWallWidth);
-			// indexes of cubes on the bottom
-			int botCubes = total - Random.Range(minWallWidth, maxWallWidth);
-			
-			for (int i = 1; i < total; i++)
+			/*	i < topCubes
+			*	gaps (no cubes)
+			*	i > bot cubes
+			*/
+			if (i < topCubes || i > botCubes)
 			{
-				/*	i < topCubes
-				*	gaps (no cubes)
-				*	i > bot cubes
-				*/
-				if (i < topCubes || i > botCubes)
-				{
-					CubeMeta tempCube = new CubeMeta();
-					// target position is height determined by i
-					tempCube.targetPosition = currentPosition + (Vector3.up * i);
-					// start offset is some Z offset
-					tempCube.startPosition = tempCube.targetPosition + (Vector3.forward * Random.Range(-20, 20));
-					// additional offset is just zero here
-					tempCube.positionOffset = Vector3.zero;
-					
-					// audio beat value should be less than 1
-					float beat = Mathf.Abs(i - (total/2f));
-					Rescale(ref beat, total/2f, 0f, 0.5f, 0f);
-					tempCube.audioBeat = 0f;
-					
-					// add metadata to list
-					cubes.Add(tempCube);
-				}
+				CubeMeta tempCube = new CubeMeta();
+				// target position is height determined by i
+				tempCube.targetPosition = currentPosition + (Vector3.up * i);
+				// start offset is some Z offset
+				tempCube.startPosition = tempCube.targetPosition + (Vector3.forward * Random.Range(-20, 20));
+				// additional offset is just zero here
+				tempCube.positionOffset = Vector3.zero;
+				
+				// audio beat value should be less than 1
+				float beat = Mathf.Abs(i - (total/2f));
+				Rescale(ref beat, total/2f, 0f, 0.5f, 0f);
+				tempCube.audioBeat = 0f;
+				
+				// add metadata to list
+				cubes.Add(tempCube);
 			}
-			
-			// Spawn column of cubes
-			master.LineMaker(cubes);
-			
-			// wait for iteration time
-			yield return new WaitForSeconds(iterationTime);
 		}
+		
+		return cubes;
+		
 	}
 	
-	private void NextPosition()
+	private static void NextPosition()
 	{
 		// Next positions are calculated using a Markov Chain style state machine
 		// http://en.wikipedia.org/wiki/Markov_chain
@@ -159,7 +132,7 @@ public class LevelGenerator : MonoBehaviour
 	// Rescale a value from old range to new range
 	// i.e. 5 is between 1 (min) and 10 (max)
 	// Rescale(ref 5, 1, 10, 30, 50) --> 40
-	private void Rescale(ref float value, float oldMax, float oldMin, float newMax, float newMin)
+	private static void Rescale(ref float value, float oldMax, float oldMin, float newMax, float newMin)
 	{
 		float oldRange = oldMax - oldMin;
 		float newRange = newMax - newMin;
