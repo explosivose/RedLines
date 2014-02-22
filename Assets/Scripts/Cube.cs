@@ -11,7 +11,7 @@ public class Cube : MonoBehaviour {
 
 	void Start () {
 		master = GameObject.FindWithTag("CubeMaster").GetComponent<CubeMaster>();
-		StartCoroutine("KillTrail");
+		//StartCoroutine("KillTrail");
 	}
 
 	IEnumerator KillTrail() {
@@ -31,7 +31,7 @@ public class Cube : MonoBehaviour {
 		float xShift = targetPosition.x;
 		float yShift = Mathf.Lerp(transform.position.y, targetPosition.y, Time.deltaTime * motionSmoothness.y);
 		float zShift = Mathf.Lerp(transform.position.z, targetPosition.z, Time.deltaTime * motionSmoothness.z);
-
+		/*
 		// Audio effects
 		int shakeMe = Random.Range(0,100);
 		
@@ -45,7 +45,7 @@ public class Cube : MonoBehaviour {
 			zShift += master.audioBeat*1f*audioBeat;
 		}
 
-		yShift += master.audioBeat*.2f;
+		yShift += master.audioBeat*.2f;*/
 
 		// Move cube
 		//zShift = Mathf.Clamp(zShift, targetPosition.z, targetPosition.z + 1);

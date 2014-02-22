@@ -10,21 +10,26 @@ public class Player : MonoBehaviour
 	
 	public static bool isDead = false;
 	
+	private Vector3 targetPosition = Vector3.zero;
+	
 	// Use this for initialization
 	void Start () 
 	{
-	
+		targetPosition = transform.position;
 	}
 	
 	void Update () 
 	{
 		float V = Input.GetAxisRaw("Vertical");
+		float H = Input.GetAxisRaw("Horizontal");
 		if (Input.GetButton("Fire1") ) V *= 1.5f;
-		Vector3 direction = new Vector3(0f, V);
+		Vector3 direction = new Vector3(0f, V, H).normalized;
 		
-		transform.position += direction * maxSpeed * Time.deltaTime;
+		targetPosition += direction * maxSpeed * Time.deltaTime;
 		
-		Vector3 vector3Rotation = new Vector3 (0f, 0f, -V * 45f);
+		transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 2f);
+		
+		Vector3 vector3Rotation = new Vector3 (0f, H * 45f, -V * 45f);
 		Quaternion rotation = Quaternion.Euler(vector3Rotation);
 		transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime * 8f);
 		

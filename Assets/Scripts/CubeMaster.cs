@@ -2,7 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class CubeMaster : MonoBehaviour {
+public class CubeMaster : MonoBehaviour 
+{
 
 	// Cubes
 	public GameObject cube;
@@ -24,14 +25,18 @@ public class CubeMaster : MonoBehaviour {
 	public float audioBeat = 0f;
 	private float[] samples;
 	
+	private Transform player;
 	
-	void Start () {
-		StartCoroutine( MakeLevel() );
+	void Start () 
+	{
+		StartCoroutine( MakeLevel3D() );
 		samples = new float[1024];
+		player = GameObject.FindGameObjectWithTag("Player").transform;
 	}
 	
 	// Read a level map from an image file
-	IEnumerator ImageMapReader() {
+	IEnumerator ImageMapReader() 
+	{
 
 		// Loop repeat read of level map
 		for(int k = 0; k < mapRepeatCount; k++)
@@ -70,19 +75,81 @@ public class CubeMaster : MonoBehaviour {
 		}
 	}
 
+	private List<LevelGenerator.moving> levelStates = new List<LevelGenerator.moving>();
+	float cubeLifetime = 0f;
 	IEnumerator MakeLevel()
 	{
 		while(true)
 		{
 			int sinGap = Mathf.RoundToInt( gap * ( Mathf.Sin (Time.time/2f) + 2f ) );
 			LineMaker(LevelGenerator.Generate(sinGap, minWall, maxWall));
+			
+			// Store level states for camera rotation calcs
+			levelStates.Add(LevelGenerator.State);
+			
+			// levelLength: this oughta be calculated somehow
+			// it's the distance from the CubeMaster to the CubeMonster
+			float levelLength = 75f;
+			cubeLifetime = levelLength / (cubeSpeed*cubeRatePerSecond);
+			if (Time.time > cubeLifetime) levelStates.RemoveAt(0);
 			yield return new WaitForSeconds(1f/cubeRatePerSecond);
 		}
 	}
+	
+	IEnumerator MakeLevel3D()
+	{
+		while(true)
+		{
+			LineMaker(LevelGenerator.Generate3D());
+			levelStates.Add(LevelGenerator.State);
+			yield return new WaitForSeconds(1f/cubeRatePerSecond);
+		}
+	}
+	
+	int accumulate = 0;
+	float slant = 0f;
+	
+	void CameraAngle()
+	{
+		accumulate = 0;
+		foreach(LevelGenerator.moving state in levelStates)
+		{
+			switch (state)
+			{
+			case LevelGenerator.moving.upSteep:
+				accumulate += 2;
+				break;
+				
+			case LevelGenerator.moving.up:
+				accumulate++;
+				break;
+				
+			case LevelGenerator.moving.straight:
+				break;
+				
+			case LevelGenerator.moving.down:
+				accumulate--;
+				break;
+				
+			case LevelGenerator.moving.downSteep:
+				accumulate -= 2;
+				break;
+			}
+		}
+		slant = (float)accumulate / (float)levelStates.Count;
+		Quaternion rotation = Quaternion.Euler(new Vector3(0f, 270f, 0f));
+		rotation *= Quaternion.AngleAxis(slant * -10f, transform.right);
+		Transform cam = Camera.main.transform;
+		cam.rotation = Quaternion.Lerp(cam.rotation, rotation, Time.deltaTime);
+		cam.position = player.position + new Vector3(4f, 0f, 0f);
+		
+	}
+
 
 	public void LineMaker(List<CubeMeta> allCubes)
 	{
-		foreach(CubeMeta oneCube in allCubes){
+		foreach(CubeMeta oneCube in allCubes)
+		{
 			// Create new cube at starting position
 			oneCube.startPosition += transform.position;
 			GameObject newCube = (GameObject)Instantiate(cube, oneCube.startPosition, Quaternion.identity);
@@ -104,6 +171,8 @@ public class CubeMaster : MonoBehaviour {
 			sum += samples[i]*samples[i]; // sum squared samples
 		}
 		audioBeat = Mathf.Sqrt(sum/1024);
+		
+		CameraAngle();
 	}
 	
 }

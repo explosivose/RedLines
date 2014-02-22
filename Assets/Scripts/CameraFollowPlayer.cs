@@ -32,8 +32,8 @@ public class CameraFollowPlayer : MonoBehaviour
 			//float V = player.rigidbody.velocity.magnitude / playerScript.maxSpeed;
 			
 			Quaternion rotation = Quaternion.Euler(defaultRotation);
-			rotation *= Quaternion.AngleAxis(V * 45f, player.transform.forward);
-			rotation *= Quaternion.AngleAxis(V * 22.5f, transform.right);
+			rotation *= Quaternion.AngleAxis(V * 45f, player.forward);
+			//rotation *= Quaternion.AngleAxis(V * 22.5f, transform.right);
 			transform.rotation = Quaternion.Lerp (transform.rotation, rotation, Time.deltaTime / 1f);
 			
 		}

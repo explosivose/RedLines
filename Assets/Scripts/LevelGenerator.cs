@@ -69,7 +69,7 @@ public class LevelGenerator
 				// audio beat value should be less than 1
 				float beat = Mathf.Abs(i - (total/2f));
 				Rescale(ref beat, total/2f, 0f, 0.5f, 0f);
-				tempCube.audioBeat = 0f;
+				tempCube.audioBeat = beat;
 				
 				// add metadata to list
 				cubes.Add(tempCube);
@@ -97,6 +97,67 @@ public class LevelGenerator
 		
 		return cubes;
 		
+	}
+	
+	private static float xRadius = 5f;
+	private static float yRadius = 5f;
+	private const float radiusMax = 6f;
+	private const float radiusMin = 3f;
+	
+	public static List<CubeMeta> Generate3D()
+	{
+		NextPosition();
+		
+		List<CubeMeta> cubes = new List<CubeMeta>();
+		
+		// 3D level is a tunnel formed from sequential ellipses
+		// ellipses walls are the cubes
+		// Here's the maths:
+		// 		General Equation of an ellipse 
+		// 			x^2/a^2  +   y^2/b^2  =  1
+		//		where:
+		//			x, y are the coordinates of any point on the ellipse
+		// 			a, b are the radius on the x and y axes respectively
+		//		source: http://www.mathopenref.com/coordgeneralellipse.html
+		
+		
+		xRadius += Random.Range(-1f, 0.5f);
+		xRadius = Mathf.Clamp (xRadius, radiusMin, radiusMax);
+		
+		yRadius += Random.Range(-1f, 0.5f);
+		yRadius = Mathf.Clamp (yRadius, radiusMin, radiusMax);
+		
+		// Scan a square shape around the ellipse
+		// Add a cube around the outside of the ellipse
+		for (float y = -yRadius-1; y <= yRadius+1; y++)
+		{
+			for (float x = -xRadius-1; x <= xRadius+1; x++)
+			{
+				if ( ((x*x)/(xRadius*xRadius)) + ((y*y)/(yRadius*yRadius)) > 1f )
+				{
+					CubeMeta tempCube = new CubeMeta();
+					Vector3 pos = new Vector3(0f, y, x);
+					//Debug.DrawLine(pos, pos + Vector3.left, Color.green, 1f);
+					tempCube.targetPosition = currentPosition + pos;
+					tempCube.startPosition  = currentPosition + pos*10f;
+					tempCube.positionOffset = Vector3.zero;
+					cubes.Add(tempCube);
+				}
+				
+				else if (Random.value < 0.05f)
+				{
+					CubeMeta tempCube = new CubeMeta();
+					Vector3 pos = new Vector3(0f, y, x);
+					//Debug.DrawLine(pos, pos + Vector3.left, Color.green, 1f);
+					tempCube.targetPosition = currentPosition + pos;
+					tempCube.startPosition  = currentPosition + pos*10f;
+					tempCube.positionOffset = Vector3.zero;
+					cubes.Add(tempCube);
+				}
+			}
+		}
+		
+		return cubes;
 	}
 	
 	private static void NextPosition()
