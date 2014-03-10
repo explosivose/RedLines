@@ -12,15 +12,16 @@ public class LevelGenerator
 	
 	private static Vector3 currentPosition = Vector3.zero;
 	private static moving state = moving.straight;
+	private static moving hState = moving.straight;
 	private static int ticker = 0;
 	
 	public enum moving
 	{
-		upSteep,
-		up,
+		positive2,
+		positive,
 		straight,
-		down,
-		downSteep
+		negative,
+		negative2
 	}
 	
 	public static void Reset()
@@ -99,13 +100,15 @@ public class LevelGenerator
 		
 	}
 	
-	private static float xRadius = 5f;
-	private static float yRadius = 5f;
+	private static float xRadius = 6f;
+	private static float yRadius = 4f;
 	private const float radiusMax = 6f;
-	private const float radiusMin = 3f;
+	private const float radiusMin = 4f;
+	private static float spacing = 1f;
 	
-	public static List<CubeMeta> Generate3D()
+	public static List<CubeMeta> Generate3D(float cubeSize)
 	{
+		spacing = cubeSize;
 		NextPosition();
 		
 		List<CubeMeta> cubes = new List<CubeMeta>();
@@ -120,11 +123,13 @@ public class LevelGenerator
 		// 			a, b are the radius on the x and y axes respectively
 		//		source: http://www.mathopenref.com/coordgeneralellipse.html
 		
+		bool middleSpread = false;
+		if (Random.value < 0.1f) middleSpread = true;
 		
-		xRadius += Random.Range(-1f, 0.5f);
+		xRadius += Random.Range(-0.25f, 0.25f);
 		xRadius = Mathf.Clamp (xRadius, radiusMin, radiusMax);
 		
-		yRadius += Random.Range(-1f, 0.5f);
+		yRadius += Random.Range(-0.25f, 0.25f);
 		yRadius = Mathf.Clamp (yRadius, radiusMin, radiusMax);
 		
 		// Scan a square shape around the ellipse
@@ -133,24 +138,27 @@ public class LevelGenerator
 		{
 			for (float x = -xRadius-1; x <= xRadius+1; x++)
 			{
-				if ( ((x*x)/(xRadius*xRadius)) + ((y*y)/(yRadius*yRadius)) > 1f )
+				float xy = ((x*x)/(xRadius*xRadius)) + ((y*y)/(yRadius*yRadius));
+				
+				if ( xy > 1f && xy < 2f)
 				{
 					CubeMeta tempCube = new CubeMeta();
-					Vector3 pos = new Vector3(0f, y, x);
+					Vector3 pos = new Vector3(0f, y*spacing, x*spacing);
 					//Debug.DrawLine(pos, pos + Vector3.left, Color.green, 1f);
 					tempCube.targetPosition = currentPosition + pos;
-					tempCube.startPosition  = currentPosition + pos*10f;
+					if (middleSpread) tempCube.startPosition = currentPosition;
+					else tempCube.startPosition  = currentPosition + pos*5f;
 					tempCube.positionOffset = Vector3.zero;
 					cubes.Add(tempCube);
 				}
 				
-				else if (Random.value < 0.05f)
+				else if (Random.value < 0.005f)
 				{
 					CubeMeta tempCube = new CubeMeta();
-					Vector3 pos = new Vector3(0f, y, x);
+					Vector3 pos = new Vector3(0f, y*spacing, x*spacing);
 					//Debug.DrawLine(pos, pos + Vector3.left, Color.green, 1f);
 					tempCube.targetPosition = currentPosition + pos;
-					tempCube.startPosition  = currentPosition + pos*10f;
+					tempCube.startPosition  = currentPosition + pos*5f;
 					tempCube.positionOffset = Vector3.zero;
 					cubes.Add(tempCube);
 				}
@@ -172,54 +180,105 @@ public class LevelGenerator
 		// Determine new state
 		switch (state)
 		{
-		case moving.upSteep:
-			if      (roll > 0.75f) state = moving.up;		// 25% chance
-			else                   state = moving.upSteep;	// 75% chance
+		case moving.positive2:
+			if      (roll > 0.75f) state = moving.positive;		// 25% chance
+			else                   state = moving.positive2;	// 75% chance
 			break;
 		
-		case moving.up:
-			if      (roll > 0.75f) state = moving.upSteep;	// 25%
-			else if (roll > 0.25f) state = moving.up;      	// 50%
+		case moving.positive:
+			if      (roll > 0.75f) state = moving.positive2;	// 25%
+			else if (roll > 0.25f) state = moving.positive;      	// 50%
 			else                   state = moving.straight; // 25%
 			break;
 			
 		case moving.straight:
 			if      (roll > 0.50f) state = moving.straight;	// 50%
-			else if (roll > 0.25f) state = moving.up;		// 25%
-			else                   state = moving.down;		// 25%
+			else if (roll > 0.25f) state = moving.positive;		// 25%
+			else                   state = moving.negative;		// 25%
 			break;
 			
-		case moving.down:
-			if      (roll > 0.75f) state = moving.downSteep;
-			else if (roll > 0.25f) state = moving.down;
+		case moving.negative:
+			if      (roll > 0.75f) state = moving.negative2;
+			else if (roll > 0.25f) state = moving.negative;
 			else                   state = moving.straight;
 			break;
 			
-		case moving.downSteep:
-			if      (roll > 0.75f) state = moving.down;
-			else                   state = moving.downSteep;
+		case moving.negative2:
+			if      (roll > 0.75f) state = moving.negative;
+			else                   state = moving.negative2;
+			break;
+		}
+		
+		switch (hState)
+		{
+		case moving.positive2:
+			if      (roll > 0.75f) hState = moving.positive;		// 25% chance
+			else                   hState = moving.positive2;	// 75% chance
+			break;
+			
+		case moving.positive:
+			if      (roll > 0.75f) hState = moving.positive2;	// 25%
+			else if (roll > 0.25f) hState = moving.positive;      	// 50%
+			else                   hState = moving.straight; // 25%
+			break;
+			
+		case moving.straight:
+			if      (roll > 0.50f) hState = moving.straight;	// 50%
+			else if (roll > 0.25f) hState = moving.positive;		// 25%
+			else                   hState = moving.negative;		// 25%
+			break;
+			
+		case moving.negative:
+			if      (roll > 0.75f) hState = moving.negative2;
+			else if (roll > 0.25f) hState = moving.negative;
+			else                   hState = moving.straight;
+			break;
+			
+		case moving.negative2:
+			if      (roll > 0.75f) hState = moving.negative;
+			else                   hState = moving.negative2;
 			break;
 		}
 		
 		// Determine new position based on state
 		switch (state)
 		{
-		case moving.upSteep:
+		case moving.positive2:
 			currentPosition += Vector3.up * 1.25f;
 			break;
 		
-		case moving.up:
+		case moving.positive:
 			currentPosition += Vector3.up * 0.75f;
 			break;
 			
-		case moving.down:
+		case moving.negative:
 			currentPosition += Vector3.down * 0.75f;
 			break;
 			
-		case moving.downSteep:
+		case moving.negative2:
 			currentPosition += Vector3.down * 1.25f;
 			break;
 		}
+		
+		switch (hState)
+		{
+		case moving.positive2:
+			currentPosition += Vector3.forward * 1.25f;
+			break;
+			
+		case moving.positive:
+			currentPosition += Vector3.forward * 0.75f;
+			break;
+			
+		case moving.negative:
+			currentPosition += Vector3.back * 0.75f;
+			break;
+			
+		case moving.negative2:
+			currentPosition += Vector3.back * 1.25f;
+			break;
+		}
+		
 	}
 	
 	// Rescale a value from old range to new range

@@ -31,7 +31,7 @@ public class Player : MonoBehaviour
 		
 		Vector3 vector3Rotation = new Vector3 (0f, H * 45f, -V * 45f);
 		Quaternion rotation = Quaternion.Euler(vector3Rotation);
-		transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime * 8f);
+		transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime);
 		
 		
 	}

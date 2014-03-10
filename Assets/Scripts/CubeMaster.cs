@@ -6,17 +6,19 @@ public class CubeMaster : MonoBehaviour
 {
 
 	// Cubes
-	public GameObject cube;
+	public GameObject cubePrefab;
+	public int numberOfCubes = 1000;
+	public float cubeSize = 1f;
 	public float cubeRatePerSecond;
 	public float cubeSpeed;
-
+	
 	// Map
 	public Texture2D levelMap;
 	public int mapHeight;
 	public int mapLength = 0;
 	public int mapRepeatCount = 0;
-	public int cubeYMotionSmoothness;
-	public int cubeZMotionSmoothness;
+	public float cubeYMotionSmoothness;
+	public float cubeZMotionSmoothness;
 	public int gap = 8;
 	public int minWall = 4;
 	public int maxWall = 8;
@@ -26,12 +28,23 @@ public class CubeMaster : MonoBehaviour
 	private float[] samples;
 	
 	private Transform player;
+	private List<Transform> cubeList     = new List<Transform>();
+	private int 			cubeListHead = 0;
 	
 	void Start () 
 	{
-		StartCoroutine( MakeLevel3D() );
 		samples = new float[1024];
 		player = GameObject.FindGameObjectWithTag("Player").transform;
+		
+		for (int i = 0; i < numberOfCubes; i++)
+		{
+			GameObject cube = (GameObject)Instantiate(cubePrefab, new Vector3(0f,(float)i), Quaternion.identity);
+			cube.transform.parent = transform;
+			cubeList.Add(cube.transform);
+		}
+		
+		StartCoroutine( MakeLevel3D() );
+
 	}
 	
 	// Read a level map from an image file
@@ -100,7 +113,7 @@ public class CubeMaster : MonoBehaviour
 	{
 		while(true)
 		{
-			LineMaker(LevelGenerator.Generate3D());
+			LineMaker(LevelGenerator.Generate3D(cubeSize));
 			levelStates.Add(LevelGenerator.State);
 			yield return new WaitForSeconds(1f/cubeRatePerSecond);
 		}
@@ -116,22 +129,22 @@ public class CubeMaster : MonoBehaviour
 		{
 			switch (state)
 			{
-			case LevelGenerator.moving.upSteep:
+			case LevelGenerator.moving.positive2:
 				accumulate += 2;
 				break;
 				
-			case LevelGenerator.moving.up:
+			case LevelGenerator.moving.positive:
 				accumulate++;
 				break;
 				
 			case LevelGenerator.moving.straight:
 				break;
 				
-			case LevelGenerator.moving.down:
+			case LevelGenerator.moving.negative:
 				accumulate--;
 				break;
 				
-			case LevelGenerator.moving.downSteep:
+			case LevelGenerator.moving.negative2:
 				accumulate -= 2;
 				break;
 			}
@@ -141,29 +154,38 @@ public class CubeMaster : MonoBehaviour
 		rotation *= Quaternion.AngleAxis(slant * -10f, transform.right);
 		Transform cam = Camera.main.transform;
 		cam.rotation = Quaternion.Lerp(cam.rotation, rotation, Time.deltaTime);
-		cam.position = player.position + new Vector3(4f, 0f, 0f);
+		cam.position = player.position + new Vector3(1.5f, 0.5f, 0f);
 		
 	}
 
 
-	public void LineMaker(List<CubeMeta> allCubes)
+	public void LineMaker(List<CubeMeta> lineMeta)
 	{
-		foreach(CubeMeta oneCube in allCubes)
+		foreach(CubeMeta meta in lineMeta)
 		{
 			// Create new cube at starting position
-			oneCube.startPosition += transform.position;
-			GameObject newCube = (GameObject)Instantiate(cube, oneCube.startPosition, Quaternion.identity);
-			newCube.transform.parent = this.transform;
+			meta.startPosition += transform.position;
+			//GameObject newCube = (GameObject)Instantiate(cubePrefab, meta.startPosition, Quaternion.identity);
+			Transform newCube = cubeList[cubeListHead++];
+			if (cubeListHead >= numberOfCubes) cubeListHead = 0;
+			
+			newCube.position = meta.startPosition;
+			/*if (newCube.localScale != new Vector3(cubeSize, cubeSize, cubeSize));
+			{
+				newCube.localScale = new Vector3(cubeSize, cubeSize, cubeSize);
+			}*/
+			
+			
 			Cube cubeScript = newCube.GetComponent<Cube>();
 
 			// Initialize cube 
-			cubeScript.targetPosition = oneCube.targetPosition + oneCube.positionOffset + transform.position;
-			cubeScript.audioBeat = oneCube.audioBeat;
+			cubeScript.targetPosition = meta.targetPosition + meta.positionOffset + transform.position;
+			cubeScript.audioBeat = meta.audioBeat;
 			cubeScript.SetMotionSmooth(new Vector3(0f, cubeYMotionSmoothness, cubeZMotionSmoothness));
 		}
 	}
 
-	
+	int cubeCount = 0;
 	void Update () {
 		audio.GetOutputData(samples, 0);
 		float sum = 0;
@@ -171,9 +193,11 @@ public class CubeMaster : MonoBehaviour
 			sum += samples[i]*samples[i]; // sum squared samples
 		}
 		audioBeat = Mathf.Sqrt(sum/1024);
-		
+		cubeCount = transform.childCount;
 		CameraAngle();
 	}
+	
+	
 	
 }
 
