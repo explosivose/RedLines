@@ -7,11 +7,11 @@ public class LevelGenerator
 
 	public static moving State
 	{
-		get { return state; }
+		get { return vState; }
 	}
 	
 	private static Vector3 currentPosition = Vector3.zero;
-	private static moving state = moving.straight;
+	private static moving vState = moving.straight;
 	private static moving hState = moving.straight;
 	private static int ticker = 0;
 	
@@ -27,7 +27,8 @@ public class LevelGenerator
 	public static void Reset()
 	{
 		ticker = 0;
-		state = moving.straight;
+		vState = moving.straight;
+		hState = moving.straight;
 	}
 	
 	public static List<CubeMeta> Generate(int gap, int minimumWallWidth, int maximumWallWidth)
@@ -63,14 +64,14 @@ public class LevelGenerator
 				// target position is height determined by i
 				tempCube.targetPosition = currentPosition + (Vector3.up * i);
 				// start offset is some Z offset
-				tempCube.startPosition = tempCube.targetPosition + (Vector3.back * Random.Range(-20, 20));
+				tempCube.startPosition = tempCube.targetPosition + (Vector3.left * Random.Range(-20, 20));
 				// additional offset is just zero here
-				tempCube.positionOffset = Vector3.zero;//Vector3.forward * Mathf.Abs(i - (total/2f)) * 0.25f;
+				//tempCube.positionOffset = Vector3.zero;//Vector3.forward * Mathf.Abs(i - (total/2f)) * 0.25f;
 				
 				// audio beat value should be less than 1
-				float beat = Mathf.Abs(i - (total/2f));
-				Rescale(ref beat, total/2f, 0f, 0.5f, 0f);
-				tempCube.audioBeat = beat;
+				//float beat = Mathf.Abs(i - (total/2f));
+				//Rescale(ref beat, total/2f, 0f, 0.5f, 0f);
+				//tempCube.audioBeat = beat;
 				
 				// add metadata to list
 				cubes.Add(tempCube);
@@ -82,14 +83,14 @@ public class LevelGenerator
 				// target position is height determined by i
 				tempCube.targetPosition = currentPosition + (Vector3.up * i);
 				// start offset is some Z offset
-				tempCube.startPosition = tempCube.targetPosition + (Vector3.back * Random.Range(-20, 20));
+				tempCube.startPosition = tempCube.targetPosition + (Vector3.left * Random.Range(-20, 20));
 				// additional offset is just zero here
-				tempCube.positionOffset = Vector3.forward * Mathf.Abs(i - (total/2f)) * 0.25f;
+				//tempCube.positionOffset = Vector3.forward * Mathf.Abs(i - (total/2f)) * 0.25f;
 				
 				// audio beat value should be less than 1
-				float beat = Mathf.Abs(i - (total/2f));
-				Rescale(ref beat, total/2f, 0f, 0.5f, 0f);
-				tempCube.audioBeat = 0f;
+				//float beat = Mathf.Abs(i - (total/2f));
+				//Rescale(ref beat, total/2f, 0f, 0.5f, 0f);
+				//tempCube.audioBeat = 0f;
 				
 				// add metadata to list
 				cubes.Add(tempCube);
@@ -143,28 +144,29 @@ public class LevelGenerator
 				if ( xy > 1f && xy < 2f)
 				{
 					CubeMeta tempCube = new CubeMeta();
-					Vector3 pos = new Vector3(0f, y*spacing, x*spacing);
+					Vector3 pos = new Vector3(x*spacing, y*spacing);
 					//Debug.DrawLine(pos, pos + Vector3.left, Color.green, 1f);
 					tempCube.targetPosition = currentPosition + pos;
 					if (middleSpread) tempCube.startPosition = currentPosition;
 					else tempCube.startPosition  = currentPosition + pos*5f;
-					tempCube.positionOffset = Vector3.zero;
+					//tempCube.positionOffset = Vector3.zero;
+					tempCube.startTime = Time.time;
 					cubes.Add(tempCube);
 				}
 				
 				else if (Random.value < 0.005f)
 				{
 					CubeMeta tempCube = new CubeMeta();
-					Vector3 pos = new Vector3(0f, y*spacing, x*spacing);
+					Vector3 pos = new Vector3(x*spacing, y*spacing);
 					//Debug.DrawLine(pos, pos + Vector3.left, Color.green, 1f);
 					tempCube.targetPosition = currentPosition + pos;
 					tempCube.startPosition  = currentPosition + pos*5f;
-					tempCube.positionOffset = Vector3.zero;
+					//tempCube.positionOffset = Vector3.zero;
+					tempCube.startTime = Time.time;
 					cubes.Add(tempCube);
 				}
 			}
 		}
-		
 		return cubes;
 	}
 	
@@ -178,34 +180,34 @@ public class LevelGenerator
 		ticker++;
 		
 		// Determine new state
-		switch (state)
+		switch (vState)
 		{
 		case moving.positive2:
-			if      (roll > 0.75f) state = moving.positive;		// 25% chance
-			else                   state = moving.positive2;	// 75% chance
+			if      (roll > 0.75f) vState = moving.positive;		// 25% chance
+			else                   vState = moving.positive2;	// 75% chance
 			break;
 		
 		case moving.positive:
-			if      (roll > 0.75f) state = moving.positive2;	// 25%
-			else if (roll > 0.25f) state = moving.positive;      	// 50%
-			else                   state = moving.straight; // 25%
+			if      (roll > 0.75f) vState = moving.positive2;	// 25%
+			else if (roll > 0.25f) vState = moving.positive;      	// 50%
+			else                   vState = moving.straight; // 25%
 			break;
 			
 		case moving.straight:
-			if      (roll > 0.50f) state = moving.straight;	// 50%
-			else if (roll > 0.25f) state = moving.positive;		// 25%
-			else                   state = moving.negative;		// 25%
+			if      (roll > 0.50f) vState = moving.straight;	// 50%
+			else if (roll > 0.25f) vState = moving.positive;		// 25%
+			else                   vState = moving.negative;		// 25%
 			break;
 			
 		case moving.negative:
-			if      (roll > 0.75f) state = moving.negative2;
-			else if (roll > 0.25f) state = moving.negative;
-			else                   state = moving.straight;
+			if      (roll > 0.75f) vState = moving.negative2;
+			else if (roll > 0.25f) vState = moving.negative;
+			else                   vState = moving.straight;
 			break;
 			
 		case moving.negative2:
-			if      (roll > 0.75f) state = moving.negative;
-			else                   state = moving.negative2;
+			if      (roll > 0.75f) vState = moving.negative;
+			else                   vState = moving.negative2;
 			break;
 		}
 		
@@ -241,7 +243,7 @@ public class LevelGenerator
 		}
 		
 		// Determine new position based on state
-		switch (state)
+		switch (vState)
 		{
 		case moving.positive2:
 			currentPosition += Vector3.up * 1.25f;

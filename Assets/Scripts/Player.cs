@@ -23,15 +23,15 @@ public class Player : MonoBehaviour
 		float V = Input.GetAxisRaw("Vertical");
 		float H = Input.GetAxisRaw("Horizontal");
 		if (Input.GetButton("Fire1") ) V *= 1.5f;
-		Vector3 direction = new Vector3(0f, V, H).normalized;
+		Vector3 direction = new Vector3(-H, V, 0f).normalized;
 		
 		targetPosition += direction * maxSpeed * Time.deltaTime;
 		
 		transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 2f);
 		
-		Vector3 vector3Rotation = new Vector3 (0f, H * 45f, -V * 45f);
+		Vector3 vector3Rotation = new Vector3 (-V * 45f, H * 45f, 0f);
 		Quaternion rotation = Quaternion.Euler(vector3Rotation);
-		transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime);
+		//transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime);
 		
 		
 	}
