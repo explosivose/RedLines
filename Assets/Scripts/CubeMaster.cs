@@ -87,7 +87,6 @@ public class CubeMaster : MonoBehaviour
 				m.currentPosition.x = Mathf.Lerp(m.startPosition.x, m.targetPosition.x, lerp);
 				m.currentPosition.y = Mathf.Lerp(m.startPosition.y, m.targetPosition.y, lerp);
 				m.currentPosition.z = masterSpawnOffset.z - cubeSpeed*travelTime;
-				
 			}
 		}
 		else
@@ -99,7 +98,6 @@ public class CubeMaster : MonoBehaviour
 				m.currentPosition.x = m.targetPosition.x;
 				m.currentPosition.y = m.targetPosition.y;
 				m.currentPosition.z = masterSpawnOffset.z - cubeSpeed*travelTime;
-				
 			}
 		}
 

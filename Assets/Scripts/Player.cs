@@ -3,20 +3,13 @@ using System.Collections;
 
 public class Player : MonoBehaviour 
 {
-	public enum ControlMode {
-		mouseFromCenter,
-		mouseRotation
-	}
-	
-	public ControlMode controlMode = ControlMode.mouseFromCenter;
-	public float maxSpeed     = 10f;
+	public float maxSpeed  = 10f;
 	public float turnSpeed = 100f;
 	public Transform deathsplosion;
 	public static bool isDead = false;
 	
 	private Vector3 direction = Vector3.zero;
 	private Vector3 targetPosition = Vector3.zero;
-	private Vector3 screenCenter = Vector3.zero;
 
 	
 	
@@ -28,82 +21,36 @@ public class Player : MonoBehaviour
 	
 	void Update () 
 	{
-		if (isDead) {
+		if (isDead) 
+		{
 			Screen.lockCursor = false;
 			return;
 		}
-		switch (controlMode)
-		{
-		case ControlMode.mouseFromCenter:
-			mouseFromCenterUpdate();
-			break;
-		case ControlMode.mouseRotation:
-			mouseRotationUpdate();
-			break;
-		default:
-			break;
-		}
-		
+		movementUpdate();
 		MouseCursor();
-	}
-	
-	void OnGUI()
-	{
-		screenCenter = new Vector3(Screen.width/2, Screen.height/2);
-		switch (controlMode)
-		{
-		case ControlMode.mouseFromCenter:
-			Rect pos = new Rect(screenCenter.x + direction.x, screenCenter.y - direction.y, 100f, 30f);
-			GUI.Label(pos, direction.magnitude.ToString());
-			break;
-		}
-		
 	}
 	
 	void MouseCursor()
 	{
-		switch(controlMode)
+		if (Screen.lockCursor == false)
 		{
-		case ControlMode.mouseFromCenter:
-			Screen.lockCursor = false;
-			break;
-		case ControlMode.mouseRotation:
-			if (Screen.lockCursor == false)
-			{
-				Time.timeScale = 0f;
-				if (Input.anyKey)
-					Screen.lockCursor = true;
-			}
-			else
-			{
-				Time.timeScale = 1f;
-			}
-			break;
-			
+			Time.timeScale = 0f;
+			if (Input.anyKey)
+				Screen.lockCursor = true;
+		}
+		else
+		{
+			Time.timeScale = 1f;
 		}
 	}
 	
-	
-	void mouseFromCenterUpdate()
-	{
-		Vector3 mpos = Input.mousePosition;
-		direction = (mpos - screenCenter);
-		if (direction.magnitude < 10) direction = Vector3.zero;
-		Vector3 dirNormalized = direction / 100f;
-		
-		targetPosition += dirNormalized * maxSpeed * Time.deltaTime;
-		transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 2f);
-		
-		Vector3 vrotation = new Vector3(dirNormalized.x * 45, 90f, -dirNormalized.y * 45);
-		Quaternion rotation = Quaternion.Euler(vrotation);
-		transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime);
-	}
-	
-	void mouseRotationUpdate()
+	void movementUpdate()
 	{
 		// decide which input to take
-		float mx = Input.GetAxis ("Mouse X");
-		float ha = Input.GetAxis("Horizontal");
+		// read mouse axis and other axis inputs
+		// use the one with the larger magnitude
+		float mx = Input.GetAxis ("Mouse X");	// mouse
+		float ha = Input.GetAxis("Horizontal"); // other axis
 		float h = ha;
 		if (Mathf.Abs(mx) > Mathf.Abs(ha)) h = mx;
 		float my = -Input.GetAxis ("Mouse Y");
@@ -111,37 +58,38 @@ public class Player : MonoBehaviour
 		float v = va;
 		if (Mathf.Abs(my) > Mathf.Abs(va)) v = my;
 		
-		float maxrot = 45f;
 		// calculate rotation based on input
+		
+		float maxrot = 45f;
 		Vector3 vrot = transform.rotation.eulerAngles;
+		
+		// left/right rotation
 		vrot.y += h * turnSpeed * Time.deltaTime;
-		if (vrot.y >  90f+maxrot) vrot.y =  90f+maxrot;
+		if (vrot.y >  90f+maxrot) vrot.y =  90f+maxrot; // clamp between 90+max and 90-max
 		if (vrot.y <  90f-maxrot) vrot.y =  90f-maxrot;
+		
+		// up/down rotation
 		vrot.z += v * turnSpeed * Time.deltaTime;
 		if (vrot.z > maxrot      && vrot.z <  90f) vrot.z = maxrot;
 		if (vrot.z < 360f-maxrot && vrot.z > 270f) vrot.z = 360f-maxrot;
 		
-		// lag rotation
-		Quaternion rotation = Quaternion.Euler(vrot);//Quaternion.Lerp(transform.rotation, Quaternion.Euler(vrot), Time.deltaTime * 16f);
-		transform.rotation = Quaternion.Euler(vrot);
-		// reassign rotation vector after lag
-		vrot = rotation.eulerAngles;
+		// calculate movement based on rotation
 		
-		// need to avoid the 359, 0 border..
+		// need to avoid the wrap around from 0deg to 359deg for movement
+		// i.e. 359deg becomes -1deg
 		if (vrot.z > 270f) vrot.z -= 360f;
 		
-		// calculate movement based on rotation
 		float x = Rescale(vrot.y, 90f+maxrot, 90f-maxrot, 1f, -1f);
 		float y = Rescale(vrot.z, maxrot, -maxrot, 1f, -1f);
-		direction = new Vector3(x, -y);
+		// move direction relative to camera orientation
+		direction = Camera.main.transform.TransformDirection(new Vector3(x, -y));
+		direction.z = 0f;	// remove any Z component added by TransformDirection()
 		targetPosition += direction * maxSpeed * Time.deltaTime;
+		
 		transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 16f);
+		transform.rotation = Quaternion.Euler(vrot);
 		
 	}
-	
-
-	
-
 	
 	void OnCollisionEnter(Collision col)
 	{
