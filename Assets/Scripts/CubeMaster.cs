@@ -14,13 +14,13 @@ public class CubeMeta
 public class CubeMaster : MonoBehaviour 
 {
 	public GameObject cubePrefab;
+	public bool animateCubes = true;
 	public int numberOfCubes = 1000;
 	public Vector3 cubeScale = Vector3.one;
 	public float cubeSpeed = 5f;
 	
 	// list of cube objects
 	private List<Transform> cubeList = new List<Transform>();
-	private int cubeListHead = 0;
 	
 	// list of cube start and target positions
 	private List<CubeMeta> cubeMetaList = new List<CubeMeta>();
@@ -78,15 +78,31 @@ public class CubeMaster : MonoBehaviour
 		// calculate cube positions using meta data
 		float travelTime;
 		float lerp;
-		foreach(CubeMeta m in cubeMetaList)
+		if (animateCubes)
 		{
-			travelTime = Time.time - m.startTime;
-			lerp = travelTime;
-			m.currentPosition.x = Mathf.Lerp(m.startPosition.x, m.targetPosition.x, lerp);
-			m.currentPosition.y = Mathf.Lerp(m.startPosition.y, m.targetPosition.y, lerp);
-			m.currentPosition.z = masterSpawnOffset.z + cubeSpeed*travelTime;
-			
+			foreach(CubeMeta m in cubeMetaList)
+			{
+				travelTime = Time.time - m.startTime;
+				lerp = travelTime;
+				m.currentPosition.x = Mathf.Lerp(m.startPosition.x, m.targetPosition.x, lerp);
+				m.currentPosition.y = Mathf.Lerp(m.startPosition.y, m.targetPosition.y, lerp);
+				m.currentPosition.z = masterSpawnOffset.z - cubeSpeed*travelTime;
+				
+			}
 		}
+		else
+		{
+			foreach(CubeMeta m in cubeMetaList)
+			{
+				travelTime = Time.time - m.startTime;
+				lerp = travelTime;
+				m.currentPosition.x = m.targetPosition.x;
+				m.currentPosition.y = m.targetPosition.y;
+				m.currentPosition.z = masterSpawnOffset.z - cubeSpeed*travelTime;
+				
+			}
+		}
+
 		// assign positions to cubes
 		for (int i = 0; i < cubeMetaList.Count; i++)
 		{

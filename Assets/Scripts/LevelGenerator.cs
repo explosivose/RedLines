@@ -104,7 +104,7 @@ public class LevelGenerator
 	private static float xRadius = 6f;
 	private static float yRadius = 4f;
 	private const float radiusMax = 6f;
-	private const float radiusMin = 4f;
+	private const float radiusMin = 2f;
 	private static float spacing = 1f;
 	
 	public static List<CubeMeta> Generate3D(float cubeSize)
