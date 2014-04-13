@@ -24,8 +24,8 @@ public class Player : MonoBehaviour
 		if (isDead) 
 			return;
 		MovementUpdate();
+		WeaponUpdate();
 	}
-	
 
 	void MovementUpdate()
 	{
@@ -72,6 +72,23 @@ public class Player : MonoBehaviour
 		transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 16f);
 		transform.rotation = Quaternion.Euler(vrot);
 		
+	}
+	
+	void WeaponUpdate()
+	{
+		if (Input.GetButton("Fire1"))
+		{
+			RaycastHit hit;
+			if (Physics.Raycast(transform.position, Camera.main.transform.forward, out hit))
+			{
+				BroadcastMessage("Fire", hit.point);
+			}
+			else
+			{
+				Vector3 target = Camera.main.transform.forward * 100f;
+				//BroadcastMessage("Fire", target);
+			}
+		}
 	}
 	
 	void OnCollisionEnter(Collision col)
