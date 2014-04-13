@@ -26,7 +26,7 @@ public class Player : MonoBehaviour
 			Screen.lockCursor = false;
 			return;
 		}
-		movementUpdate();
+		MovementUpdate();
 		MouseCursor();
 	}
 	
@@ -44,7 +44,7 @@ public class Player : MonoBehaviour
 		}
 	}
 	
-	void movementUpdate()
+	void MovementUpdate()
 	{
 		// decide which input to take
 		// read mouse axis and other axis inputs
