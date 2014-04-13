@@ -54,7 +54,6 @@ public class WeaponLaser : MonoBehaviour
 		firing = true;
 		fireTime = Time.time;
 		float targetDistance = Vector3.Distance(transform.position, target);
-		Debug.Log (targetDistance);
 		while (fireTime + 0.2f > Time.time)
 		{
 			for (int i = 0; i < rendererPoints; i++)

@@ -30,6 +30,18 @@ public class LevelGenerator
 		currentPosition = Vector3.zero;
 		vState = moving.straight;
 		hState = moving.straight;
+		xRadius = radiusMax;
+		yRadius = radiusMax;
+	}
+	
+	public static void Reset(Vector3 startPosition)
+	{
+		ticker = 0;
+		currentPosition = startPosition;
+		vState = moving.straight;
+		hState = moving.straight;
+		xRadius = radiusMax;
+		yRadius = radiusMax;
 	}
 	
 	public static List<CubeMeta> Generate(int gap, int minimumWallWidth, int maximumWallWidth)
@@ -150,7 +162,7 @@ public class LevelGenerator
 					tempCube.targetPosition = currentPosition + pos;
 					if (middleSpread) tempCube.startPosition = currentPosition;
 					else tempCube.startPosition  = currentPosition + pos*5f;
-					//tempCube.positionOffset = Vector3.zero;
+					tempCube.layerCenter = currentPosition;
 					tempCube.startTime = Time.time;
 					cubes.Add(tempCube);
 				}
@@ -162,7 +174,7 @@ public class LevelGenerator
 					//Debug.DrawLine(pos, pos + Vector3.left, Color.green, 1f);
 					tempCube.targetPosition = currentPosition + pos;
 					tempCube.startPosition  = currentPosition + pos*5f;
-					//tempCube.positionOffset = Vector3.zero;
+					tempCube.layerCenter = currentPosition;
 					tempCube.startTime = Time.time;
 					cubes.Add(tempCube);
 				}

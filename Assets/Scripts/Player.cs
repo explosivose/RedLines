@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Player : MonoBehaviour 
+public class Player : MonoBehaviour
 {
 	public float maxSpeed  = 10f;
 	public float turnSpeed = 100f;
@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
 	
 	private Vector3 direction = Vector3.zero;
 	private Vector3 targetPosition = Vector3.zero;
-
+	private bool hyperJump = false;
 	
 	
 	// Use this for initialization
@@ -21,8 +21,9 @@ public class Player : MonoBehaviour
 	
 	void Update () 
 	{
-		if (isDead) 
+		if (isDead || hyperJump)
 			return;
+			
 		MovementUpdate();
 		WeaponUpdate();
 	}
@@ -89,7 +90,21 @@ public class Player : MonoBehaviour
 				//BroadcastMessage("Fire", target);
 			}
 		}
+		if (Input.GetKey(KeyCode.Space))
+		{
+			if (!hyperJump) StartCoroutine( HyperJump() );
+		}
 	}
+	
+	IEnumerator HyperJump()
+	{
+		hyperJump = true;
+		CubeMaster.Instance.HyperJump = true;
+		LevelGenerator.Reset(transform.position);
+		yield return new WaitForSeconds(CubeMaster.Instance.CubeTravelTime);
+		CubeMaster.Instance.HyperJump = false;
+		hyperJump = false;
+	}	
 	
 	void OnCollisionEnter(Collision col)
 	{
