@@ -48,6 +48,7 @@ public class LevelGenerator
 	{
 		ticker = 0;
 		currentPosition = startPosition;
+		currentPosition.z = 0f;
 		vState = moving.straight;
 		hState = moving.straight;
 		xRadius = radiusMax;
