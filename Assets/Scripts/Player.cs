@@ -11,7 +11,7 @@ public class Player : MonoBehaviour
 	private Vector3 direction = Vector3.zero;
 	private Vector3 targetPosition = Vector3.zero;
 	private bool hyperJump = false;
-	
+	private int hyperMatter = 0;
 	
 	// Use this for initialization
 	void Start () 
@@ -79,16 +79,7 @@ public class Player : MonoBehaviour
 	{
 		if (Input.GetButton("Fire1"))
 		{
-			RaycastHit hit;
-			if (Physics.Raycast(transform.position, Camera.main.transform.forward, out hit))
-			{
-				BroadcastMessage("Fire", hit.point);
-			}
-			else
-			{
-				Vector3 target = Camera.main.transform.forward * 100f;
-				//BroadcastMessage("Fire", target);
-			}
+			BroadcastMessage("Fire");
 		}
 		if (Input.GetKey(KeyCode.Space))
 		{
@@ -103,6 +94,7 @@ public class Player : MonoBehaviour
 		LevelGenerator.Reset(transform.position);
 		yield return new WaitForSeconds(CubeMaster.Instance.CubeTravelTime);
 		CubeMaster.Instance.HyperJump = false;
+		ScreenShake.Instance.Shake(0.2f, 0.5f);
 		hyperJump = false;
 	}	
 	
@@ -111,6 +103,15 @@ public class Player : MonoBehaviour
 		if (col.gameObject.tag == "Death" && !isDead)
 		{
 			Death();
+		}
+	}
+	
+	void OnTriggerEnter(Collider col)
+	{
+		if (col.gameObject.tag == "HyperDust")
+		{
+			hyperMatter++;
+			Debug.Log (hyperMatter);
 		}
 	}
 	

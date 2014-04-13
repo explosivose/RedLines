@@ -20,14 +20,9 @@ public class WeaponLaser : MonoBehaviour
 	
 	void Update()
 	{
-		if (debug)
-		{
-			if (Input.GetButton("Fire1"))
-			{
-				Vector3 target = Camera.main.transform.forward * 100f;
-				Fire (target);
-			}
-		}
+		if (debug && Input.GetButton("Fire1"))
+			Fire();
+		
 		if (!firing)
 		{
 			startC = Color.Lerp(startC, Color.clear, Time.time - fireTime);
@@ -36,16 +31,23 @@ public class WeaponLaser : MonoBehaviour
 		}
 	}
 	
-	public void Fire(Vector3 target)
+	public void Fire()
 	{
 		if (!firing) 
 		{
-			lr.SetVertexCount(rendererPoints);
-			startC = new Color(1f, Random.value, Random.value);
-			endC = new Color(1f, Random.value, Random.value);
-			lr.SetColors(startC, endC);
-			lr.enabled = true;
-			StartCoroutine( FireRoutine(target) );
+			RaycastHit hit;
+			if (Physics.Raycast(transform.position, Camera.main.transform.forward, out hit))
+			{
+				if (hit.transform.tag == "HyperMatter")
+					hit.transform.BroadcastMessage("Explode");
+				
+				lr.SetVertexCount(rendererPoints);
+				startC = new Color(1f, Random.value, Random.value);
+				endC = new Color(1f, Random.value, Random.value);
+				lr.SetColors(startC, endC);
+				lr.enabled = true;
+				StartCoroutine( FireRoutine(hit.point) );
+			}
 		}
 	}
 	

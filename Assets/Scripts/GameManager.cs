@@ -24,7 +24,7 @@ public class GameManager : Singleton<GameManager>
 	{
 		get 
 		{
-			return (state != GameState.Playing);
+			return (state == GameState.Playing);
 		}
 	}
 	
@@ -123,7 +123,8 @@ public class GameManager : Singleton<GameManager>
 	public GUIWindow mainMenu = new GUIWindow();
 	void wMainMenu(int windowID)
 	{
-		GUILayout.Space (menuSkin.window.fontSize);
+		GUILayout.Space(menuSkin.window.fontSize);
+		GUILayout.Space(Screen.height/8f);
 		
 		if (state == GameState.Paused)
 		{
@@ -155,6 +156,7 @@ public class GameManager : Singleton<GameManager>
 	void wDeathMenu(int windowID)
 	{
 		GUILayout.Space(menuSkin.window.fontSize);
+		GUILayout.Space(Screen.height/8f);
 		
 		if (GUILayout.Button("AGAIN", menuSkin.button))
 			StartGame();
@@ -169,6 +171,7 @@ public class GameManager : Singleton<GameManager>
 	void wPauseMenu(int windowID)
 	{
 		GUILayout.Space(menuSkin.window.fontSize);
+		GUILayout.Space(Screen.height/8f);
 		
 		if (GUILayout.Button("RESUME", menuSkin.button))
 			UnPause();
@@ -189,7 +192,8 @@ public class GameManager : Singleton<GameManager>
 	void wScoreBoard(int windowID)
 	{
 		GUILayout.Space(menuSkin.window.fontSize);
-		GUILayout.Space (50);
+		GUILayout.Space(Screen.height/8f);
+		
 		if (GUILayout.Button("MAIN MENU", menuSkin.button))
 			gui = GUIState.MainMenu;
 	}
@@ -198,8 +202,8 @@ public class GameManager : Singleton<GameManager>
 	void wOptions(int windowID)
 	{
 		GUILayout.Space(menuSkin.window.fontSize);
+		GUILayout.Space(Screen.height/8f);
 		
-		GUILayout.Space (50);
 		if (GUILayout.Button("MAIN MENU", menuSkin.button))
 			gui = GUIState.MainMenu;
 	}
@@ -208,9 +212,10 @@ public class GameManager : Singleton<GameManager>
 	void wCredits(int windowID)
 	{
 		GUILayout.Space(menuSkin.window.fontSize);
-		
-		GUILayout.Label ("Build date: " + buildDate, menuSkin.label);
-		GUILayout.Space (50);
+		GUILayout.Label("Build date: " + buildDate, menuSkin.label);
+		GUILayout.Space(Screen.height/8);
+		GUILayout.Label("HTTP://SUPERCORE.CO.UK", menuSkin.label);
+		GUILayout.Space (20f);
 		if (GUILayout.Button("MAIN MENU", menuSkin.button))
 			gui = GUIState.MainMenu;
 	}

@@ -22,7 +22,6 @@ public class CubeMaster : Singleton<CubeMaster>
 	
 	private float hyperJumpEnterTime = 0f;
 	private float hyperJumpExitTime = 0f;
-	private float timeSpentInHyperSpace = 0f;
 	private Transform player;
 	
 	// list of cube objects
@@ -57,7 +56,6 @@ public class CubeMaster : Singleton<CubeMaster>
 			else
 			{
 				masterState = cubeMasterState.hyperSpaceExit;
-				timeSpentInHyperSpace = Time.time - hyperJumpEnterTime;
 				hyperJumpExitTime = Time.time;
 			}
 		}

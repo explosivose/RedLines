@@ -17,7 +17,7 @@ RenderSettings:
   m_FogMode: 3
   m_FogDensity: .100000001
   m_LinearFogStart: 0
-  m_LinearFogEnd: 60
+  m_LinearFogEnd: 100
   m_AmbientLight: {r: .200000003, g: .200000003, b: .200000003, a: 1}
   m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: .5
@@ -112,6 +112,46 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 41812f59753735e4696abd01ea785301, type: 2}
   m_RootGameObject: {fileID: 1570846204}
+  m_IsPrefabParent: 0
+  m_IsExploded: 1
+--- !u!1001 &81786030
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 400000, guid: a89eb78faab2f0046b97a1f32ab30c05, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: a89eb78faab2f0046b97a1f32ab30c05, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: a89eb78faab2f0046b97a1f32ab30c05, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: a89eb78faab2f0046b97a1f32ab30c05, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: a89eb78faab2f0046b97a1f32ab30c05, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: a89eb78faab2f0046b97a1f32ab30c05, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: a89eb78faab2f0046b97a1f32ab30c05, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: a89eb78faab2f0046b97a1f32ab30c05, type: 2}
+  m_RootGameObject: {fileID: 355848280}
   m_IsPrefabParent: 0
   m_IsExploded: 1
 --- !u!1 &170599809
@@ -369,6 +409,48 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1570846205}
+--- !u!1 &355848280
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 100000, guid: a89eb78faab2f0046b97a1f32ab30c05, type: 2}
+  m_PrefabInternal: {fileID: 81786030}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 355848282}
+  - 114: {fileID: 355848281}
+  m_Layer: 0
+  m_Name: HyperMatterSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &355848281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 11400000, guid: a89eb78faab2f0046b97a1f32ab30c05,
+    type: 2}
+  m_PrefabInternal: {fileID: 81786030}
+  m_GameObject: {fileID: 355848280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2258bc0762059b74bb37f6b824be7713, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hyperMatterPrefab: {fileID: 400000, guid: 13c1e2f99e901ee4e95a162cf31bd814, type: 2}
+  maxTime: 3
+  minTime: 1
+--- !u!4 &355848282
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 400000, guid: a89eb78faab2f0046b97a1f32ab30c05, type: 2}
+  m_PrefabInternal: {fileID: 81786030}
+  m_GameObject: {fileID: 355848280}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
 --- !u!1 &356194514
 GameObject:
   m_ObjectHideFlags: 0
@@ -413,7 +495,6 @@ MonoBehaviour:
   numberOfCubes: 750
   cubeScale: {x: 1, y: 1, z: 5}
   cubeSpeed: 10
-  hyperJump: 0
 --- !u!1001 &412626271
 Prefab:
   m_ObjectHideFlags: 0
@@ -451,7 +532,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 19800000, guid: 8c5db8adb33c5e64f958b5e9cc3d5c69, type: 2}
       propertyPath: InitialModule.startSize.scalar
-      value: .800000012
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 19800000, guid: 8c5db8adb33c5e64f958b5e9cc3d5c69, type: 2}
       propertyPath: SizeModule.curve.scalar
@@ -463,11 +544,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 19800000, guid: 8c5db8adb33c5e64f958b5e9cc3d5c69, type: 2}
       propertyPath: InitialModule.maxNumParticles
-      value: 400
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 19800000, guid: 8c5db8adb33c5e64f958b5e9cc3d5c69, type: 2}
       propertyPath: InitialModule.startSpeed.scalar
-      value: 4
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 19800000, guid: 8c5db8adb33c5e64f958b5e9cc3d5c69, type: 2}
       propertyPath: VelocityModule.enabled
@@ -484,6 +565,10 @@ Prefab:
     - target: {fileID: 19800000, guid: 8c5db8adb33c5e64f958b5e9cc3d5c69, type: 2}
       propertyPath: VelocityModule.z.scalar
       value: -120
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 8c5db8adb33c5e64f958b5e9cc3d5c69, type: 2}
+      propertyPath: InitialModule.startColor.maxColor.rgba
+      value: 4278190335
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}
@@ -683,7 +768,7 @@ ParticleSystem:
         m_PostInfinity: 2
       minMaxState: 0
     startSpeed:
-      scalar: 4
+      scalar: 100
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -810,7 +895,7 @@ ParticleSystem:
         rgba: 4278190335
       minMaxState: 0
     startSize:
-      scalar: .800000012
+      scalar: 1
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -877,7 +962,7 @@ ParticleSystem:
       minMaxState: 0
     gravityModifier: 0
     inheritVelocity: 0
-    maxNumParticles: 400
+    maxNumParticles: 1000
   ShapeModule:
     serializedVersion: 2
     enabled: 1
