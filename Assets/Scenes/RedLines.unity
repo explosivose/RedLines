@@ -296,7 +296,6 @@ MonoBehaviour:
   numberOfCubes: 750
   cubeScale: {x: 1, y: 1, z: 5}
   cubeSpeed: 10
-  offsetAmount: 1
 --- !u!1001 &412626271
 Prefab:
   m_ObjectHideFlags: 0

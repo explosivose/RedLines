@@ -27,6 +27,7 @@ public class LevelGenerator
 	public static void Reset()
 	{
 		ticker = 0;
+		currentPosition = Vector3.zero;
 		vState = moving.straight;
 		hState = moving.straight;
 	}

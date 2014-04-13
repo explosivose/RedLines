@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 	public float maxSpeed  = 10f;
 	public float turnSpeed = 100f;
 	public Transform deathsplosion;
-	public static bool isDead = false;
+	public bool isDead = false;
 	
 	private Vector3 direction = Vector3.zero;
 	private Vector3 targetPosition = Vector3.zero;
@@ -22,28 +22,12 @@ public class Player : MonoBehaviour
 	void Update () 
 	{
 		if (isDead) 
-		{
-			Screen.lockCursor = false;
 			return;
-		}
+		
 		MovementUpdate();
-		MouseCursor();
 	}
 	
-	void MouseCursor()
-	{
-		if (Screen.lockCursor == false)
-		{
-			Time.timeScale = 0f;
-			if (Input.anyKey)
-				Screen.lockCursor = true;
-		}
-		else
-		{
-			Time.timeScale = 1f;
-		}
-	}
-	
+
 	void MovementUpdate()
 	{
 		// decide which input to take
@@ -103,8 +87,8 @@ public class Player : MonoBehaviour
 	{
 		Instantiate(deathsplosion, transform.position, transform.rotation);
 		maxSpeed = 0f;
-		//rigidbody.useGravity = true;
 		isDead = true;
+		GameManager.Instance.GameOver(0);
 	}
 	
 	// Rescale a value from old range to new range
