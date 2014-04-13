@@ -23,7 +23,6 @@ public class Player : MonoBehaviour
 	{
 		if (isDead) 
 			return;
-		
 		MovementUpdate();
 	}
 	
