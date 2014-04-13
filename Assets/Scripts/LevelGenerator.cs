@@ -10,6 +10,16 @@ public class LevelGenerator
 		get { return vState; }
 	}
 	
+	public static Vector3 CurrentPosition
+	{
+		get { return currentPosition; }
+	}
+	
+	public static float MaxRadius
+	{
+		get { return radiusMax; }
+	}
+	
 	private static Vector3 currentPosition = Vector3.zero;
 	private static moving vState = moving.straight;
 	private static moving hState = moving.straight;
@@ -233,19 +243,19 @@ public class LevelGenerator
 			
 		case moving.positive:
 			if      (roll > 0.75f) hState = moving.positive2;	// 25%
-			else if (roll > 0.25f) hState = moving.positive;      	// 50%
-			else                   hState = moving.straight; // 25%
+			else if (roll > 0.50f) hState = moving.positive;      	// 25%
+			else                   hState = moving.straight; // 50%
 			break;
 			
 		case moving.straight:
-			if      (roll > 0.50f) hState = moving.straight;	// 50%
-			else if (roll > 0.25f) hState = moving.positive;		// 25%
-			else                   hState = moving.negative;		// 25%
+			if      (roll > 0.25f) hState = moving.straight;	// 75%
+			else if (roll > 0.125f) hState = moving.positive;		// 12.5%
+			else                   hState = moving.negative;		// 12.5%
 			break;
 			
 		case moving.negative:
 			if      (roll > 0.75f) hState = moving.negative2;
-			else if (roll > 0.25f) hState = moving.negative;
+			else if (roll > 0.50f) hState = moving.negative;
 			else                   hState = moving.straight;
 			break;
 			
@@ -278,19 +288,19 @@ public class LevelGenerator
 		switch (hState)
 		{
 		case moving.positive2:
-			currentPosition += Vector3.forward * 1.25f;
+			currentPosition += Vector3.right * 1.25f;
 			break;
 			
 		case moving.positive:
-			currentPosition += Vector3.forward * 0.75f;
+			currentPosition += Vector3.right * 0.75f;
 			break;
 			
 		case moving.negative:
-			currentPosition += Vector3.back * 0.75f;
+			currentPosition += Vector3.left * 0.75f;
 			break;
 			
 		case moving.negative2:
-			currentPosition += Vector3.back * 1.25f;
+			currentPosition += Vector3.left * 1.25f;
 			break;
 		}
 		
