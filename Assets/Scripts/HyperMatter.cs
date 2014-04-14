@@ -4,12 +4,15 @@ using System.Collections;
 public class HyperMatter : MonoBehaviour 
 {
 	public Transform hyperDustPrefab;
+	public Transform hyperMatterHintPrefab;
 	public Transform explosion;
 	public float minSpeedFactor = 0.75f;
 	public float maxSpeedFactor = 1.25f;
 	
 	private float speed;
 	private Vector3 initialScale;
+	private Transform hyperMatterHint;
+	private bool provideHint = false;
 	
 	void Start()
 	{
@@ -17,6 +20,12 @@ public class HyperMatter : MonoBehaviour
 		speed = Random.Range(minSpeedFactor * cubeSpeed, maxSpeedFactor * cubeSpeed);
 		initialScale = transform.localScale;
 		Destroy(this.gameObject, 30f);
+		
+		if (Time.timeSinceLevelLoad < 10f)
+		{
+			hyperMatterHint = Instantiate(hyperMatterHintPrefab) as Transform;
+			provideHint = true;
+		}
 	}
 	
 	void Update()
@@ -25,6 +34,10 @@ public class HyperMatter : MonoBehaviour
 		Vector3 scale = initialScale * (Mathf.Sin (Time.time*4f)/4f + 1f);
 		transform.localScale = scale;
 		transform.Rotate(Vector3.one);
+		if (provideHint)
+		{
+			hyperMatterHint.position = transform.position;
+		}
 	}
 	
 	public void Explode()
@@ -36,6 +49,12 @@ public class HyperMatter : MonoBehaviour
 			Vector3 pos = transform.position + Random.insideUnitSphere;
 			Transform dust = Instantiate(hyperDustPrefab, pos, Quaternion.identity) as Transform;
 			dust.parent = transform;
+		}
+		
+		if (provideHint)
+		{
+			provideHint = false;
+			Destroy(hyperMatterHint.gameObject);
 		}
 		
 		renderer.enabled = false;

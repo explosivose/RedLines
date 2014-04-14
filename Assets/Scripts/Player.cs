@@ -16,6 +16,7 @@ public class Player : MonoBehaviour
 	
 	private TextMesh guiHyperMatter;
 	private TextMesh guiSpeed;
+	private Transform guiHyperSpaceHint;
 	
 	// Use this for initialization
 	void Start () 
@@ -23,6 +24,7 @@ public class Player : MonoBehaviour
 		targetPosition = transform.position;
 		guiHyperMatter = transform.FindChild("guiHyperValue").GetComponent<TextMesh>();
 		guiSpeed =       transform.FindChild("guiSpeedValue").GetComponent<TextMesh>();
+		guiHyperSpaceHint = transform.FindChild("guiHyperSpaceHint");
 	}
 	
 	void Update () 
@@ -107,6 +109,8 @@ public class Player : MonoBehaviour
 			guiSpeed.text = (Mathf.RoundToInt(100*CubeMaster.Instance.cubeSpeed)).ToString();
 			guiHyperMatter.text = (100 * hyperMatter / maxHyperMatter).ToString() + "%";
 		}
+		
+		guiHyperSpaceHint.renderer.enabled = (hyperMatter == maxHyperMatter);
 	}
 	
 	IEnumerator HyperJump()

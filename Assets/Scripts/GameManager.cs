@@ -106,6 +106,8 @@ public class GameManager : Singleton<GameManager>
 		{
 			Pause();
 		}
+		if (Input.GetKeyUp(KeyCode.Escape) && state == GameState.Playing)
+			Pause();
 	}
 	
 	private enum GUIState
