@@ -39,9 +39,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cubePrefab: {fileID: 100000, guid: a834510723aaf9b4e9b97c1e7168fae5, type: 2}
+  animateCubes: 0
   numberOfCubes: 750
   cubeScale: {x: 1, y: 1, z: 5}
-  cubeSpeed: 25
+  cubeSpeed: 9
+  cubeAccel: .125
+  cubeDecel: .800000012
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

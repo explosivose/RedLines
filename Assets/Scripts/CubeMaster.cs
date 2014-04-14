@@ -19,6 +19,8 @@ public class CubeMaster : Singleton<CubeMaster>
 	public int numberOfCubes = 1000;
 	public Vector3 cubeScale = Vector3.one;
 	public float cubeSpeed = 5f;
+	public float cubeAccel = 1f;
+	public float cubeDecel = 4f;
 	
 	private float hyperJumpEnterTime = 0f;
 	private float hyperJumpExitTime = 0f;
@@ -76,6 +78,10 @@ public class CubeMaster : Singleton<CubeMaster>
 		}
 	}
 
+	public void Decel()
+	{
+		cubeSpeed *= cubeDecel;
+	}
 	
 	// initialization
 	void Start () 
@@ -121,6 +127,8 @@ public class CubeMaster : Singleton<CubeMaster>
 	
 	void Update()
 	{
+		cubeSpeed += Time.deltaTime * cubeAccel;
+		
 		// calculate cube positions using meta data
 		float travelTime;
 		

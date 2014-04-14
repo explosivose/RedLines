@@ -27,12 +27,12 @@ public class Player : MonoBehaviour
 	
 	void Update () 
 	{
+		GUIUpdate();
 		if (isDead || hyperJump)
 			return;
 			
 		MovementUpdate();
 		WeaponUpdate();
-		GUIUpdate();
 	}
 
 	void MovementUpdate()
@@ -97,8 +97,16 @@ public class Player : MonoBehaviour
 	
 	void GUIUpdate()
 	{
-		guiSpeed.text = (100*CubeMaster.Instance.cubeSpeed).ToString();
-		guiHyperMatter.text = (100 * hyperMatter / maxHyperMatter).ToString() + "%";
+		if (hyperJump)
+		{
+			guiSpeed.text = "----";
+			guiHyperMatter.text = (100 * hyperMatter / maxHyperMatter).ToString() + "%";
+		}
+		else
+		{
+			guiSpeed.text = (Mathf.RoundToInt(100*CubeMaster.Instance.cubeSpeed)).ToString();
+			guiHyperMatter.text = (100 * hyperMatter / maxHyperMatter).ToString() + "%";
+		}
 	}
 	
 	IEnumerator HyperJump()
@@ -109,6 +117,7 @@ public class Player : MonoBehaviour
 		LevelGenerator.Reset(transform.position);
 		yield return new WaitForSeconds(CubeMaster.Instance.CubeTravelTime);
 		CubeMaster.Instance.HyperJump = false;
+		CubeMaster.Instance.Decel();
 		ScreenShake.Instance.Shake(0.2f, 0.5f);
 		hyperJump = false;
 	}	
