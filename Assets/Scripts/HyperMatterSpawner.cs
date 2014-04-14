@@ -17,9 +17,12 @@ public class HyperMatterSpawner : MonoBehaviour
 		while(true)
 		{
 			yield return new WaitForSeconds(Random.Range(minTime, maxTime));
-			float offsetDistance = Random.Range(0f, LevelGenerator.MaxRadius);
-			Vector3 pos = LevelGenerator.CurrentPosition + Random.onUnitSphere * offsetDistance;
-			Instantiate(hyperMatterPrefab, pos, Random.rotation);
+			if (!CubeMaster.Instance.HyperJump)
+			{
+				float offsetDistance = Random.Range(0f, LevelGenerator.MaxRadius);
+				Vector3 pos = LevelGenerator.CurrentPosition + Random.onUnitSphere * offsetDistance;
+				Instantiate(hyperMatterPrefab, pos, Random.rotation);
+			}
 		}
 	}
 

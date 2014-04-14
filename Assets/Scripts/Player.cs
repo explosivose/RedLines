@@ -7,16 +7,22 @@ public class Player : MonoBehaviour
 	public float turnSpeed = 100f;
 	public Transform deathsplosion;
 	public bool isDead = false;
+	public int maxHyperMatter = 16;
 	
 	private Vector3 direction = Vector3.zero;
 	private Vector3 targetPosition = Vector3.zero;
 	private bool hyperJump = false;
 	private int hyperMatter = 0;
 	
+	private TextMesh guiHyperMatter;
+	private TextMesh guiSpeed;
+	
 	// Use this for initialization
 	void Start () 
 	{
 		targetPosition = transform.position;
+		guiHyperMatter = transform.FindChild("guiHyperValue").GetComponent<TextMesh>();
+		guiSpeed =       transform.FindChild("guiSpeedValue").GetComponent<TextMesh>();
 	}
 	
 	void Update () 
@@ -26,6 +32,7 @@ public class Player : MonoBehaviour
 			
 		MovementUpdate();
 		WeaponUpdate();
+		GUIUpdate();
 	}
 
 	void MovementUpdate()
@@ -83,13 +90,21 @@ public class Player : MonoBehaviour
 		}
 		if (Input.GetKey(KeyCode.Space))
 		{
-			if (!hyperJump) StartCoroutine( HyperJump() );
+			if (!hyperJump && hyperMatter == maxHyperMatter) 
+				StartCoroutine( HyperJump() );
 		}
+	}
+	
+	void GUIUpdate()
+	{
+		guiSpeed.text = (100*CubeMaster.Instance.cubeSpeed).ToString();
+		guiHyperMatter.text = (100 * hyperMatter / maxHyperMatter).ToString() + "%";
 	}
 	
 	IEnumerator HyperJump()
 	{
 		hyperJump = true;
+		hyperMatter = 0;
 		CubeMaster.Instance.HyperJump = true;
 		LevelGenerator.Reset(transform.position);
 		yield return new WaitForSeconds(CubeMaster.Instance.CubeTravelTime);
@@ -110,8 +125,7 @@ public class Player : MonoBehaviour
 	{
 		if (col.gameObject.tag == "HyperDust")
 		{
-			hyperMatter++;
-			Debug.Log (hyperMatter);
+			if (hyperMatter < maxHyperMatter) hyperMatter++;
 		}
 	}
 	

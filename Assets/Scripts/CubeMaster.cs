@@ -45,6 +45,13 @@ public class CubeMaster : Singleton<CubeMaster>
 	
 	public bool HyperJump
 	{
+		get {
+			if (masterState == cubeMasterState.hyperSpaceEnter
+				|| masterState == cubeMasterState.hyperSpaceExit)
+				return true;
+			else
+				return false;
+		}
 		set {
 			// enter hyperspace
 			if (value)
