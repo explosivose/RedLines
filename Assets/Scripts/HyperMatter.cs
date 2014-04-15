@@ -8,7 +8,7 @@ public class HyperMatter : MonoBehaviour
 	public Transform explosion;
 	public float minSpeedFactor = 0.75f;
 	public float maxSpeedFactor = 1.25f;
-	
+	public AudioClip[] audioExplosions;
 	private float speed;
 	private Vector3 initialScale;
 	private Transform hyperMatterHint;
@@ -44,6 +44,9 @@ public class HyperMatter : MonoBehaviour
 	{
 		Instantiate(explosion, transform.position, Random.rotation);
 		
+		int x = Random.Range(0, audioExplosions.Length);
+		AudioSource.PlayClipAtPoint(audioExplosions[x], transform.position);
+		
 		for (int i = 0; i < Random.Range(4, 8); i++)
 		{
 			Vector3 pos = transform.position + Random.insideUnitSphere;
@@ -59,6 +62,7 @@ public class HyperMatter : MonoBehaviour
 		
 		renderer.enabled = false;
 		collider.enabled = false;
+		audio.Stop();
 	}
 	
 }

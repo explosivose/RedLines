@@ -9,6 +9,14 @@ public class Player : MonoBehaviour
 	public bool isDead = false;
 	public int maxHyperMatter = 16;
 	
+	public AudioClip[] audioGameStart;
+	public AudioClip[] audioDeath;
+	public AudioClip[] audioHyperDustPickup;
+	public AudioClip[] audioHyperJumpReady;
+	public AudioClip[] audioHyperJumpEnter;
+	public AudioClip[] audioHyperJumpExit;
+	
+	
 	private Vector3 direction = Vector3.zero;
 	private Vector3 targetPosition = Vector3.zero;
 	private bool hyperJump = false;
@@ -25,6 +33,7 @@ public class Player : MonoBehaviour
 		guiHyperMatter = transform.FindChild("guiHyperValue").GetComponent<TextMesh>();
 		guiSpeed =       transform.FindChild("guiSpeedValue").GetComponent<TextMesh>();
 		guiHyperSpaceHint = transform.FindChild("guiHyperSpaceHint");
+		PlayRandomSound(audioGameStart, transform.position);
 	}
 	
 	void Update () 
@@ -116,12 +125,14 @@ public class Player : MonoBehaviour
 	IEnumerator HyperJump()
 	{
 		hyperJump = true;
+		PlayRandomSound(audioHyperJumpEnter, transform.position);
 		hyperMatter = 0;
 		CubeMaster.Instance.HyperJump = true;
 		LevelGenerator.Reset(transform.position);
 		yield return new WaitForSeconds(CubeMaster.Instance.CubeTravelTime);
 		CubeMaster.Instance.HyperJump = false;
 		CubeMaster.Instance.Decel();
+		PlayRandomSound(audioHyperJumpExit, transform.position);
 		ScreenShake.Instance.Shake(0.2f, 0.5f);
 		hyperJump = false;
 	}	
@@ -130,23 +141,32 @@ public class Player : MonoBehaviour
 	{
 		if (col.gameObject.tag == "Death" && !isDead)
 		{
-			Death();
+			if (!isDead) StartCoroutine( Death() );
 		}
 	}
 	
 	void OnTriggerEnter(Collider col)
 	{
+		if (isDead) return;
 		if (col.gameObject.tag == "HyperDust")
 		{
-			if (hyperMatter < maxHyperMatter) hyperMatter++;
+			if (hyperMatter < maxHyperMatter) 
+			{
+				hyperMatter++;
+				PlayRandomSound(audioHyperDustPickup, transform.position);
+				if (hyperMatter == maxHyperMatter)
+					PlayRandomSound(audioHyperJumpReady, transform.position);
+			}
 		}
 	}
 	
-	void Death()
+	IEnumerator Death()
 	{
+		isDead = true;
+		float t = PlayRandomSound(audioDeath, transform.position);
+		yield return new WaitForSeconds(t);
 		Instantiate(deathsplosion, transform.position, transform.rotation);
 		maxSpeed = 0f;
-		isDead = true;
 		GameManager.Instance.GameOver(0);
 	}
 	
@@ -158,5 +178,12 @@ public class Player : MonoBehaviour
 		float oldRange = oldMax - oldMin;
 		float newRange = newMax - newMin;
 		return (((value - oldMin)*newRange)/oldRange)+newMin;
+	}
+	
+	private float PlayRandomSound(AudioClip[] library, Vector3 position)
+	{
+		int i = Random.Range(0, library.Length);
+		AudioSource.PlayClipAtPoint(library[i], position);
+		return library[i].length;
 	}
 }

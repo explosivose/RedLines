@@ -1070,6 +1070,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug: 0
   rendererPoints: 25
+  rateOfFire: .200000003
+  audioFireLaser:
+  - {fileID: 8300000, guid: d1f67567ff77c3646b35798a21d99d34, type: 3}
+  - {fileID: 8300000, guid: 6d1122f84b5865141a3bd0759bd8b35c, type: 3}
+  - {fileID: 8300000, guid: 712a5bafb4f0c404b8e96467db6772b1, type: 3}
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1086,6 +1091,20 @@ MonoBehaviour:
   deathsplosion: {fileID: 400000, guid: e64860351235eb34cb278fe95e7f1966, type: 2}
   isDead: 0
   maxHyperMatter: 16
+  audioGameStart:
+  - {fileID: 8300000, guid: 1005f9f249342ea4691c405e756f7491, type: 3}
+  audioDeath:
+  - {fileID: 8300000, guid: f341f1891190366468b13ccf0afa4521, type: 3}
+  audioHyperDustPickup:
+  - {fileID: 8300000, guid: bef5834a9fe90834da55e1ad01e2b57a, type: 3}
+  - {fileID: 8300000, guid: 0f832fab5da997447a6f01e1cac55892, type: 3}
+  - {fileID: 8300000, guid: 4f5348a1fb26671458c3d84b27d9ce7f, type: 3}
+  audioHyperJumpReady:
+  - {fileID: 8300000, guid: c250603d72fff91408fddeeec2b207b0, type: 3}
+  audioHyperJumpEnter:
+  - {fileID: 8300000, guid: 7668c0290e3209e459cd8f7c7744eec7, type: 3}
+  audioHyperJumpExit:
+  - {fileID: 8300000, guid: 93f37f587f8400a4c916ab96269df05e, type: 3}
 --- !u!120 &12000000
 LineRenderer:
   m_ObjectHideFlags: 1

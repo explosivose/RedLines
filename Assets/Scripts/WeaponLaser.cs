@@ -7,6 +7,8 @@ public class WeaponLaser : MonoBehaviour
 	public int rendererPoints = 25;
 	public float rateOfFire = 0.2f;
 	
+	public AudioClip[] audioFireLaser;
+	
 	private LineRenderer lr;
 	private bool firing = false;
 	private float fireTime = 0f;
@@ -78,6 +80,8 @@ public class WeaponLaser : MonoBehaviour
 	IEnumerator FireRoutine(Vector3 target)
 	{
 		firing = true;
+		int x = Random.Range(0, audioFireLaser.Length);
+		AudioSource.PlayClipAtPoint(audioFireLaser[x], transform.position);
 		fireTime = Time.time;
 		float targetDistance = Vector3.Distance(transform.position, target);
 		while (fireTime + 0.2f > Time.time)
