@@ -47,7 +47,7 @@ public class HyperMatter : MonoBehaviour
 		int x = Random.Range(0, audioExplosions.Length);
 		AudioSource.PlayClipAtPoint(audioExplosions[x], transform.position);
 		
-		for (int i = 0; i < Random.Range(4, 8); i++)
+		for (int i = 0; i < Random.Range(6, 12); i++)
 		{
 			Vector3 pos = transform.position + Random.insideUnitSphere;
 			Transform dust = Instantiate(hyperDustPrefab, pos, Quaternion.identity) as Transform;

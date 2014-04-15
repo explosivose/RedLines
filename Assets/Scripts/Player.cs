@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
 	private Vector3 targetPosition = Vector3.zero;
 	private bool hyperJump = false;
 	private int hyperMatter = 0;
+	private int newHyperMatter = 0;
 	
 	private TextMesh guiHyperMatter;
 	private TextMesh guiSpeed;
@@ -34,6 +35,7 @@ public class Player : MonoBehaviour
 		guiSpeed =       transform.FindChild("guiSpeedValue").GetComponent<TextMesh>();
 		guiHyperSpaceHint = transform.FindChild("guiHyperSpaceHint");
 		PlayRandomSound(audioGameStart, transform.position);
+		StartCoroutine( HyperDustPickupQueue() );
 	}
 	
 	void Update () 
@@ -150,12 +152,9 @@ public class Player : MonoBehaviour
 		if (isDead) return;
 		if (col.gameObject.tag == "HyperDust")
 		{
-			if (hyperMatter < maxHyperMatter) 
+			if (hyperMatter + newHyperMatter < maxHyperMatter) 
 			{
-				hyperMatter++;
-				PlayRandomSound(audioHyperDustPickup, transform.position);
-				if (hyperMatter == maxHyperMatter)
-					PlayRandomSound(audioHyperJumpReady, transform.position);
+				newHyperMatter++;
 			}
 		}
 	}
@@ -168,6 +167,23 @@ public class Player : MonoBehaviour
 		Instantiate(deathsplosion, transform.position, transform.rotation);
 		maxSpeed = 0f;
 		GameManager.Instance.GameOver(0);
+	}
+	
+	IEnumerator HyperDustPickupQueue()
+	{
+		while (true)
+		{
+			if ( newHyperMatter > 0)
+			{
+				newHyperMatter--;
+				hyperMatter++;
+				PlayRandomSound(audioHyperDustPickup, transform.position);
+				yield return new WaitForSeconds(0.125f);
+				if (hyperMatter == maxHyperMatter)
+					PlayRandomSound(audioHyperJumpReady, transform.position);
+			}
+			yield return new WaitForFixedUpdate();
+		}
 	}
 	
 	// Rescale a value from old range to new range
