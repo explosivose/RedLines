@@ -5,6 +5,7 @@ public class WeaponLaser : MonoBehaviour
 {
 	public bool debug = true;
 	public int rendererPoints = 25;
+	public float rateOfFire = 0.2f;
 	
 	private LineRenderer lr;
 	private bool firing = false;
@@ -25,9 +26,31 @@ public class WeaponLaser : MonoBehaviour
 		
 		if (!firing)
 		{
-			startC = Color.Lerp(startC, Color.clear, Time.time - fireTime);
-			endC = Color.Lerp (endC, Color.clear, Time.time - fireTime);
-			lr.SetColors(startC, endC);
+			float lerp = Time.time - fireTime;
+			if(lerp < rateOfFire)
+			{
+				startC = Color.Lerp(startC, Color.clear, lerp);
+				endC = Color.Lerp (endC, Color.clear, lerp);
+				lr.SetColors(startC, endC);
+			}
+			else
+			{
+				lr.SetVertexCount(2);
+				lr.SetWidth(0.01f, 0f);
+				lr.SetColors(Color.red, Color.red);
+				lr.SetPosition(0, transform.position);
+				RaycastHit hit;
+				if (Physics.Raycast(transform.position, Camera.main.transform.forward, out hit))
+				{
+					lr.SetPosition(1, hit.point);
+					if (hit.transform.tag == "HyperMatter")
+						lr.SetColors(Color.green, Color.red);
+				}
+				else 
+				{
+					lr.SetPosition(1, transform.position + Camera.main.transform.forward * 100f);
+				}
+			}	
 		}
 	}
 	
@@ -42,6 +65,7 @@ public class WeaponLaser : MonoBehaviour
 					hit.transform.BroadcastMessage("Explode");
 				
 				lr.SetVertexCount(rendererPoints);
+				lr.SetWidth(0.01f, 1f);
 				startC = new Color(1f, Random.value, Random.value);
 				endC = new Color(1f, Random.value, Random.value);
 				lr.SetColors(startC, endC);
@@ -66,7 +90,7 @@ public class WeaponLaser : MonoBehaviour
 			}
 			yield return new WaitForEndOfFrame();
 		}
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(rateOfFire);
 		fireTime = Time.time;
 		firing = false;
 	}

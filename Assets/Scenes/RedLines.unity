@@ -395,6 +395,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug: 0
   rendererPoints: 25
+  rateOfFire: .200000003
 --- !u!120 &331283005
 LineRenderer:
   m_ObjectHideFlags: 0
