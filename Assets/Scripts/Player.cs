@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
 	public AudioClip[] audioHyperJumpEnter;
 	public AudioClip[] audioHyperJumpExit;
 	
-	
+	private float distanceTravelled;
 	private Vector3 direction = Vector3.zero;
 	private Vector3 targetPosition = Vector3.zero;
 	private bool hyperJump = false;
@@ -25,7 +25,13 @@ public class Player : MonoBehaviour
 	
 	private TextMesh guiHyperMatter;
 	private TextMesh guiSpeed;
+	private TextMesh guiScore;
 	private Transform guiHyperSpaceHint;
+	
+	public int Score
+	{
+		get { return Mathf.RoundToInt(distanceTravelled * 100); }
+	}
 	
 	// Use this for initialization
 	void Start () 
@@ -33,9 +39,25 @@ public class Player : MonoBehaviour
 		targetPosition = transform.position;
 		guiHyperMatter = transform.FindChild("guiHyperValue").GetComponent<TextMesh>();
 		guiSpeed =       transform.FindChild("guiSpeedValue").GetComponent<TextMesh>();
+		guiScore		=transform.FindChild("guiScoreValue").GetComponent<TextMesh>();
 		guiHyperSpaceHint = transform.FindChild("guiHyperSpaceHint");
 		PlayRandomSound(audioGameStart, transform.position);
 		StartCoroutine( HyperDustPickupQueue() );
+		//StartCoroutine( UpdateScore() );
+	}
+	
+	IEnumerator UpdateScore()
+	{
+		while(true)
+		{
+			float t = 0.3f;
+			yield return new WaitForSeconds(t);
+			if (!(isDead || hyperJump))
+			{
+				distanceTravelled += t * CubeMaster.Instance.cubeSpeed;
+			}
+			
+		}
 	}
 	
 	void Update () 
@@ -43,11 +65,13 @@ public class Player : MonoBehaviour
 		GUIUpdate();
 		if (isDead || hyperJump)
 			return;
-			
+		
+		distanceTravelled += Time.deltaTime * CubeMaster.Instance.cubeSpeed;
+		
 		MovementUpdate();
 		WeaponUpdate();
 	}
-
+	
 	void MovementUpdate()
 	{
 		// decide which input to take
@@ -64,7 +88,7 @@ public class Player : MonoBehaviour
 		
 		// calculate rotation based on input
 		
-		float maxrot = 45f;
+		float maxrot = 60f;
 		Vector3 vrot = transform.rotation.eulerAngles;
 		
 		// left/right rotation
@@ -113,13 +137,16 @@ public class Player : MonoBehaviour
 		if (hyperJump)
 		{
 			guiSpeed.text = "----";
-			guiHyperMatter.text = (100 * hyperMatter / maxHyperMatter).ToString() + "%";
+			guiHyperMatter.text = "----";
 		}
 		else
 		{
 			guiSpeed.text = (Mathf.RoundToInt(100*CubeMaster.Instance.cubeSpeed)).ToString();
 			guiHyperMatter.text = (100 * hyperMatter / maxHyperMatter).ToString() + "%";
 		}
+		
+		
+		guiScore.text = Score.ToString();
 		
 		guiHyperSpaceHint.renderer.enabled = (hyperMatter == maxHyperMatter && GameManager.Instance.ShowHints);
 	}
@@ -166,7 +193,7 @@ public class Player : MonoBehaviour
 		yield return new WaitForSeconds(t);
 		Instantiate(deathsplosion, transform.position, transform.rotation);
 		maxSpeed = 0f;
-		GameManager.Instance.GameOver(0);
+		GameManager.Instance.GameOver(Score);
 	}
 	
 	IEnumerator HyperDustPickupQueue()

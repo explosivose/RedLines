@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GameManager : Singleton<GameManager> 
 {
@@ -69,11 +70,13 @@ public class GameManager : Singleton<GameManager>
 		gui = GUIState.NoWindows;
 	}
 	
-	public void GameOver(int score)
+	private int score;
+	public void GameOver(int gameScore)
 	{
 		Screen.lockCursor = false;
 		state = GameState.GameOver;
 		gui = GUIState.DeathMenu;
+		score = gameScore;
 		Time.timeScale = 0.01f;
 	}
 	
@@ -179,13 +182,31 @@ public class GameManager : Singleton<GameManager>
 		GUILayout.Space(menuSkin.window.fontSize);
 		GUILayout.Space(Screen.height/8f);
 		
-		if (GUILayout.Button("AGAIN", menuSkin.button))
-			StartGame();
-		
-		GUILayout.Space (10);
-		
 		if (GUILayout.Button("MAIN MENU", menuSkin.button))
+		{
+			SaveSettings();
+			ScoreBoard.NewScore(score);
 			gui = GUIState.MainMenu;
+		}
+		
+		GUILayout.BeginHorizontal();
+		GUILayout.Label("PILOTNAME:", menuSkin.label);
+		playerName = GUILayout.TextField(playerName, 16, menuSkin.textField);
+		GUILayout.EndHorizontal();
+		
+		GUILayout.BeginHorizontal();
+		GUILayout.Label("SCORE:", menuSkin.label);
+		GUILayout.Label(score.ToString(), menuSkin.label);
+		GUILayout.EndHorizontal();
+		
+		if (GUILayout.Button("AGAIN", menuSkin.button))
+		{
+			SaveSettings();
+			ScoreBoard.NewScore(score);
+			StartGame();
+		}
+		GUILayout.Space (10);
+
 	}
 	
 	public GUIWindow pauseMenu = new GUIWindow();
@@ -217,6 +238,19 @@ public class GameManager : Singleton<GameManager>
 		
 		if (GUILayout.Button("MAIN MENU", menuSkin.button))
 			gui = GUIState.MainMenu;
+		
+		List<Score> scores = ScoreBoard.GetScores();
+		
+		for (int i = 0; i < scores.Count; i++)
+		{
+			GUILayout.BeginHorizontal();
+			GUILayout.Label((i+1).ToString() + ". " + scores[i].player, menuSkin.label);
+			GUILayout.Label(scores[i].score.ToString(), menuSkin.label);
+			GUILayout.EndHorizontal();
+		}
+		
+		if (GUILayout.Button("WIPE SCORES", menuSkin.button))
+			ScoreBoard.DeleteSavedScores();
 	}
 	
 	public GUIWindow options = new GUIWindow();
@@ -226,6 +260,13 @@ public class GameManager : Singleton<GameManager>
 		
 		GUILayout.Space(menuSkin.window.fontSize);
 		GUILayout.Space(Screen.height/8f);
+		
+		
+		if (GUILayout.Button("MAIN MENU", menuSkin.button))
+		{
+			SaveSettings();
+			gui = GUIState.MainMenu;
+		}
 		
 		GUILayout.BeginHorizontal();
 		GUILayout.Label("PILOTNAME:", menuSkin.label);
@@ -244,12 +285,7 @@ public class GameManager : Singleton<GameManager>
 		
 		if (h) hints = 1;
 		else hints = 0;
-		
-		if (GUILayout.Button("MAIN MENU", menuSkin.button))
-		{
-			SaveSettings();
-			gui = GUIState.MainMenu;
-		}
+
 	}
 	
 	public GUIWindow credits = new GUIWindow();
@@ -258,10 +294,11 @@ public class GameManager : Singleton<GameManager>
 		GUILayout.Space(menuSkin.window.fontSize);
 		GUILayout.Label("Build date: " + buildDate, menuSkin.label);
 		GUILayout.Space(Screen.height/8);
-		GUILayout.Label("HTTP://SUPERCORE.CO.UK", menuSkin.label);
-		GUILayout.Space (20f);
 		if (GUILayout.Button("MAIN MENU", menuSkin.button))
 			gui = GUIState.MainMenu;
+		GUILayout.Space (20f);
+		GUILayout.Label("HTTP://SUPERCORE.CO.UK", menuSkin.label);
+
 	}
 
 	void OnGUI()
