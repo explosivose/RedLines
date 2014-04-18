@@ -21,7 +21,7 @@ public class HyperMatter : MonoBehaviour
 		initialScale = transform.localScale;
 		Destroy(this.gameObject, 30f);
 		
-		if (Time.timeSinceLevelLoad < 10f)
+		if (Time.timeSinceLevelLoad < 15f && GameManager.Instance.ShowHints)
 		{
 			hyperMatterHint = Instantiate(hyperMatterHintPrefab) as Transform;
 			provideHint = true;

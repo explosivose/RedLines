@@ -121,7 +121,7 @@ public class Player : MonoBehaviour
 			guiHyperMatter.text = (100 * hyperMatter / maxHyperMatter).ToString() + "%";
 		}
 		
-		guiHyperSpaceHint.renderer.enabled = (hyperMatter == maxHyperMatter);
+		guiHyperSpaceHint.renderer.enabled = (hyperMatter == maxHyperMatter && GameManager.Instance.ShowHints);
 	}
 	
 	IEnumerator HyperJump()

@@ -8,9 +8,6 @@ public class GameManager : Singleton<GameManager>
 	private GUISkin menuSkin;
 	private string buildDate = "unknown";
 	
-
-	
-	
 	private enum GameState
 	{
 		PreGame,
@@ -26,6 +23,27 @@ public class GameManager : Singleton<GameManager>
 		{
 			return (state == GameState.Playing);
 		}
+	}
+	
+	private string playerName;
+	private int hints;
+	
+	void LoadSettings()
+	{
+		playerName = PlayerPrefs.GetString("playerName", "mingebag");
+		AudioListener.volume = PlayerPrefs.GetFloat("audioVolume", 0.75f);
+		hints = PlayerPrefs.GetInt("hints", 1);
+	}
+	void SaveSettings()
+	{
+		PlayerPrefs.SetString("playerName", playerName);
+		PlayerPrefs.SetFloat("audioVolume", AudioListener.volume);
+		PlayerPrefs.SetInt("hints", hints);
+	}
+	
+	public bool ShowHints
+	{
+		get { return (hints != 0); }
 	}
 	
 	void StartGame()
@@ -63,6 +81,7 @@ public class GameManager : Singleton<GameManager>
 	{
 		DontDestroyOnLoad(this);
 		menuSkin = (GUISkin)Resources.Load("Menus", typeof(GUISkin));
+		LoadSettings();
 		// unfortunately this code doesnt work or even fail safely with a Unity Webplayer build :-((
 		//DateTime buildTime = RetrieveLinkerTimestamp();
 		//buildDate = String.Format("{0:d/M/yyyy HH:mm:ss}", buildTime);
@@ -203,11 +222,34 @@ public class GameManager : Singleton<GameManager>
 	public GUIWindow options = new GUIWindow();
 	void wOptions(int windowID)
 	{
+		bool h = (hints == 0);
+		
 		GUILayout.Space(menuSkin.window.fontSize);
 		GUILayout.Space(Screen.height/8f);
 		
+		GUILayout.BeginHorizontal();
+		GUILayout.Label("PILOTNAME:", menuSkin.label);
+		playerName = GUILayout.TextField(playerName, 16, menuSkin.textField);
+		GUILayout.EndHorizontal();
+		
+		GUILayout.BeginHorizontal();
+		GUILayout.Label("AUDIOVOLUME:", menuSkin.label);
+		AudioListener.volume = GUILayout.HorizontalSlider(AudioListener.volume, 0f, 1f, menuSkin.horizontalSlider, menuSkin.horizontalSliderThumb);
+		GUILayout.EndHorizontal();
+		
+		GUILayout.BeginHorizontal();
+		GUILayout.Label("GAME HINTS:", menuSkin.label);
+		h = GUILayout.Toggle(h, "", menuSkin.toggle);
+		GUILayout.EndHorizontal();
+		
+		if (h) hints = 1;
+		else hints = 0;
+		
 		if (GUILayout.Button("MAIN MENU", menuSkin.button))
+		{
+			SaveSettings();
 			gui = GUIState.MainMenu;
+		}
 	}
 	
 	public GUIWindow credits = new GUIWindow();
