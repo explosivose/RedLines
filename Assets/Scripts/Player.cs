@@ -93,22 +93,23 @@ public class Player : MonoBehaviour
 		
 		// left/right rotation
 		vrot.y += h * turnSpeed * Time.deltaTime;
-		if (vrot.y >  90f+maxrot) vrot.y =  90f+maxrot; // clamp between 90+max and 90-max
-		if (vrot.y <  90f-maxrot) vrot.y =  90f-maxrot;
+		if (vrot.y > maxrot		  && vrot.y <  90f) vrot.y =  maxrot; // clamp between 0+max and 0-max
+		if (vrot.y <  360f-maxrot && vrot.y > 270f) vrot.y =  360f-maxrot;
 		
 		// up/down rotation
-		vrot.z += v * turnSpeed * Time.deltaTime;
-		if (vrot.z > maxrot      && vrot.z <  90f) vrot.z = maxrot;
-		if (vrot.z < 360f-maxrot && vrot.z > 270f) vrot.z = 360f-maxrot;
+		vrot.x += v * turnSpeed * Time.deltaTime;
+		if (vrot.x > maxrot      && vrot.x <  90f) vrot.x = maxrot;
+		if (vrot.x < 360f-maxrot && vrot.x > 270f) vrot.x = 360f-maxrot;
 		
 		// calculate movement based on rotation
 		
 		// need to avoid the wrap around from 0deg to 359deg for movement
 		// i.e. 359deg becomes -1deg
-		if (vrot.z > 270f) vrot.z -= 360f;
+		if (vrot.y > 270f) vrot.y -= 360f;
+		if (vrot.x > 270f) vrot.x -= 360f;
 		
-		float x = Rescale(vrot.y, 90f+maxrot, 90f-maxrot, 1f, -1f);
-		float y = Rescale(vrot.z, maxrot, -maxrot, 1f, -1f);
+		float x = Rescale(vrot.y, maxrot, -maxrot, 1f, -1f);
+		float y = Rescale(vrot.x, maxrot, -maxrot, 1f, -1f);
 		// move direction relative to camera orientation
 		direction = Camera.main.transform.TransformDirection(new Vector3(x, -y));
 		direction.z = 0f;	// remove any Z component added by TransformDirection()

@@ -14,9 +14,11 @@ public class WeaponLaser : MonoBehaviour
 	private float fireTime = 0f;
 	private Color startC;
 	private Color endC;
+	private Transform player;
 	
 	void Start()
 	{
+		player = GameObject.FindGameObjectWithTag("Player").transform;
 		lr = GetComponent<LineRenderer>();
 		lr.useWorldSpace = true;
 	}
@@ -42,7 +44,7 @@ public class WeaponLaser : MonoBehaviour
 				lr.SetColors(Color.red, Color.red);
 				lr.SetPosition(0, transform.position);
 				RaycastHit hit;
-				if (Physics.Raycast(transform.position, Camera.main.transform.forward, out hit))
+				if (Physics.Raycast(transform.position, player.forward, out hit))
 				{
 					lr.SetPosition(1, hit.point);
 					if (hit.transform.tag == "HyperMatter")
@@ -50,7 +52,7 @@ public class WeaponLaser : MonoBehaviour
 				}
 				else 
 				{
-					lr.SetPosition(1, transform.position + Camera.main.transform.forward * 100f);
+					lr.SetPosition(1, transform.position + player.forward * 100f);
 				}
 			}	
 		}
@@ -61,15 +63,8 @@ public class WeaponLaser : MonoBehaviour
 		if (!firing) 
 		{
 			RaycastHit hit;
-			if (Physics.Raycast(transform.position, Camera.main.transform.forward, out hit))
+			if (Physics.Raycast(transform.position, player.forward, out hit))
 			{
-				lr.SetVertexCount(rendererPoints);
-				lr.SetWidth(0.01f, 1f);
-				startC = new Color(1f, Random.value, Random.value);
-				endC = new Color(1f, Random.value, Random.value);
-				lr.SetColors(startC, endC);
-				lr.enabled = true;
-				ScreenShake.Instance.Shake(0.15f, 1.5f);
 				StartCoroutine( FireRoutine(hit.transform) );
 			}
 		}
@@ -81,6 +76,13 @@ public class WeaponLaser : MonoBehaviour
 		int x = Random.Range(0, audioFireLaser.Length);
 		AudioSource.PlayClipAtPoint(audioFireLaser[x], transform.position);
 		fireTime = Time.time;
+		lr.SetVertexCount(rendererPoints);
+		lr.SetWidth(0.01f, 1f);
+		startC = new Color(1f, Random.value, Random.value);
+		endC = new Color(1f, Random.value, Random.value);
+		lr.SetColors(startC, endC);
+		lr.enabled = true;
+		ScreenShake.Instance.Shake(0.2f, 1.5f);
 		float targetDistance = Vector3.Distance(transform.position, target.position);
 		while (fireTime + 0.2f > Time.time)
 		{
