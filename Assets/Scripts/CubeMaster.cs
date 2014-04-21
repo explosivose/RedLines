@@ -5,28 +5,47 @@ using System.Collections.Generic;
 [System.Serializable]
 public class CubeMeta
 {
-	public float startTime = 0f;
+	public float   startTime = 0f;
 	public Vector3 startPosition;
 	public Vector3 currentPosition;
 	public Vector3 targetPosition;
 	public Vector3 layerCenter;
+	public int layerIndex;
+}
+
+// speed data is sampled every fixed update
+// the data is then used to calculate cube positions
+[System.Serializable]
+public class SpeedData
+{
+	public float speed 		= 0f;
+	public float time  		= 0f;
+	public float distance 	= 0f;
+	public SpeedData(float t, float v)
+	{
+		speed = v;
+		time = t;
+		distance = Time.fixedDeltaTime * v;
+	}
 }
 
 public class CubeMaster : Singleton<CubeMaster> 
 {
-	public GameObject cubePrefab;
-	public bool animateCubes = true;
-	public int numberOfCubes = 1000;
-	public Vector3 cubeScale = Vector3.one;
-	public float cubeSpeed = 5f;
-	public float cubeAccel = 1f;
-	public float cubeDecel = 4f;
-	public float cubeSpeedModifier = 1f;
+	public bool 		debug = false;
+	public GameObject	cubePrefab;
+	public bool 		animateCubes = true;
+	public int 			numberOfCubes = 1000;
+	public Vector3 		cubeScale = Vector3.one;
+	public float 		cubeSpeed = 5f;
+	public float 		cubeAccel = 1f;
+	public float 		cubeDecel = 4f;
+	public float 		cubeSpeedModifier = 1f;
+	public int 			cubeSpeedSampleCount = 800;
 	
-	private float hyperJumpEnterTime = 0f;
-	private float hyperJumpExitTime = 0f;
-	private Transform player;
-	private float cubeSpeedModified;
+	private float 		hyperJumpEnterTime = 0f;
+	private float 		hyperJumpExitTime = 0f;
+	private Transform 	player;
+	private float 		cubeSpeedModified;
 	
 	// list of cube objects
 	private List<Transform> cubeList = new List<Transform>();
@@ -37,6 +56,8 @@ public class CubeMaster : Singleton<CubeMaster>
 	// position offset added to all start positions of cubes
 	private Vector3 masterSpawnOffset = Vector3.zero;
 	
+	private List<SpeedData> speedData = new List<SpeedData>();
+	private int speedDataHead = 0;
 
 	private enum cubeMasterState {
 		direct,		// cubes are forced to their target positions immediately
@@ -99,6 +120,11 @@ public class CubeMaster : Singleton<CubeMaster>
 			cubeList.Add(cube.transform);
 		}
 		
+		for (int i = 0; i < cubeSpeedSampleCount; i++)
+		{
+			speedData.Add(new SpeedData(0f, 0f));
+		}	
+		
 		// spawn the first stretch of level before game starts
 		LevelGenerator.Reset();
 		/*
@@ -145,65 +171,75 @@ public class CubeMaster : Singleton<CubeMaster>
 		}
 	}
 	
-	void Update()
+	void FixedUpdate()
 	{
 		cubeSpeed += Time.deltaTime * cubeAccel;
-		
 		cubeSpeedModified = cubeSpeed * cubeSpeedModifier;
-		
+		speedData[speedDataHead++] = new SpeedData(Time.time, cubeSpeedModified);
+		if (speedDataHead >= cubeSpeedSampleCount) speedDataHead = 0;
+	}
+	
+	void Update()
+	{
+		if (debug) D();
+
 		// calculate cube positions using meta data
-		float travelTime;
-		
-		switch(masterState)
+		float distance = 0f;
+		float hyperTime = 0f;
+		int layerIndex = -1;
+		foreach(CubeMeta m in cubeMetaList)
 		{
-		default:
-		case cubeMasterState.direct:
-			foreach(CubeMeta m in cubeMetaList)
+			// if we're on a new layer then recalculate the z distance
+			if (layerIndex != m.layerIndex) 
 			{
-				travelTime = Time.time - m.startTime;
+				layerIndex = m.layerIndex;
+				distance = 0f;
+				foreach(SpeedData d in speedData)
+				{
+					if (m.startTime < d.time)
+						distance += d.distance;
+				}
+			}
+			
+			switch(masterState)
+			{
+			default:
+			case cubeMasterState.direct:
+				// map the target position straight to current position
 				m.currentPosition.x = m.targetPosition.x;
 				m.currentPosition.y = m.targetPosition.y;
-				m.currentPosition.z = masterSpawnOffset.z - cubeSpeedModified*travelTime;
-			}
-			break;
-		case cubeMasterState.animated:
-			foreach(CubeMeta m in cubeMetaList)
-			{
-				travelTime = Time.time - m.startTime;
-				m.currentPosition.x = Mathf.Lerp(m.startPosition.x, m.targetPosition.x, travelTime);
-				m.currentPosition.y = Mathf.Lerp(m.startPosition.y, m.targetPosition.y, travelTime);
-				m.currentPosition.z = masterSpawnOffset.z - cubeSpeedModified*travelTime;
-			}
-			break;
-		case cubeMasterState.hyperSpaceEnter:
-			foreach(CubeMeta m in cubeMetaList)
-			{
-				travelTime = Time.time - m.startTime;
+				m.currentPosition.z = masterSpawnOffset.z - distance;
+				break;
+			case cubeMasterState.hyperSpaceEnter:
+				// move current position away from layer center
+				m.currentPosition.x = m.targetPosition.x;
+				m.currentPosition.y = m.targetPosition.y;
+				m.currentPosition.z = masterSpawnOffset.z - distance;
 				Vector3 offset = m.targetPosition - m.layerCenter;
-				float hyperTime = (Time.time - hyperJumpEnterTime) * 4f;
-				m.currentPosition.x = m.targetPosition.x;
-				m.currentPosition.y = m.targetPosition.y;
-				m.currentPosition.z = masterSpawnOffset.z - cubeSpeedModified*travelTime;
+				hyperTime = (Time.time - hyperJumpEnterTime) * 4f;
 				m.currentPosition += offset * hyperTime;
-			}
-			break;
-		case cubeMasterState.hyperSpaceExit:
-			foreach(CubeMeta m in cubeMetaList)
-			{
-				travelTime = Time.time - m.startTime;
-				float hyperTime = (Time.time - hyperJumpExitTime) *  1f;
+				break;
+			case cubeMasterState.hyperSpaceExit:
+				// lerp current position to target position
+				hyperTime = (Time.time - hyperJumpExitTime) *  1f;
 				m.currentPosition.x = Mathf.Lerp(m.currentPosition.x, m.targetPosition.x, hyperTime);
 				m.currentPosition.y = Mathf.Lerp(m.currentPosition.y, m.targetPosition.y, hyperTime);
-				m.currentPosition.z = masterSpawnOffset.z - cubeSpeedModified*travelTime;
+				m.currentPosition.z = masterSpawnOffset.z - distance;
 				if (hyperTime > 1f) masterState = cubeMasterState.direct;
+				break;
 			}
-			break;
 		}
-		
+
 		// assign positions to cubes
 		for (int i = 0; i < cubeMetaList.Count; i++)
 		{
 			cubeList[i].position = cubeMetaList[i].currentPosition;
 		}
+	}
+	
+	void D()
+	{
+		if (Input.GetKeyUp(KeyCode.Space))
+			HyperJump = !HyperJump;
 	}
 }

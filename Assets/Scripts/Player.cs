@@ -134,7 +134,7 @@ public class Player : MonoBehaviour
 	
 	void GUIUpdate()
 	{
-		if (hyperJump)
+		if (hyperJump || isDead)
 		{
 			guiSpeed.text = "----";
 			guiHyperMatter.text = "----";

@@ -36,7 +36,6 @@ public class LevelGenerator
 	
 	public static void Reset()
 	{
-		ticker = 0;
 		currentPosition = Vector3.zero;
 		vState = moving.straight;
 		hState = moving.straight;
@@ -46,7 +45,6 @@ public class LevelGenerator
 	
 	public static void Reset(Vector3 startPosition)
 	{
-		ticker = 0;
 		currentPosition = startPosition;
 		currentPosition.z = 0f;
 		vState = moving.straight;
@@ -174,10 +172,11 @@ public class LevelGenerator
 					if (middleSpread) tempCube.startPosition = currentPosition;
 					else tempCube.startPosition  = currentPosition + pos*5f;
 					tempCube.layerCenter = currentPosition;
+					tempCube.layerIndex = ticker;
 					tempCube.startTime = Time.time;
 					cubes.Add(tempCube);
 				}
-				
+				//random obstacle
 				else if (Random.value < 0.005f)
 				{
 					CubeMeta tempCube = new CubeMeta();
@@ -186,6 +185,7 @@ public class LevelGenerator
 					tempCube.targetPosition = currentPosition + pos;
 					tempCube.startPosition  = currentPosition + pos*5f;
 					tempCube.layerCenter = currentPosition;
+					tempCube.layerIndex = ticker;
 					tempCube.startTime = Time.time;
 					cubes.Add(tempCube);
 				}
@@ -196,12 +196,14 @@ public class LevelGenerator
 	
 	private static void NextPosition()
 	{
+		ticker++;
+		
 		// Next positions are calculated using a Markov Chain style state machine
 		// http://en.wikipedia.org/wiki/Markov_chain
 		// 
 
 		float roll = Random.value; // random float between 0 and 1
-		ticker++;
+		
 		
 		// Determine new state
 		switch (vState)

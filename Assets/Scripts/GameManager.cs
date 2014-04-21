@@ -77,7 +77,8 @@ public class GameManager : Singleton<GameManager>
 		state = GameState.GameOver;
 		gui = GUIState.DeathMenu;
 		score = gameScore;
-		Time.timeScale = 0.01f;
+		CubeMaster.Instance.cubeAccel = 0f;
+		CubeMaster.Instance.cubeSpeed = 0.5f;
 	}
 	
 	void Awake()
