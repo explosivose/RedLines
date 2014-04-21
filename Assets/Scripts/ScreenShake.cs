@@ -10,7 +10,17 @@ public class ScreenShake : Singleton<ScreenShake>
 	private float mag;
 	private float t;
 	
+	void OnLevelWasLoaded()
+	{
+		init();
+	}
+	
 	void Awake()
+	{
+		init();
+	}
+	
+	void init()
 	{
 		cam = Camera.main.transform;
 		if (cam == null) Debug.LogError("could not find main camera");

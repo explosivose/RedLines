@@ -173,6 +173,7 @@ public class CubeMaster : Singleton<CubeMaster>
 	
 	void FixedUpdate()
 	{
+		cubeAccel += Time.deltaTime * 0.001f;
 		cubeSpeed += Time.deltaTime * cubeAccel;
 		cubeSpeedModified = cubeSpeed * cubeSpeedModifier;
 		speedData[speedDataHead++] = new SpeedData(Time.time, cubeSpeedModified);

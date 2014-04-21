@@ -44,7 +44,7 @@ MonoBehaviour:
   numberOfCubes: 750
   cubeScale: {x: 1, y: 1, z: 5}
   cubeSpeed: 9
-  cubeAccel: .125
+  cubeAccel: .100000001
   cubeDecel: .800000012
   cubeSpeedModifier: 1
   cubeSpeedSampleCount: 800
