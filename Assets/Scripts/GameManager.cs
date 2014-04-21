@@ -59,6 +59,7 @@ public class GameManager : Singleton<GameManager>
 		Screen.lockCursor = false;
 		state = GameState.Paused;
 		gui = GUIState.PauseMenu;
+		AudioListener.volume = 0f;
 		Time.timeScale = 0f;
 	}
 	
@@ -68,6 +69,7 @@ public class GameManager : Singleton<GameManager>
 		Screen.lockCursor = true;
 		state = GameState.Playing;
 		gui = GUIState.NoWindows;
+		AudioListener.volume = PlayerPrefs.GetFloat("audioVolume", 0.75f);
 	}
 	
 	private int score;
