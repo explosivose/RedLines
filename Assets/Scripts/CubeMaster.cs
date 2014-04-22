@@ -127,6 +127,7 @@ public class CubeMaster : Singleton<CubeMaster>
 		
 		// spawn the first stretch of level before game starts
 		LevelGenerator.Reset();
+		LevelGenerator.Unlock();
 		/*
 		float distance = Vector3.Distance(transform.position, player.position);
 		float timer = - (distance/cubeSpeed);

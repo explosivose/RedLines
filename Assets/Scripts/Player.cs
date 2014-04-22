@@ -159,9 +159,11 @@ public class Player : MonoBehaviour
 		hyperMatter = 0;
 		CubeMaster.Instance.HyperJump = true;
 		LevelGenerator.Reset(transform.position);
+		LevelGenerator.LockPosition();
 		yield return new WaitForSeconds(CubeMaster.Instance.CubeTravelTime);
 		CubeMaster.Instance.HyperJump = false;
 		CubeMaster.Instance.Decel();
+		LevelGenerator.Unlock();
 		PlayRandomSound(audioHyperJumpExit, transform.position);
 		ScreenShake.Instance.Shake(0.2f, 0.5f);
 		hyperJump = false;

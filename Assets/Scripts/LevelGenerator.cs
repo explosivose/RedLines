@@ -23,15 +23,27 @@ public class LevelGenerator
 	private static Vector3 currentPosition = Vector3.zero;
 	private static moving vState = moving.straight;
 	private static moving hState = moving.straight;
+	private static size xrState = size.locked;
+	private static size yrState = size.locked;
 	private static int ticker = 0;
 	
+	// change in position states
 	public enum moving
 	{
 		positive2,
 		positive,
 		straight,
 		negative,
-		negative2
+		negative2,
+		locked
+	}
+	
+	// change in radius states
+	private enum size
+	{
+		mutate,	// +random.range(-0.25,0.25)
+		target, // while(radius < target) radius+=0.25f; while(target < radius) radius-=0.25f;
+		locked  // no change
 	}
 	
 	public static void Reset()
@@ -51,6 +63,46 @@ public class LevelGenerator
 		hState = moving.straight;
 		xRadius = radiusMax;
 		yRadius = radiusMax;
+	}
+	
+	public static void LockRadius()
+	{
+		// prevent size changes
+		xrState = size.locked;
+		yrState = size.locked;
+	}
+	
+	public static void LockRadius(float radius)
+	{
+		// lerp to circular shape
+		xrState = size.target;
+		yrState = size.target;
+		yRadiusTarget = radius;
+		xRadiusTarget = radius;
+	}
+	
+	public static void LockRadius(float x, float y)
+	{
+		// lerp to x and y radii
+		xrState = size.target;
+		yrState = size.target;
+		yRadiusTarget = y;
+		xRadiusTarget = x;
+	}
+	
+	public static void LockPosition()
+	{
+		// push position states outside the markov chain state machine
+		vState = moving.locked;	// position cannot change
+		hState = moving.locked;
+	}
+	
+	public static void Unlock()
+	{
+		xrState = size.mutate;
+		yrState = size.mutate;
+		vState = moving.straight;
+		hState = moving.straight;
 	}
 	
 	public static List<CubeMeta> Generate(int gap, int minimumWallWidth, int maximumWallWidth)
@@ -124,18 +176,15 @@ public class LevelGenerator
 	}
 	
 	private static float xRadius = 6f;
+	private static float xRadiusTarget = 0f;
 	private static float yRadius = 4f;
+	private static float yRadiusTarget = 0f;
 	private const float radiusMax = 6f;
 	private const float radiusMin = 2f;
 	private static float spacing = 1f;
 	
 	public static List<CubeMeta> Generate3D(float cubeSize)
 	{
-		spacing = cubeSize;
-		NextPosition();
-		
-		List<CubeMeta> cubes = new List<CubeMeta>();
-		
 		// 3D level is a tunnel formed from sequential ellipses
 		// ellipses walls are the cubes
 		// Here's the maths:
@@ -146,14 +195,13 @@ public class LevelGenerator
 		// 			a, b are the radius on the x and y axes respectively
 		//		source: http://www.mathopenref.com/coordgeneralellipse.html
 		
+		spacing = cubeSize;
+		List<CubeMeta> cubes = new List<CubeMeta>();
+		NextPosition();		// update center point
+		NextSize();			// update radii
+		
 		bool middleSpread = false;
 		if (Random.value < 0.1f) middleSpread = true;
-		
-		xRadius += Random.Range(-0.25f, 0.25f);
-		xRadius = Mathf.Clamp (xRadius, radiusMin, radiusMax);
-		
-		yRadius += Random.Range(-0.25f, 0.25f);
-		yRadius = Mathf.Clamp (yRadius, radiusMin, radiusMax);
 		
 		// Scan a square shape around the ellipse
 		// Add a cube around the outside of the ellipse
@@ -194,6 +242,41 @@ public class LevelGenerator
 		return cubes;
 	}
 	
+	private static void NextSize()
+	{
+		// decide on changes in radii
+		
+		switch (xrState)
+		{
+		default:
+		case size.locked:
+			break;
+		case size.mutate:
+			xRadius += Random.Range(-0.25f, 0.25f);
+			break;
+		case size.target:
+			if (xRadius < xRadiusTarget) xRadius += 0.25f;
+			if (xRadius > xRadiusTarget) xRadius -= 0.25f;
+			break;
+		}
+		xRadius = Mathf.Clamp (xRadius, radiusMin, radiusMax); 
+		
+		switch (yrState)
+		{
+		default:
+		case size.locked:
+			break;
+		case size.mutate:
+			yRadius += Random.Range(-0.25f, 0.25f);
+			break;
+		case size.target:
+			if (yRadius < yRadiusTarget) yRadius += 0.25f;
+			if (yRadius > yRadiusTarget) yRadius -= 0.25f;
+			break;
+		}
+		yRadius = Mathf.Clamp (yRadius, radiusMin, radiusMax);
+	}
+	
 	private static void NextPosition()
 	{
 		ticker++;
@@ -205,7 +288,8 @@ public class LevelGenerator
 		float roll = Random.value; // random float between 0 and 1
 		
 		
-		// Determine new state
+		/* Determine new state
+		*/
 		switch (vState)
 		{
 		case moving.positive2:
@@ -268,7 +352,8 @@ public class LevelGenerator
 			break;
 		}
 		
-		// Determine new position based on state
+		/* Determine new position based on new state
+		*/
 		switch (vState)
 		{
 		case moving.positive2:
