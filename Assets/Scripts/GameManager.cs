@@ -301,6 +301,7 @@ public class GameManager : Singleton<GameManager>
 			gui = GUIState.MainMenu;
 		GUILayout.Space (20f);
 		GUILayout.Label("HTTP://SUPERCORE.CO.UK", menuSkin.label);
+		GUILayout.Label("Laser Sounds by Michel Baradari apollo-music.de");
 
 	}
 
