@@ -6,7 +6,7 @@ public class WeaponLaser : MonoBehaviour
 	public bool debug = true;
 	public int rendererPoints = 25;
 	public float rateOfFire = 0.2f;
-	
+	public Transform hitEffect;
 	public AudioClip[] audioFireLaser;
 	
 	private LineRenderer lr;
@@ -23,7 +23,7 @@ public class WeaponLaser : MonoBehaviour
 		lr.useWorldSpace = true;
 	}
 	
-	void Update()
+	void FixedUpdate()
 	{
 		if (debug && Input.GetButton("Fire1"))
 			Fire();
@@ -83,6 +83,9 @@ public class WeaponLaser : MonoBehaviour
 		lr.SetColors(startC, endC);
 		lr.enabled = true;
 		ScreenShake.Instance.Shake(0.2f, 1.5f);
+		Instantiate(hitEffect, target.position, Random.rotation);
+		if (target.tag == "HyperMatter")
+			target.BroadcastMessage("Explode");
 		float targetDistance = Vector3.Distance(transform.position, target.position);
 		while (fireTime + 0.2f > Time.time)
 		{
@@ -94,8 +97,7 @@ public class WeaponLaser : MonoBehaviour
 			}
 			yield return new WaitForEndOfFrame();
 		}
-		if (target.tag == "HyperMatter")
-			target.BroadcastMessage("Explode");
+
 		yield return new WaitForSeconds(rateOfFire);
 
 		fireTime = Time.time;

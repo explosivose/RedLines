@@ -43,10 +43,7 @@ MonoBehaviour:
   animateCubes: 0
   numberOfCubes: 750
   cubeScale: {x: 1, y: 1, z: 5}
-  cubeSpeed: 9
-  cubeAccel: .100000001
-  cubeDecel: .800000012
-  cubeSpeedModifier: 1
+  cubeSpeed: 10
   cubeSpeedSampleCount: 800
 --- !u!1001 &100100000
 Prefab:

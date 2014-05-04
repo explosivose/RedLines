@@ -16,12 +16,13 @@ public class Player : MonoBehaviour
 	public AudioClip[] audioHyperJumpEnter;
 	public AudioClip[] audioHyperJumpExit;
 	
-	private float distanceTravelled;
+	private float currentScore;
 	private Vector3 direction = Vector3.zero;
 	private Vector3 targetPosition = Vector3.zero;
 	private bool hyperJump = false;
 	private int hyperMatter = 0;
 	private int newHyperMatter = 0;
+	private float hyperJumpCount = 0;
 	
 	private TextMesh guiHyperMatter;
 	private TextMesh guiSpeed;
@@ -30,7 +31,7 @@ public class Player : MonoBehaviour
 	
 	public int Score
 	{
-		get { return Mathf.RoundToInt(distanceTravelled * 100); }
+		get { return Mathf.RoundToInt(currentScore * 100); }
 	}
 	
 	// Use this for initialization
@@ -43,30 +44,16 @@ public class Player : MonoBehaviour
 		guiHyperSpaceHint = transform.FindChild("guiHyperSpaceHint");
 		PlayRandomSound(audioGameStart, transform.position);
 		StartCoroutine( HyperDustPickupQueue() );
-		//StartCoroutine( UpdateScore() );
 	}
 	
-	IEnumerator UpdateScore()
-	{
-		while(true)
-		{
-			float t = 0.3f;
-			yield return new WaitForSeconds(t);
-			if (!(isDead || hyperJump))
-			{
-				distanceTravelled += t * CubeMaster.Instance.cubeSpeed;
-			}
-			
-		}
-	}
-	
+
 	void Update () 
 	{
 		GUIUpdate();
 		if (isDead || hyperJump)
 			return;
 		
-		distanceTravelled += Time.deltaTime * CubeMaster.Instance.cubeSpeed;
+		currentScore += (Time.deltaTime * CubeMaster.Instance.cubeSpeed)+(10*hyperJumpCount*Time.deltaTime);
 		
 		MovementUpdate();
 		WeaponUpdate();
@@ -160,12 +147,15 @@ public class Player : MonoBehaviour
 		CubeMaster.Instance.HyperJump = true;
 		LevelGenerator.Reset(transform.position);
 		LevelGenerator.LockPosition();
+		LevelGenerator.Obstacles = false;
+		CubeMaster.Instance.SpeedChange(1.75f);
 		yield return new WaitForSeconds(CubeMaster.Instance.CubeTravelTime);
 		CubeMaster.Instance.HyperJump = false;
-		CubeMaster.Instance.Decel();
 		LevelGenerator.Unlock();
+		LevelGenerator.Obstacles = true;
 		PlayRandomSound(audioHyperJumpExit, transform.position);
 		ScreenShake.Instance.Shake(0.2f, 0.5f);
+		hyperJumpCount++;
 		hyperJump = false;
 	}	
 	

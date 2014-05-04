@@ -30,26 +30,26 @@ public class HyperMatter : MonoBehaviour
 	
 	void Update()
 	{
-		transform.position += Vector3.back * speed * Time.deltaTime;
+		transform.parent.position += Vector3.back * speed * Time.deltaTime;
 		Vector3 scale = initialScale * (Mathf.Sin (Time.time*4f)/4f + 1f);
-		transform.localScale = scale;
-		transform.Rotate(Vector3.one);
+		transform.parent.localScale = scale;
+		transform.parent.Rotate(Vector3.one);
 		if (provideHint)
 		{
-			hyperMatterHint.position = transform.position;
+			hyperMatterHint.position = transform.parent.position;
 		}
 	}
 	
 	public void Explode()
 	{
-		Instantiate(explosion, transform.position, Random.rotation);
+		Instantiate(explosion, transform.parent.position, Random.rotation);
 		
 		int x = Random.Range(0, audioExplosions.Length);
-		AudioSource.PlayClipAtPoint(audioExplosions[x], transform.position);
+		AudioSource.PlayClipAtPoint(audioExplosions[x], transform.parent.position);
 		
 		for (int i = 0; i < Random.Range(6, 12); i++)
 		{
-			Vector3 pos = transform.position + Random.insideUnitSphere;
+			Vector3 pos = transform.parent.position + Random.insideUnitSphere;
 			Transform dust = Instantiate(hyperDustPrefab, pos, Quaternion.identity) as Transform;
 			dust.parent = transform;
 		}
@@ -61,8 +61,8 @@ public class HyperMatter : MonoBehaviour
 		}
 		
 		renderer.enabled = false;
-		collider.enabled = false;
-		audio.Stop();
+		transform.parent.collider.enabled = false;
+		transform.parent.audio.Stop();
 	}
 	
 }

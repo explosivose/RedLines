@@ -36,7 +36,7 @@ GameObject:
   m_IsActive: 1
 --- !u!1 &100006
 GameObject:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 4
@@ -223,7 +223,7 @@ Transform:
   m_LocalPosition: {x: 0, y: -.200000003, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 400020}
+  m_Father: {fileID: 400026}
 --- !u!4 &400018
 Transform:
   m_ObjectHideFlags: 1
@@ -252,7 +252,6 @@ Transform:
   - {fileID: 400028}
   - {fileID: 400022}
   - {fileID: 400026}
-  - {fileID: 400006}
   - {fileID: 400030}
   m_Father: {fileID: 0}
 --- !u!4 &400022
@@ -288,6 +287,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 400024}
+  - {fileID: 400006}
   m_Father: {fileID: 400020}
 --- !u!4 &400028
 Transform:
@@ -538,7 +538,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: .5, y: .100000001, z: .5}
+  m_Size: {x: .5, y: .25, z: .5}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!81 &8100000
 AudioListener:
@@ -553,13 +553,13 @@ AudioSource:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100026}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_audioClip: {fileID: 8300000, guid: 1c71f3fbd206a8245b3a44df71c8475d, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Priority: 128
   DopplerLevel: 1
@@ -567,9 +567,9 @@ AudioSource:
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
+  BypassEffects: 1
+  BypassListenerEffects: 1
+  BypassReverbZones: 1
   rolloffCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -772,11 +772,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug: 0
   rendererPoints: 25
-  rateOfFire: .200000003
+  rateOfFire: .25
+  hitEffect: {fileID: 400000, guid: e64860351235eb34cb278fe95e7f1966, type: 2}
   audioFireLaser:
   - {fileID: 8300000, guid: d1f67567ff77c3646b35798a21d99d34, type: 3}
   - {fileID: 8300000, guid: 6d1122f84b5865141a3bd0759bd8b35c, type: 3}
   - {fileID: 8300000, guid: 712a5bafb4f0c404b8e96467db6772b1, type: 3}
+  - {fileID: 8300000, guid: 6a12f3d630762914087b2928298d655f, type: 3}
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1

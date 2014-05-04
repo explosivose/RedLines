@@ -26,6 +26,7 @@ public class LevelGenerator
 	private static size xrState = size.locked;
 	private static size yrState = size.locked;
 	private static int ticker = 0;
+	private static bool obstacles = true;
 	
 	// change in position states
 	public enum moving
@@ -103,6 +104,12 @@ public class LevelGenerator
 		yrState = size.mutate;
 		vState = moving.straight;
 		hState = moving.straight;
+	}
+	
+	public static bool Obstacles 
+	{
+		get { return obstacles; }
+		set { obstacles = value; }
 	}
 	
 	public static List<CubeMeta> Generate(int gap, int minimumWallWidth, int maximumWallWidth)
@@ -225,7 +232,7 @@ public class LevelGenerator
 					cubes.Add(tempCube);
 				}
 				//random obstacle
-				else if (Random.value < 0.005f)
+				else if (Random.value < 0.005f && obstacles)
 				{
 					CubeMeta tempCube = new CubeMeta();
 					Vector3 pos = new Vector3(x*spacing, y*spacing);

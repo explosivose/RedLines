@@ -79,7 +79,6 @@ public class GameManager : Singleton<GameManager>
 		state = GameState.GameOver;
 		gui = GUIState.DeathMenu;
 		score = gameScore;
-		CubeMaster.Instance.cubeAccel = 0f;
 		CubeMaster.Instance.cubeSpeed = 0.5f;
 	}
 	

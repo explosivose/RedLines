@@ -37,15 +37,15 @@ public class CubeMaster : Singleton<CubeMaster>
 	public int 			numberOfCubes = 1000;
 	public Vector3 		cubeScale = Vector3.one;
 	public float 		cubeSpeed = 5f;
-	public float 		cubeAccel = 1f;
-	public float 		cubeDecel = 4f;
-	public float 		cubeSpeedModifier = 1f;
 	public int 			cubeSpeedSampleCount = 800;
+	
+	private float 		targetCubeSpeed;
+	private float 		overshootCubeSpeed;
 	
 	private float 		hyperJumpEnterTime = 0f;
 	private float 		hyperJumpExitTime = 0f;
 	private Transform 	player;
-	private float 		cubeSpeedModified;
+	private GameObject[] lights;
 	
 	// list of cube objects
 	private List<Transform> cubeList = new List<Transform>();
@@ -101,16 +101,23 @@ public class CubeMaster : Singleton<CubeMaster>
 		}
 	}
 
-	public void Decel()
+	public void SpeedSet(float newSpeed) 
 	{
-		cubeSpeed *= cubeDecel;
+		targetCubeSpeed = newSpeed;
+	}
+	
+	public void SpeedChange(float change)
+	{
+		targetCubeSpeed += change;
 	}
 	
 	// initialization
 	void Start () 
 	{
 		player = GameObject.FindGameObjectWithTag("Player").transform;
-	
+		lights = GameObject.FindGameObjectsWithTag("Lights");
+		targetCubeSpeed = cubeSpeed;
+		cubeSpeed *= 0.5f;
 		cubePrefab.transform.localScale = cubeScale;
 		// spawn a bunch of cubes
 		for (int i = 0; i < numberOfCubes; i++)
@@ -145,6 +152,7 @@ public class CubeMaster : Singleton<CubeMaster>
 		}*/
 		
 		// start level loop
+		StartCoroutine(SpeedController());
 		StartCoroutine(LevelLoop());
 	}
 	
@@ -172,19 +180,40 @@ public class CubeMaster : Singleton<CubeMaster>
 		}
 	}
 	
+	IEnumerator SpeedController()
+	{
+		while(true)
+		{
+			if (HyperJump)
+			{
+				overshootCubeSpeed = targetCubeSpeed * 2f;
+			}
+			else
+			{
+				float error = targetCubeSpeed - cubeSpeed;
+				float k = 1.5f;
+				overshootCubeSpeed = (cubeSpeed + error * k);
+				yield return new WaitForSeconds(1f);
+			}
+			yield return new WaitForFixedUpdate();
+		}
+	}
+	
 	void FixedUpdate()
 	{
-		cubeAccel += Time.deltaTime * 0.001f;
-		cubeSpeed += Time.deltaTime * cubeAccel;
-		cubeSpeedModified = cubeSpeed * cubeSpeedModifier;
-		speedData[speedDataHead++] = new SpeedData(Time.time, cubeSpeedModified);
+		LightsUpdate();
+		cubeSpeed = Mathf.Lerp(cubeSpeed, overshootCubeSpeed, Time.deltaTime);
+		
+		speedData[speedDataHead++] = new SpeedData(Time.time, cubeSpeed);
 		if (speedDataHead >= cubeSpeedSampleCount) speedDataHead = 0;
 	}
 	
 	void Update()
 	{
 		if (debug) D();
-
+		
+		
+		
 		// calculate cube positions using meta data
 		float distance = 0f;
 		float hyperTime = 0f;
@@ -238,6 +267,26 @@ public class CubeMaster : Singleton<CubeMaster>
 			cubeList[i].position = cubeMetaList[i].currentPosition;
 		}
 	}
+	
+	void LightsUpdate()
+	{
+		if (HyperJump)
+		{
+			for (int i = 0; i < lights.Length; i++)
+			{
+				lights[i].light.color = new Color(0.5f, Random.value, Random.value);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < lights.Length; i++)
+			{
+				lights[i].light.color = Color.red;
+			}
+		}
+		
+	}
+	
 	
 	void D()
 	{
