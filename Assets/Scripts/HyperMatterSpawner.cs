@@ -7,10 +7,18 @@ public class HyperMatterSpawner : MonoBehaviour
 	public float maxTime = 6f;
 	public float minTime = 2f;
 	
+	private bool hyper = false;
+	
 	void Start()
 	{
 		StartCoroutine( SpawnLoop() );
 	}
+	
+	void FixedUpdate()
+	{
+		if (CubeMaster.Instance.HyperJump && !hyper) StartCoroutine(HyperSpawn());
+	}
+	
 	
 	IEnumerator SpawnLoop()
 	{
@@ -24,6 +32,19 @@ public class HyperMatterSpawner : MonoBehaviour
 				Instantiate(hyperMatterPrefab, pos, Random.rotation);
 			}
 		}
+	}
+	
+	IEnumerator HyperSpawn()
+	{
+		hyper = true;
+		while(CubeMaster.Instance.HyperJump)
+		{
+			float offsetDistance = Random.Range(2f, LevelGenerator.MaxRadius);
+			Vector3 pos = LevelGenerator.CurrentPosition + Random.onUnitSphere * offsetDistance;
+			Instantiate(hyperMatterPrefab, pos, Random.rotation);
+			yield return new WaitForSeconds(Random.Range(0.1f, 2f));
+		}
+		hyper = false;
 	}
 
 }

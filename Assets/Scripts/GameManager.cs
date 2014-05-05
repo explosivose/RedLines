@@ -79,6 +79,7 @@ public class GameManager : Singleton<GameManager>
 		state = GameState.GameOver;
 		gui = GUIState.DeathMenu;
 		score = gameScore;
+		AudioListener.volume = 0f;
 		CubeMaster.Instance.cubeSpeed = 0.5f;
 	}
 	
@@ -186,7 +187,7 @@ public class GameManager : Singleton<GameManager>
 		
 		if (GUILayout.Button("MAIN MENU", menuSkin.button))
 		{
-			SaveSettings();
+			PlayerPrefs.SetString("playerName", playerName);
 			ScoreBoard.NewScore(score);
 			gui = GUIState.MainMenu;
 		}
@@ -203,7 +204,7 @@ public class GameManager : Singleton<GameManager>
 		
 		if (GUILayout.Button("AGAIN", menuSkin.button))
 		{
-			SaveSettings();
+			PlayerPrefs.SetString("playerName", playerName);
 			ScoreBoard.NewScore(score);
 			StartGame();
 		}
@@ -300,7 +301,7 @@ public class GameManager : Singleton<GameManager>
 			gui = GUIState.MainMenu;
 		GUILayout.Space (20f);
 		GUILayout.Label("HTTP://SUPERCORE.CO.UK", menuSkin.label);
-		GUILayout.Label("Laser Sounds by Michel Baradari apollo-music.de");
+		GUILayout.Label("Laser Sounds by Michel Baradari apollo-music.de", menuSkin.label);
 
 	}
 

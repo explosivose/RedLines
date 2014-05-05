@@ -26,6 +26,7 @@ public class HyperMatter : MonoBehaviour
 			hyperMatterHint = Instantiate(hyperMatterHintPrefab) as Transform;
 			provideHint = true;
 		}
+		transform.parent.audio.Play();
 	}
 	
 	void Update()

@@ -116,8 +116,10 @@ public class Player : MonoBehaviour
 		}
 		if (Input.GetKey(KeyCode.Space))
 		{
-			if (!hyperJump && hyperMatter == maxHyperMatter) 
+			if (!hyperJump && hyperMatter == maxHyperMatter)
+			{
 				StartCoroutine( HyperJump() );
+			}
 		}
 	}
 	
@@ -154,6 +156,7 @@ public class Player : MonoBehaviour
 		hyperSpaceEffect.time = 0f;
 		hyperSpaceEffect.playbackSpeed = hyperSpaceEffect.duration/CubeMaster.Instance.CubeTravelTime;
 		hyperSpaceEffect.Play();
+		transform.rotation = Quaternion.identity;
 		yield return new WaitForSeconds(CubeMaster.Instance.CubeTravelTime);
 		CubeMaster.Instance.HyperJump = false;
 		PlayRandomSound(audioHyperJumpExit, transform.position);

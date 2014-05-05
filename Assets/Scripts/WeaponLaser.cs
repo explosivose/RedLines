@@ -27,8 +27,7 @@ public class WeaponLaser : MonoBehaviour
 		lights = new GameObject[rendererPoints];
 		for (int i = 0; i < rendererPoints; i++)
 		{
-			lights[i] = new GameObject("light"+i, typeof(Light));
-			lights[i].transform.parent = this.transform;
+			lights[i] = new GameObject("LaserLight"+i, typeof(Light));
 			lights[i].SetActive(false);
 		}
 	}
@@ -88,9 +87,10 @@ public class WeaponLaser : MonoBehaviour
 			RaycastHit hit;
 			if (Physics.Raycast(transform.position, player.forward, out hit))
 			{
-				StartCoroutine( FireRoutine(hit.transform.position) );
+				StartCoroutine( FireRoutine(hit.point) );
 				if (hit.transform.tag == "HyperMatter")
 					hit.transform.BroadcastMessage("Explode");
+				Instantiate(hitEffect, hit.point, Quaternion.LookRotation(hit.normal));
 			}
 			else
 			{
@@ -117,7 +117,7 @@ public class WeaponLaser : MonoBehaviour
 		lr.SetColors(startC, endC);
 		lr.enabled = true;
 		ScreenShake.Instance.Shake(0.2f, 1.5f);
-		Instantiate(hitEffect, target, Random.rotation);
+		
 		float targetDistance = Vector3.Distance(transform.position, target);
 		while (fireTime + 0.2f > Time.time)
 		{

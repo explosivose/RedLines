@@ -801,8 +801,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug: 0
   rendererPoints: 25
-  rateOfFire: .25
-  hitEffect: {fileID: 400000, guid: e64860351235eb34cb278fe95e7f1966, type: 2}
+  minimumRateOfFire: .200000003
+  hitEffect: {fileID: 400000, guid: 76214154f716de440ad2a2ad2aa46d05, type: 2}
   audioFireLaser:
   - {fileID: 8300000, guid: d1f67567ff77c3646b35798a21d99d34, type: 3}
   - {fileID: 8300000, guid: 6d1122f84b5865141a3bd0759bd8b35c, type: 3}
