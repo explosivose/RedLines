@@ -30,10 +30,12 @@ public class HyperMatter : MonoBehaviour
 	
 	void Update()
 	{
-		transform.parent.position += Vector3.back * speed * Time.deltaTime;
+		float hyperfactor = 1f;
+		if (CubeMaster.Instance.HyperJump) hyperfactor = 10f;
+		transform.parent.position += Vector3.back * speed * hyperfactor * Time.deltaTime;
 		Vector3 scale = initialScale * (Mathf.Sin (Time.time*4f)/4f + 1f);
 		transform.parent.localScale = scale;
-		transform.parent.Rotate(Vector3.one);
+		transform.parent.Rotate(Vector3.one * hyperfactor);
 		if (provideHint)
 		{
 			hyperMatterHint.position = transform.parent.position;

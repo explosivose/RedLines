@@ -23,7 +23,7 @@ public class Player : MonoBehaviour
 	private int hyperMatter = 0;
 	private int newHyperMatter = 0;
 	private float hyperJumpCount = 0;
-	
+	private ParticleSystem hyperSpaceEffect;
 	private TextMesh guiHyperMatter;
 	private TextMesh guiSpeed;
 	private TextMesh guiScore;
@@ -38,6 +38,7 @@ public class Player : MonoBehaviour
 	void Start () 
 	{
 		targetPosition = transform.position;
+		hyperSpaceEffect = transform.FindChild("HyperSpaceEffect").particleSystem;
 		guiHyperMatter = transform.FindChild("guiHyperValue").GetComponent<TextMesh>();
 		guiSpeed =       transform.FindChild("guiSpeedValue").GetComponent<TextMesh>();
 		guiScore		=transform.FindChild("guiScoreValue").GetComponent<TextMesh>();
@@ -144,18 +145,23 @@ public class Player : MonoBehaviour
 		hyperJump = true;
 		PlayRandomSound(audioHyperJumpEnter, transform.position);
 		hyperMatter = 0;
-		CubeMaster.Instance.HyperJump = true;
 		LevelGenerator.Reset(transform.position);
 		LevelGenerator.LockPosition();
 		LevelGenerator.Obstacles = false;
+		CubeMaster.Instance.HyperJump = true;
 		CubeMaster.Instance.SpeedChange(1.75f);
+		ScreenShake.Instance.Shake(0.5f,1f/CubeMaster.Instance.CubeTravelTime);
+		hyperSpaceEffect.time = 0f;
+		hyperSpaceEffect.playbackSpeed = hyperSpaceEffect.duration/CubeMaster.Instance.CubeTravelTime;
+		hyperSpaceEffect.Play();
 		yield return new WaitForSeconds(CubeMaster.Instance.CubeTravelTime);
 		CubeMaster.Instance.HyperJump = false;
+		PlayRandomSound(audioHyperJumpExit, transform.position);
+		ScreenShake.Instance.Shake(0.5f,0.5f);
+		hyperJumpCount++;
+		yield return new WaitForSeconds(0.5f);
 		LevelGenerator.Unlock();
 		LevelGenerator.Obstacles = true;
-		PlayRandomSound(audioHyperJumpExit, transform.position);
-		ScreenShake.Instance.Shake(0.2f, 0.5f);
-		hyperJumpCount++;
 		hyperJump = false;
 	}	
 	
