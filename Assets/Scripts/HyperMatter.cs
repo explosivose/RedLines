@@ -54,7 +54,7 @@ public class HyperMatter : MonoBehaviour
 		{
 			Vector3 pos = transform.parent.position + Random.insideUnitSphere;
 			Transform dust = Instantiate(hyperDustPrefab, pos, Quaternion.identity) as Transform;
-			dust.parent = transform;
+			//dust.parent = transform;
 		}
 		
 		if (provideHint)
