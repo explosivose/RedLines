@@ -35,7 +35,7 @@ public class Player : MonoBehaviour
 	}
 	
 	// Use this for initialization
-	void Start () 
+	IEnumerator Start () 
 	{
 		targetPosition = transform.position;
 		hyperSpaceEffect = transform.FindChild("HyperSpaceEffect").particleSystem;
@@ -45,6 +45,8 @@ public class Player : MonoBehaviour
 		guiHyperSpaceHint = transform.FindChild("guiHyperSpaceHint");
 		PlayRandomSound(audioGameStart, transform.position);
 		StartCoroutine( HyperDustPickupQueue() );
+		yield return new WaitForSeconds(1f);
+		StartCoroutine( HyperJump() );
 	}
 	
 

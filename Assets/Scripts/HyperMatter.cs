@@ -65,6 +65,7 @@ public class HyperMatter : MonoBehaviour
 		
 		renderer.enabled = false;
 		transform.parent.collider.enabled = false;
+		transform.parent.FindChild("Hologram").renderer.enabled = false;
 		transform.parent.audio.Stop();
 	}
 	

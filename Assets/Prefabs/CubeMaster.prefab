@@ -27,6 +27,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
+  m_RootOrder: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -39,7 +40,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debug: 0
-  cubePrefab: {fileID: 100000, guid: a834510723aaf9b4e9b97c1e7168fae5, type: 2}
+  cubePrefab: {fileID: 100002, guid: a834510723aaf9b4e9b97c1e7168fae5, type: 2}
   animateCubes: 0
   numberOfCubes: 750
   cubeScale: {x: 1, y: 1, z: 5}
