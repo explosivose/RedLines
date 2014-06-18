@@ -11,7 +11,6 @@ public class Player : Singleton<Player>
 	
 	public AudioClip[] audioGameStart;
 	public AudioClip[] audioDeath;
-	public AudioClip[] audioHyperDustPickup;
 	public AudioClip[] audioHyperJumpReady;
 	public AudioClip[] audioHyperJumpEnter;
 	public AudioClip[] audioHyperJumpExit;
@@ -206,7 +205,8 @@ public class Player : Singleton<Player>
 				newHyperMatter--;
 				hyperMatter++;
 				ScoreBoard.CurrentScore += 1500 * Player.Instance.HyperMultiplier;
-				PlayRandomSound(audioHyperDustPickup, transform.position);
+				audio.pitch = 0.5f + (float)hyperMatter/(float)maxHyperMatter;
+				audio.Play();
 				yield return new WaitForSeconds(0.125f);
 				if (hyperMatter == maxHyperMatter)
 					PlayRandomSound(audioHyperJumpReady, transform.position);
