@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Player : MonoBehaviour
+public class Player : Singleton<Player>
 {
 	public float maxSpeed  = 10f;
 	public float turnSpeed = 100f;
@@ -16,22 +16,20 @@ public class Player : MonoBehaviour
 	public AudioClip[] audioHyperJumpEnter;
 	public AudioClip[] audioHyperJumpExit;
 	
-	private float currentScore;
 	private Vector3 direction = Vector3.zero;
 	private Vector3 targetPosition = Vector3.zero;
 	private bool hyperJump = false;
 	private int hyperMatter = 0;
 	private int newHyperMatter = 0;
-	private float hyperJumpCount = 0;
+	private int hyperJumpCount = 0;
 	private ParticleSystem hyperSpaceEffect;
 	private TextMesh guiHyperMatter;
 	private TextMesh guiSpeed;
 	private TextMesh guiScore;
 	private Transform guiHyperSpaceHint;
 	
-	public int Score
-	{
-		get { return Mathf.RoundToInt(currentScore * 100); }
+	public int HyperMultiplier {
+		get { return hyperJumpCount; }
 	}
 	
 	// Use this for initialization
@@ -55,8 +53,6 @@ public class Player : MonoBehaviour
 		GUIUpdate();
 		if (isDead || hyperJump)
 			return;
-		
-		currentScore += (Time.deltaTime * CubeMaster.Instance.cubeSpeed)+(10*hyperJumpCount*Time.deltaTime);
 		
 		MovementUpdate();
 		WeaponUpdate();
@@ -139,7 +135,7 @@ public class Player : MonoBehaviour
 		}
 		
 		
-		guiScore.text = Score.ToString();
+		guiScore.text = ScoreBoard.CurrentScore.ToString();
 		
 		guiHyperSpaceHint.renderer.enabled = (hyperMatter == maxHyperMatter && GameManager.Instance.ShowHints);
 	}
@@ -160,6 +156,7 @@ public class Player : MonoBehaviour
 		hyperSpaceEffect.Play();
 		transform.rotation = Quaternion.identity;
 		yield return new WaitForSeconds(CubeMaster.Instance.CubeTravelTime);
+		ScoreBoard.CurrentScore += Mathf.RoundToInt(10000f/CubeMaster.Instance.CubeTravelTime);
 		CubeMaster.Instance.HyperJump = false;
 		PlayRandomSound(audioHyperJumpExit, transform.position);
 		ScreenShake.Instance.Shake(0.5f,0.5f);
@@ -197,7 +194,7 @@ public class Player : MonoBehaviour
 		yield return new WaitForSeconds(t);
 		Instantiate(deathsplosion, transform.position, transform.rotation);
 		maxSpeed = 0f;
-		GameManager.Instance.GameOver(Score);
+		GameManager.Instance.GameOver();
 	}
 	
 	IEnumerator HyperDustPickupQueue()
@@ -208,6 +205,7 @@ public class Player : MonoBehaviour
 			{
 				newHyperMatter--;
 				hyperMatter++;
+				ScoreBoard.CurrentScore += 1500 * Player.Instance.HyperMultiplier;
 				PlayRandomSound(audioHyperDustPickup, transform.position);
 				yield return new WaitForSeconds(0.125f);
 				if (hyperMatter == maxHyperMatter)

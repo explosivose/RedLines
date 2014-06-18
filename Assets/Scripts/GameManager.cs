@@ -72,13 +72,11 @@ public class GameManager : Singleton<GameManager>
 		AudioListener.volume = PlayerPrefs.GetFloat("audioVolume", 0.75f);
 	}
 	
-	private int score;
-	public void GameOver(int gameScore)
+	public void GameOver()
 	{
 		Screen.lockCursor = false;
 		state = GameState.GameOver;
 		gui = GUIState.DeathMenu;
-		score = gameScore;
 		AudioListener.volume = 0f;
 		CubeMaster.Instance.cubeSpeed = 0.5f;
 	}
@@ -188,7 +186,7 @@ public class GameManager : Singleton<GameManager>
 		if (GUILayout.Button("MAIN MENU", menuSkin.button))
 		{
 			PlayerPrefs.SetString("playerName", playerName);
-			ScoreBoard.NewScore(score);
+			ScoreBoard.SaveAndClearCurrentScore();
 			gui = GUIState.MainMenu;
 		}
 		
@@ -199,13 +197,13 @@ public class GameManager : Singleton<GameManager>
 		
 		GUILayout.BeginHorizontal();
 		GUILayout.Label("SCORE:", menuSkin.label);
-		GUILayout.Label(score.ToString(), menuSkin.label);
+		GUILayout.Label(ScoreBoard.CurrentScore.ToString(), menuSkin.label);
 		GUILayout.EndHorizontal();
 		
 		if (GUILayout.Button("AGAIN", menuSkin.button))
 		{
 			PlayerPrefs.SetString("playerName", playerName);
-			ScoreBoard.NewScore(score);
+			ScoreBoard.SaveAndClearCurrentScore();
 			StartGame();
 		}
 		GUILayout.Space (10);

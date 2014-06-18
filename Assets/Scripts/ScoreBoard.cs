@@ -44,8 +44,15 @@ public class ScoreBoard
 	
 	private static bool scoresCached = false;
 	private static List<Score> scores = new List<Score>();
+	private static float currentScore = 0;
 	
-	public static void NewScore(float score)
+	public static float CurrentScore
+	{
+		get { return currentScore; }
+		set { currentScore = value; }
+	}
+	
+	public static void SaveAndClearCurrentScore()
 	{
 		bool added = false;
 		if (!scoresCached) 
@@ -53,7 +60,7 @@ public class ScoreBoard
 			
 		if (scores.Count == 0)
 		{
-			scores.Add(new Score(score));
+			scores.Add(new Score(currentScore));
 			added = true;
 		}
 		else
@@ -61,9 +68,9 @@ public class ScoreBoard
 			// insert new score in the right position in the table;
 			for (int i = 0; i < scores.Count; i++)
 			{
-				if ( score > scores[i].score)
+				if ( currentScore > scores[i].score)
 				{
-					scores.Insert(i, new Score(score));
+					scores.Insert(i, new Score(currentScore));
 					added = true;
 					i = scores.Count;
 				}
@@ -73,10 +80,10 @@ public class ScoreBoard
 		// append new score if it wasn't inserted
 		if (!added && scores.Count < numberOfScores)
 		{
-			scores.Add(new Score(score));
+			scores.Add(new Score(currentScore));
 			added = true;
 		}
-		
+		currentScore = 0f;
 		SaveScores();
 		
 	}

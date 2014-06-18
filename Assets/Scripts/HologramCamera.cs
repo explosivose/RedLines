@@ -3,22 +3,35 @@ using System.Collections;
 
 public class HologramCamera : MonoBehaviour {
 
-	public Shader hologramShader;
-	private Transform player;
+	public Transform ship;
+	public enum perspective {
+		behind, top, right
+	}
+	public perspective viewFrom = perspective.behind;
+	
+	private Vector3 offset;
 	
 	// Use this for initialization
 	void Start () {
-		player = GameObject.FindGameObjectWithTag("Player").transform;
-		camera.enabled = false;
-		camera.RenderWithShader(hologramShader, "");
-		camera.enabled = true;
+		switch (viewFrom) {
+		case perspective.behind:
+			camera.farClipPlane = 30f;
+			offset = Vector3.back * camera.farClipPlane/2f;
+			break;
+		case perspective.right:
+			camera.farClipPlane = 10f;
+			offset = Vector3.right * camera.farClipPlane/2f;
+			break;
+		case perspective.top:
+			camera.farClipPlane = 10f;
+			offset = Vector3.up * camera.farClipPlane/2f;
+			break;
+		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		Vector3 playerPos = player.position;
-		playerPos.z -= camera.farClipPlane/2f;
-		transform.position = playerPos;
-		transform.rotation = Quaternion.identity;
+		transform.position = ship.position + offset;;
+		transform.LookAt(ship);
 	}
 }

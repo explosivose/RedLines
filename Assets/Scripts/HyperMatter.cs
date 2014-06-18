@@ -46,7 +46,7 @@ public class HyperMatter : MonoBehaviour
 	public void Explode()
 	{
 		Instantiate(explosion, transform.parent.position, Random.rotation);
-		
+		ScoreBoard.CurrentScore += 1000 * Player.Instance.HyperMultiplier;
 		int x = Random.Range(0, audioExplosions.Length);
 		AudioSource.PlayClipAtPoint(audioExplosions[x], transform.parent.position);
 		
