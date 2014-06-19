@@ -18,17 +18,21 @@ public class Player : Singleton<Player>
 	private Vector3 direction = Vector3.zero;
 	private Vector3 targetPosition = Vector3.zero;
 	private bool hyperJump = false;
-	private int hyperMatter = 0;
+	private int hyperMatter = 0; 
 	private int newHyperMatter = 0;
 	private int hyperJumpCount = 0;
 	private ParticleSystem hyperSpaceEffect;
-	private TextMesh guiHyperMatter;
-	private TextMesh guiSpeed;
-	private TextMesh guiScore;
-	private Transform guiHyperSpaceHint;
+	
+	public bool HyperReady {
+		get { return hyperMatter == maxHyperMatter;}
+	}
 	
 	public int HyperMultiplier {
 		get { return hyperJumpCount; }
+	}
+	
+	public int HyperTankPercentage {
+		get { return Mathf.RoundToInt(100f*hyperMatter/maxHyperMatter); }
 	}
 	
 	// Use this for initialization
@@ -36,20 +40,16 @@ public class Player : Singleton<Player>
 	{
 		targetPosition = transform.position;
 		hyperSpaceEffect = transform.FindChild("HyperSpaceEffect").particleSystem;
-		guiHyperMatter = transform.FindChild("guiHyperValue").GetComponent<TextMesh>();
-		guiSpeed =       transform.FindChild("guiSpeedValue").GetComponent<TextMesh>();
-		guiScore		=transform.FindChild("guiScoreValue").GetComponent<TextMesh>();
-		guiHyperSpaceHint = transform.FindChild("guiHyperSpaceHint");
+		
 		PlayRandomSound(audioGameStart, transform.position);
 		StartCoroutine( HyperDustPickupQueue() );
-		yield return new WaitForSeconds(1f);
+		yield return new WaitForSeconds(0.5f);
 		StartCoroutine( HyperJump() );
 	}
 	
 
 	void Update () 
 	{
-		GUIUpdate();
 		if (isDead || hyperJump)
 			return;
 		
@@ -118,25 +118,6 @@ public class Player : Singleton<Player>
 				StartCoroutine( HyperJump() );
 			}
 		}
-	}
-	
-	void GUIUpdate()
-	{
-		if (hyperJump || isDead)
-		{
-			guiSpeed.text = "----";
-			guiHyperMatter.text = "----";
-		}
-		else
-		{
-			guiSpeed.text = (Mathf.RoundToInt(100*CubeMaster.Instance.cubeSpeed)).ToString();
-			guiHyperMatter.text = (100 * hyperMatter / maxHyperMatter).ToString() + "%";
-		}
-		
-		
-		guiScore.text = ScoreBoard.CurrentScore.ToString();
-		
-		guiHyperSpaceHint.renderer.enabled = (hyperMatter == maxHyperMatter && GameManager.Instance.ShowHints);
 	}
 	
 	IEnumerator HyperJump()
