@@ -34,6 +34,7 @@ public class HyperMatterSpawner : MonoBehaviour
 		}
 	}
 	
+	// avoid spawning hypermatter near the player whilst in hyperjump
 	IEnumerator HyperSpawn()
 	{
 		hyper = true;

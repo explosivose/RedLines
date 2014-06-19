@@ -8,6 +8,7 @@ public class HyperDust : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		initialScale = transform.localScale;
+		Destroy(this.gameObject, 30f);
 	}
 	
 	// Update is called once per frame
