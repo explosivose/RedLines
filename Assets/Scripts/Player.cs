@@ -123,8 +123,10 @@ public class Player : Singleton<Player>
 	IEnumerator HyperJump()
 	{
 		hyperJump = true;
-		PlayRandomSound(audioHyperJumpEnter, transform.position);
+		hyperJumpCount++;
 		hyperMatter = 0;
+		maxHyperMatter += hyperJumpCount * 2;
+		PlayRandomSound(audioHyperJumpEnter, transform.position);
 		LevelGenerator.Reset(transform.position);
 		LevelGenerator.LockPosition();
 		LevelGenerator.Obstacles = false;
@@ -140,7 +142,7 @@ public class Player : Singleton<Player>
 		CubeMaster.Instance.HyperJump = false;
 		PlayRandomSound(audioHyperJumpExit, transform.position);
 		ScreenShake.Instance.Shake(0.5f,0.5f);
-		hyperJumpCount++;
+		
 		yield return new WaitForSeconds(0.5f);
 		LevelGenerator.Unlock();
 		LevelGenerator.Obstacles = true;
