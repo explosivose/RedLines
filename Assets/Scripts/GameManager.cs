@@ -125,12 +125,15 @@ public class GameManager : Singleton<GameManager>
 	void Update()
 	{
 		// grab the mouse cursor while playing
-		if (!Screen.lockCursor && state == GameState.Playing)
-		{
+		if (!Screen.lockCursor && state == GameState.Playing) {
 			Pause();
 		}
-		if (Input.GetKeyUp(KeyCode.Escape) && state == GameState.Playing)
+		if (Input.GetKeyUp(KeyCode.Escape) && state == GameState.Playing) {
 			Pause();
+		}
+		if (Time.timeSinceLevelLoad > 30f) {
+			hints = 0;
+		}
 	}
 	
 	private enum GUIState

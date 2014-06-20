@@ -21,7 +21,7 @@ public class HyperMatter : MonoBehaviour
 		initialScale = transform.localScale;
 		Destroy(this.gameObject, 30f);
 		
-		if (Time.timeSinceLevelLoad < 15f && GameManager.Instance.ShowHints)
+		if (GameManager.Instance.ShowHints)
 		{
 			hyperMatterHint = Instantiate(hyperMatterHintPrefab) as Transform;
 			provideHint = true;
@@ -39,7 +39,7 @@ public class HyperMatter : MonoBehaviour
 		transform.parent.Rotate(Vector3.one * hyperfactor);
 		if (provideHint)
 		{
-			hyperMatterHint.position = transform.parent.position;
+			hyperMatterHint.position = transform.parent.position + Vector3.back * transform.parent.localScale.x;
 		}
 	}
 	
