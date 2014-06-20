@@ -11,9 +11,11 @@ public class Player : Singleton<Player>
 	
 	public AudioClip[] audioGameStart;
 	public AudioClip[] audioDeath;
+	public AudioClip[] audioHyperDustPickupFail;
 	public AudioClip[] audioHyperJumpReady;
 	public AudioClip[] audioHyperJumpEnter;
 	public AudioClip[] audioHyperJumpExit;
+	public AudioClip[] audioHyperJumpFail;
 	
 	private Vector3 direction = Vector3.zero;
 	private Vector3 targetPosition = Vector3.zero;
@@ -111,11 +113,15 @@ public class Player : Singleton<Player>
 		{
 			BroadcastMessage("Fire");
 		}
-		if (Input.GetKey(KeyCode.Space))
+		if (Input.GetKeyDown(KeyCode.Space))
 		{
 			if (!hyperJump && hyperMatter == maxHyperMatter)
 			{
 				StartCoroutine( HyperJump() );
+			}
+			else if (!hyperJump)
+			{
+				PlayRandomSound(audioHyperJumpFail, transform.position);
 			}
 		}
 	}
@@ -167,6 +173,10 @@ public class Player : Singleton<Player>
 			if (hyperMatter + newHyperMatter < maxHyperMatter) 
 			{
 				newHyperMatter++;
+			}
+			else 
+			{
+				PlayRandomSound(audioHyperDustPickupFail, col.transform.position);
 			}
 		}
 	}

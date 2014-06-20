@@ -36,7 +36,7 @@ GameObject:
   m_IsActive: 1
 --- !u!1 &100006
 GameObject:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 4
@@ -431,8 +431,8 @@ Transform:
   m_LocalPosition: {x: 0, y: -.166195348, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 400020}
-  m_RootOrder: 1
+  m_Father: {fileID: 400026}
+  m_RootOrder: 3
 --- !u!4 &400008
 Transform:
   m_ObjectHideFlags: 1
@@ -452,7 +452,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100010}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -20}
+  m_LocalPosition: {x: 0, y: 0, z: -10.282692}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 400026}
@@ -470,7 +470,7 @@ Transform:
   - {fileID: 400016}
   - {fileID: 400034}
   m_Father: {fileID: 400020}
-  m_RootOrder: 4
+  m_RootOrder: 3
 --- !u!4 &400016
 Transform:
   m_ObjectHideFlags: 1
@@ -490,7 +490,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100018}
   m_LocalRotation: {x: 0, y: -1, z: 0, w: -4.37113883e-08}
-  m_LocalPosition: {x: -3.54419231, y: -.374532074, z: 4.10315275}
+  m_LocalPosition: {x: -3.61767411, y: -.374532074, z: 4.10315275}
   m_LocalScale: {x: .0434782356, y: .0666666552, z: .0499999784}
   m_Children: []
   m_Father: {fileID: 400044}
@@ -506,7 +506,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 400048}
-  - {fileID: 400006}
   - {fileID: 400022}
   - {fileID: 400026}
   - {fileID: 400014}
@@ -524,7 +523,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 400020}
-  m_RootOrder: 2
+  m_RootOrder: 1
 --- !u!4 &400024
 Transform:
   m_ObjectHideFlags: 1
@@ -550,8 +549,9 @@ Transform:
   - {fileID: 400010}
   - {fileID: 400008}
   - {fileID: 400024}
+  - {fileID: 400006}
   m_Father: {fileID: 400020}
-  m_RootOrder: 3
+  m_RootOrder: 2
 --- !u!4 &400028
 Transform:
   m_ObjectHideFlags: 1
@@ -655,7 +655,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100044}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: -4.37113883e-08}
-  m_LocalPosition: {x: .0081371665, y: -1.48827159, z: -11.9744644}
+  m_LocalPosition: {x: .0081371665, y: -1.48827159, z: -2.25710678}
   m_LocalScale: {x: 1, y: .75, z: 1}
   m_Children:
   - {fileID: 400042}
@@ -670,7 +670,7 @@ Transform:
   - {fileID: 400000}
   - {fileID: 400030}
   m_Father: {fileID: 400020}
-  m_RootOrder: 5
+  m_RootOrder: 4
 --- !u!4 &400046
 Transform:
   m_ObjectHideFlags: 1
@@ -891,7 +891,7 @@ Renderer:
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 770ba7759e4234a449731f7a17d4001b, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 0
@@ -1011,7 +1011,7 @@ Renderer:
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 770ba7759e4234a449731f7a17d4001b, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 0
@@ -1460,12 +1460,23 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 1005f9f249342ea4691c405e756f7491, type: 3}
   audioDeath:
   - {fileID: 8300000, guid: f341f1891190366468b13ccf0afa4521, type: 3}
+  audioHyperDustPickupFail:
+  - {fileID: 8300000, guid: 3130daa9fa557aa4386f8ef96c508e07, type: 3}
   audioHyperJumpReady:
   - {fileID: 8300000, guid: c250603d72fff91408fddeeec2b207b0, type: 3}
+  - {fileID: 8300000, guid: f73b445ea9d8dce4b9d5c4226a7d041d, type: 3}
+  - {fileID: 8300000, guid: 1f17231cc915f5a4faf220758824dd35, type: 3}
+  - {fileID: 8300000, guid: 4b1f7892595f2c445a9040b449d5f67b, type: 3}
+  - {fileID: 8300000, guid: 45c975670d0eb4b42abd9575133902f6, type: 3}
   audioHyperJumpEnter:
   - {fileID: 8300000, guid: 7668c0290e3209e459cd8f7c7744eec7, type: 3}
   audioHyperJumpExit:
   - {fileID: 8300000, guid: 93f37f587f8400a4c916ab96269df05e, type: 3}
+  audioHyperJumpFail:
+  - {fileID: 8300000, guid: ad78ad8d51ff355438e82b31cf32cc71, type: 3}
+  - {fileID: 8300000, guid: 88ac01c608cce7d4091b9cee7fd94644, type: 3}
+  - {fileID: 8300000, guid: 884ceaf50cc78b7428ed58f2ce72e208, type: 3}
+  - {fileID: 8300000, guid: 6d1f0fe6fc205384e8813556dc8634c4, type: 3}
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1
