@@ -41,10 +41,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   obstacles:
   - {fileID: 400014, guid: 5dbc6b5fec2debd4c8218c31ccf79501, type: 2}
+  - {fileID: 400034, guid: 8cf519ca986e00d4aadf18edd39429c2, type: 2}
+  - {fileID: 400050, guid: db0b2c7290ac0fe4ebb2b08a4221d37b, type: 2}
   initialTimeBetweenObstacles: 20
   variation: .5
   obstacleFrequencyFactor: .25
-  minimumTimeBetweenObstacles: 4
+  minimumTimeBetweenObstacles: 3
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

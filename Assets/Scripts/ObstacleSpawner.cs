@@ -29,7 +29,7 @@ public class ObstacleSpawner : MonoBehaviour {
 			wait += Random.Range(-window, window);
 			if (wait < minimumTimeBetweenObstacles) wait = minimumTimeBetweenObstacles;
 			yield return new WaitForSeconds(wait);
-			int index = Random.Range(0, obstacles.Length-1);
+			int index = Random.Range(0, obstacles.Length);
 			float offsetDistance = Random.Range(0f, LevelGenerator.MaxRadius);
 			Vector3 pos = LevelGenerator.CurrentPosition + Random.onUnitSphere * offsetDistance;
 			Instantiate(obstacles[index], pos, Random.rotation);
