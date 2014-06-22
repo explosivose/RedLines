@@ -5,6 +5,7 @@ public class Player : Singleton<Player>
 {
 	public float maxSpeed  = 10f;
 	public float turnSpeed = 100f;
+	public float hyperJumpSpeedChange = 2f;
 	public Transform deathsplosion;
 	public bool isDead = false;
 	public int maxHyperMatter = 16;
@@ -45,7 +46,7 @@ public class Player : Singleton<Player>
 		
 		PlayRandomSound(audioGameStart, transform.position);
 		StartCoroutine( HyperDustPickupQueue() );
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.3f);
 		StartCoroutine( HyperJump() );
 	}
 	
@@ -134,23 +135,23 @@ public class Player : Singleton<Player>
 		hyperJump = true;
 		collider.enabled = false;
 		bool firstJump = hyperJumpCount == 0;
-		if (firstJump) Time.timeScale = 2f;
+		if (firstJump) Time.timeScale = 3f;
 		hyperJumpCount++;
 		hyperMatter = 0;
-		maxHyperMatter += hyperJumpCount * 2;
+		maxHyperMatter += hyperJumpCount;
 		PlayRandomSound(audioHyperJumpEnter, transform.position);
 		LevelGenerator.Reset(transform.position);
 		LevelGenerator.LockPosition();
 		LevelGenerator.Obstacles = false;
 		CubeMaster.Instance.HyperJump = true;
-		CubeMaster.Instance.SpeedChange(1.75f);
+		CubeMaster.Instance.SpeedChange(hyperJumpSpeedChange);
 		ScreenShake.Instance.Shake(0.5f,1f/CubeMaster.Instance.CubeTravelTime);
 		hyperSpaceEffect.time = 0f;
 		hyperSpaceEffect.playbackSpeed = hyperSpaceEffect.duration/CubeMaster.Instance.CubeTravelTime;
 		hyperSpaceEffect.Play();
 		transform.rotation = Quaternion.identity;
 		yield return new WaitForSeconds(CubeMaster.Instance.CubeTravelTime);
-		ScoreBoard.CurrentScore += Mathf.RoundToInt(10000f/CubeMaster.Instance.CubeTravelTime);
+		ScoreBoard.CurrentScore += Mathf.RoundToInt(100000f/CubeMaster.Instance.CubeTravelTime);
 		CubeMaster.Instance.HyperJump = false;
 		PlayRandomSound(audioHyperJumpExit, transform.position);
 		ScreenShake.Instance.Shake(0.5f,0.5f);
@@ -204,7 +205,7 @@ public class Player : Singleton<Player>
 			{
 				newHyperMatter--;
 				hyperMatter++;
-				ScoreBoard.CurrentScore += 1500 * Player.Instance.HyperMultiplier;
+				ScoreBoard.CurrentScore += 3000 * hyperJumpCount;
 				audio.pitch = 0.5f + (float)hyperMatter/(float)maxHyperMatter;
 				audio.Play();
 				yield return new WaitForSeconds(0.125f);

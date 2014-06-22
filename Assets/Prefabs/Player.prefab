@@ -1512,7 +1512,7 @@ MonoBehaviour:
   turnSpeed: 100
   deathsplosion: {fileID: 400018, guid: e64860351235eb34cb278fe95e7f1966, type: 2}
   isDead: 0
-  maxHyperMatter: 24
+  maxHyperMatter: 16
   audioGameStart:
   - {fileID: 8300000, guid: 1005f9f249342ea4691c405e756f7491, type: 3}
   audioDeath:
