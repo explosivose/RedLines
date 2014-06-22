@@ -41,6 +41,7 @@ public class CubeMaster : Singleton<CubeMaster>
 	
 	private float 		targetCubeSpeed;
 	private float 		overshootCubeSpeed;
+	private float 		initialCubeSpeed;
 	
 	private float 		hyperJumpEnterTime = 0f;
 	private float 		hyperJumpExitTime = 0f;
@@ -100,6 +101,13 @@ public class CubeMaster : Singleton<CubeMaster>
 			return distance/cubeSpeed;
 		}
 	}
+	
+	public float InitialCubeSpeed
+	{
+		get {
+			return initialCubeSpeed;
+		}
+	}
 
 	public void SpeedSet(float newSpeed) 
 	{
@@ -117,6 +125,7 @@ public class CubeMaster : Singleton<CubeMaster>
 		player = GameObject.FindGameObjectWithTag("Player").transform;
 		lights = GameObject.FindGameObjectsWithTag("Lights");
 		targetCubeSpeed = cubeSpeed;
+		initialCubeSpeed = cubeSpeed;
 		cubeSpeed *= 0.5f;
 		cubePrefab.transform.localScale = cubeScale;
 		// spawn a bunch of cubes

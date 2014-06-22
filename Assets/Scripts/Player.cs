@@ -100,7 +100,10 @@ public class Player : Singleton<Player>
 		// move direction relative to camera orientation
 		direction = Camera.main.transform.TransformDirection(new Vector3(x, -y));
 		direction.z = 0f;	// remove any Z component added by TransformDirection()
-		targetPosition += direction * maxSpeed * Time.deltaTime;
+		
+		// maxSpeed scales with cubespeed
+		float speedChangeFactor = CubeMaster.Instance.cubeSpeed/CubeMaster.Instance.InitialCubeSpeed;
+		targetPosition += direction * maxSpeed * speedChangeFactor * Time.deltaTime;
 		
 		transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 16f);
 		transform.rotation = Quaternion.Euler(vrot);
@@ -129,6 +132,7 @@ public class Player : Singleton<Player>
 	IEnumerator HyperJump()
 	{
 		hyperJump = true;
+		collider.enabled = false;
 		bool firstJump = hyperJumpCount == 0;
 		if (firstJump) Time.timeScale = 2f;
 		hyperJumpCount++;
@@ -154,6 +158,7 @@ public class Player : Singleton<Player>
 		yield return new WaitForSeconds(0.5f);
 		LevelGenerator.Unlock();
 		LevelGenerator.Obstacles = true;
+		collider.enabled = true;
 		hyperJump = false;
 	}	
 	
