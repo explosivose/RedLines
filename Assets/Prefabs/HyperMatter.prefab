@@ -228,7 +228,7 @@ MonoBehaviour:
   hyperDustPrefab: {fileID: 400000, guid: d84f34d64258e1b42bd70dc172aa11ae, type: 2}
   hyperMatterHintPrefab: {fileID: 400000, guid: 24998a693822a9b4fb1a247ed43dd572,
     type: 2}
-  explosion: {fileID: 400000, guid: e64860351235eb34cb278fe95e7f1966, type: 2}
+  explosion: {fileID: 400008, guid: a662269f5e95c2a4785d22c8993dd32f, type: 2}
   minSpeedFactor: .5
   maxSpeedFactor: 1.5
   audioExplosions:
