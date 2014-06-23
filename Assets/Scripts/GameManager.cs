@@ -27,18 +27,25 @@ public class GameManager : Singleton<GameManager>
 	}
 	
 	private string playerName;
+	private float musicVolume;
+	private float masterVolume;
 	private int hints;
 	
 	void LoadSettings()
 	{
 		playerName = PlayerPrefs.GetString("playerName", "mingebag");
-		AudioListener.volume = PlayerPrefs.GetFloat("audioVolume", 0.75f);
+		musicVolume = PlayerPrefs.GetFloat("musicVolume", 0.75f);
+		masterVolume = PlayerPrefs.GetFloat("audioVolume", 0.75f);
 		hints = PlayerPrefs.GetInt("hints", 1);
+		
+		Camera.main.audio.volume = musicVolume;
+		AudioListener.volume = masterVolume;
 	}
 	void SaveSettings()
 	{
 		PlayerPrefs.SetString("playerName", playerName);
-		PlayerPrefs.SetFloat("audioVolume", AudioListener.volume);
+		PlayerPrefs.SetFloat("musicVolume", musicVolume);
+		PlayerPrefs.SetFloat("audioVolume", masterVolume);
 		PlayerPrefs.SetInt("hints", hints);
 	}
 	
@@ -69,7 +76,7 @@ public class GameManager : Singleton<GameManager>
 		Screen.lockCursor = true;
 		state = GameState.Playing;
 		gui = GUIState.NoWindows;
-		AudioListener.volume = PlayerPrefs.GetFloat("audioVolume", 0.75f);
+		AudioListener.volume = masterVolume;
 	}
 	
 	public void GameOver()
@@ -260,6 +267,9 @@ public class GameManager : Singleton<GameManager>
 	public GUIWindow options = new GUIWindow();
 	void wOptions(int windowID)
 	{
+		AudioListener.volume = masterVolume;
+		Camera.main.audio.volume = musicVolume;
+		
 		bool h = (hints == 0);
 		
 		GUILayout.Space(menuSkin.window.fontSize);
@@ -268,6 +278,7 @@ public class GameManager : Singleton<GameManager>
 		
 		if (GUILayout.Button("MAIN MENU", menuSkin.button))
 		{
+			if (state == GameState.Paused) AudioListener.volume = 0f;
 			SaveSettings();
 			gui = GUIState.MainMenu;
 		}
@@ -278,8 +289,13 @@ public class GameManager : Singleton<GameManager>
 		GUILayout.EndHorizontal();
 		
 		GUILayout.BeginHorizontal();
-		GUILayout.Label("AUDIOVOLUME:", menuSkin.label);
-		AudioListener.volume = GUILayout.HorizontalSlider(AudioListener.volume, 0f, 1f, menuSkin.horizontalSlider, menuSkin.horizontalSliderThumb);
+		GUILayout.Label("MASTERVOLUME:", menuSkin.label);
+		masterVolume = GUILayout.HorizontalSlider(masterVolume, 0f, 1f, menuSkin.horizontalSlider, menuSkin.horizontalSliderThumb);
+		GUILayout.EndHorizontal();
+		
+		GUILayout.BeginHorizontal();
+		GUILayout.Label("MUSIC:", menuSkin.label);
+		musicVolume = GUILayout.HorizontalSlider(musicVolume, 0f, 1f, menuSkin.horizontalSlider, menuSkin.horizontalSliderThumb);
 		GUILayout.EndHorizontal();
 		
 		GUILayout.BeginHorizontal();
@@ -289,7 +305,6 @@ public class GameManager : Singleton<GameManager>
 		
 		if (h) hints = 1;
 		else hints = 0;
-
 	}
 	
 	public GUIWindow credits = new GUIWindow();
@@ -304,6 +319,9 @@ public class GameManager : Singleton<GameManager>
 		if (GUILayout.Button("HTTP://SUPERCORE.CO.UK", menuSkin.button))
 			Application.OpenURL("HTTP://SUPERCORE.CO.UK");
 		GUILayout.Label("Laser Sounds by Michel Baradari apollo-music.de", menuSkin.label);
+		GUILayout.Label ("Menu Music: 'The Life and Death of a Certain K. Zabriskie, Patriarch'" +
+		                 " by Chris Zabriskie", menuSkin.label);
+		GUILayout.Label ("Font 'Akashi' by Ten by Twenty", menuSkin.label);
 
 	}
 
