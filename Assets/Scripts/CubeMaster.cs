@@ -94,6 +94,20 @@ public class CubeMaster : Singleton<CubeMaster>
 		}
 	}
 	
+	public bool HyperJumpEnter
+	{
+		get {
+			return masterState == cubeMasterState.hyperSpaceEnter;
+		}
+	}
+	
+	public bool HyperJumpExit
+	{
+		get {
+			return masterState == cubeMasterState.hyperSpaceExit;
+		}
+	}
+	
 	public float CubeTravelTime
 	{
 		get {
