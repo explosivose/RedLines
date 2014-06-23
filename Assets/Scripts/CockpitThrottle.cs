@@ -6,10 +6,12 @@ public class CockpitThrottle : MonoBehaviour {
 	public Transform fullThrottle;
 	
 	private Vector3 zeroThrottlePosition;
+	private Quaternion zeroThrottleRotation;
 	
 	// Use this for initialization
 	void Start () {
 		zeroThrottlePosition = transform.localPosition;
+		zeroThrottleRotation = transform.localRotation;
 	}
 	
 	// Update is called once per frame
@@ -19,14 +21,20 @@ public class CockpitThrottle : MonoBehaviour {
 			target = fullThrottle.localPosition;
 		}
 		
-		float s = 1.70158f * 1.525f;
-		//hyperjumpentertime
 		float z = Berp(transform.localPosition.z, target.z, Time.deltaTime * 0.5f);
 		if (CubeMaster.Instance.HyperJump) {
 			z += Random.value * 0.03f;
+			//a += Random.value * 1f;
 		}
+		
 		target.z = z;
 		transform.localPosition = target;
+		
+		
+		float t = Mathf.InverseLerp(zeroThrottlePosition.z, fullThrottle.localPosition.z, transform.localPosition.z);
+		transform.localRotation = Quaternion.Lerp(zeroThrottleRotation, fullThrottle.localRotation, t);
+		
+		
 	}
 	
 	
