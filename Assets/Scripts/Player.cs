@@ -145,7 +145,7 @@ public class Player : Singleton<Player>
 		LevelGenerator.Obstacles = false;
 		CubeMaster.Instance.HyperJump = true;
 		CubeMaster.Instance.SpeedChange(hyperJumpSpeedChange);
-		ScreenShake.Instance.Shake(0.5f,1f/CubeMaster.Instance.CubeTravelTime);
+		ScreenShake.Instance.Shake(0.5f,2f/CubeMaster.Instance.CubeTravelTime);
 		hyperSpaceEffect.time = 0f;
 		hyperSpaceEffect.playbackSpeed = hyperSpaceEffect.duration/CubeMaster.Instance.CubeTravelTime;
 		hyperSpaceEffect.Play();
@@ -169,6 +169,7 @@ public class Player : Singleton<Player>
 		{
 			if (!isDead) StartCoroutine( Death() );
 		}
+		ScreenShake.Instance.Shake(0.75f,3f);
 	}
 	
 	void OnTriggerEnter(Collider col)
