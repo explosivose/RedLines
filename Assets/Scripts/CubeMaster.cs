@@ -39,6 +39,9 @@ public class CubeMaster : Singleton<CubeMaster>
 	public float 		cubeSpeed = 5f;
 	public int 			cubeSpeedSampleCount = 800;
 	
+	public int gap;
+	
+	
 	private float 		targetCubeSpeed;
 	private float 		overshootCubeSpeed;
 	private float 		initialCubeSpeed;
@@ -158,21 +161,6 @@ public class CubeMaster : Singleton<CubeMaster>
 		// spawn the first stretch of level before game starts
 		LevelGenerator.Reset();
 		LevelGenerator.Unlock();
-		/*
-		float distance = Vector3.Distance(transform.position, player.position);
-		float timer = - (distance/cubeSpeed);
-		for (float i = 0f; i < distance; i += cubeScale.z)
-		{
-			List<CubeMeta> cubeMetaSlice = LevelGenerator.Generate3D(cubeScale.y);
-			foreach (CubeMeta m in cubeMetaSlice)
-			{
-				m.startTime = timer;
-				cubeMetaList.Add(m);
-			}
-			while ( cubeMetaList.Count > numberOfCubes)
-				cubeMetaList.RemoveAt(0);
-			timer += cubeScale.z / cubeSpeed;
-		}*/
 		
 		// start level loop
 		StartCoroutine(SpeedController());
@@ -183,8 +171,10 @@ public class CubeMaster : Singleton<CubeMaster>
 	{
 		while (true)
 		{
+			int sinGap = Mathf.RoundToInt( gap * ( Mathf.Sin (Time.time/2f) + 2f ) );
+			
 			// get the next CubeMeta data for the next Slice
-			List<CubeMeta> cubeMetaSlice = LevelGenerator.Generate3D(cubeScale.y);
+			List<CubeMeta> cubeMetaSlice = LevelGenerator.Generate(sinGap, 4, 8);
 			
 			// figure out the position ahead of the player to spawn
 			masterSpawnOffset = Vector3.back;// * distance;

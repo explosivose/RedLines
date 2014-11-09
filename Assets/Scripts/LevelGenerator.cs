@@ -21,8 +21,8 @@ public class LevelGenerator
 	}
 	
 	private static Vector3 currentPosition = Vector3.zero;
-	private static moving vState = moving.straight;
-	private static moving hState = moving.straight;
+	public static moving vState = moving.straight;
+	public static moving hState = moving.straight;
 	private static size xrState = size.locked;
 	private static size yrState = size.locked;
 	private static int ticker = 0;
@@ -103,7 +103,8 @@ public class LevelGenerator
 		xrState = size.mutate;
 		yrState = size.mutate;
 		vState = moving.straight;
-		hState = moving.straight;
+		// ## DISABLED FOR 1000AIRPLANES
+		//hState = moving.straight;
 	}
 	
 	public static bool Obstacles 
@@ -143,35 +144,27 @@ public class LevelGenerator
 			{
 				CubeMeta tempCube = new CubeMeta();
 				// target position is height determined by i
-				tempCube.targetPosition = currentPosition + (Vector3.up * i);
+				tempCube.targetPosition = currentPosition + Vector3.up * (i - total/2);
 				// start offset is some Z offset
 				tempCube.startPosition = tempCube.targetPosition + (Vector3.left * Random.Range(-20, 20));
-				// additional offset is just zero here
-				//tempCube.positionOffset = Vector3.zero;//Vector3.forward * Mathf.Abs(i - (total/2f)) * 0.25f;
-				
-				// audio beat value should be less than 1
-				//float beat = Mathf.Abs(i - (total/2f));
-				//Rescale(ref beat, total/2f, 0f, 0.5f, 0f);
-				//tempCube.audioBeat = beat;
+				tempCube.layerCenter = currentPosition;
+				tempCube.layerIndex = ticker;
+				tempCube.startTime = Time.time;
 				
 				// add metadata to list
 				cubes.Add(tempCube);
 			}
 			
-			if (i > topCubes + gap/2f && i < total - botCubes - gap/2f )
+			if (i > topCubes + gap/2f && i < total - botCubes - gap/2f && obstacles )
 			{
 				CubeMeta tempCube = new CubeMeta();
 				// target position is height determined by i
-				tempCube.targetPosition = currentPosition + (Vector3.up * i);
+				tempCube.targetPosition = currentPosition + Vector3.up * (i - total/2);
 				// start offset is some Z offset
 				tempCube.startPosition = tempCube.targetPosition + (Vector3.left * Random.Range(-20, 20));
-				// additional offset is just zero here
-				//tempCube.positionOffset = Vector3.forward * Mathf.Abs(i - (total/2f)) * 0.25f;
-				
-				// audio beat value should be less than 1
-				//float beat = Mathf.Abs(i - (total/2f));
-				//Rescale(ref beat, total/2f, 0f, 0.5f, 0f);
-				//tempCube.audioBeat = 0f;
+				tempCube.layerCenter = currentPosition;
+				tempCube.layerIndex = ticker;
+				tempCube.startTime = Time.time;
 				
 				// add metadata to list
 				cubes.Add(tempCube);
@@ -182,6 +175,7 @@ public class LevelGenerator
 		
 	}
 	
+	// 	## GENERATE3D() NOT USED IN 1000AIRPLANES
 	private static float xRadius = 6f;
 	private static float xRadiusTarget = 0f;
 	private static float yRadius = 4f;

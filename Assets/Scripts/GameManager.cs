@@ -57,7 +57,7 @@ public class GameManager : Singleton<GameManager>
 	void StartGame()
 	{
 		LevelGenerator.Reset();
-		Application.LoadLevel("RedLines");
+		Application.LoadLevel("1000airplanes");
 		UnPause();
 	}
 	

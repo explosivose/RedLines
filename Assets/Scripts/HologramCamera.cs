@@ -15,7 +15,7 @@ public class HologramCamera : MonoBehaviour {
 	void Start () {
 		switch (viewFrom) {
 		case perspective.behind:
-			camera.farClipPlane = 30f;
+			//camera.farClipPlane = 30f;
 			offset = Vector3.back * camera.farClipPlane/2f;
 			break;
 		case perspective.right:

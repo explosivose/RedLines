@@ -16,6 +16,7 @@ public class WeaponLaser : MonoBehaviour
 	private Color startC;
 	private Color endC;
 	private Transform player;
+	private Transform crosshair;
 	private GameObject[] lights;
 	
 	void Start()
@@ -30,6 +31,7 @@ public class WeaponLaser : MonoBehaviour
 			lights[i] = new GameObject("LaserLight"+i, typeof(Light));
 			lights[i].SetActive(false);
 		}
+		crosshair = transform.FindChild("crosshair");
 	}
 	
 	void FixedUpdate()
@@ -58,19 +60,22 @@ public class WeaponLaser : MonoBehaviour
 			else
 			{
 				lr.SetVertexCount(2);
-				lr.SetWidth(0.01f, 0f);
+				lr.SetWidth(0.1f, 0f);
 				lr.SetColors(Color.red, Color.red);
 				lr.SetPosition(0, transform.position);
 				RaycastHit hit;
 				if (Physics.Raycast(transform.position, player.forward, out hit))
 				{
 					lr.SetPosition(1, hit.point);
+					Crosshair(hit.point);
 					if (hit.transform.tag == "HyperMatter")
 						lr.SetColors(Color.green, Color.red);
 				}
 				else 
 				{
-					lr.SetPosition(1, transform.position + player.forward * 50f);
+					Vector3 fakehit = transform.position + player.forward * 50f;
+					lr.SetPosition(1, fakehit);
+					Crosshair(fakehit);
 				}				
 				for (int i = 0; i < rendererPoints; i++)
 				{
@@ -98,6 +103,13 @@ public class WeaponLaser : MonoBehaviour
 			}
 
 		}
+	}
+	
+	void Crosshair(Vector3 position) 
+	{
+		crosshair.position = position;
+		Vector3 dirToCamera = crosshair.position - Camera.main.transform.position;
+		crosshair.rotation = Quaternion.LookRotation(dirToCamera);
 	}
 	
 	IEnumerator FireRoutine(Vector3 target)

@@ -5,9 +5,11 @@ public class Player : Singleton<Player>
 {
 	public float maxSpeed  = 10f;
 	public float turnSpeed = 100f;
+	public float acceleration = 10f;
 	public float hyperJumpSpeedChange = 2f;
 	public Transform deathsplosion;
 	public bool isDead = false;
+	public bool controlEnabled = false;
 	public int maxHyperMatter = 16;
 	
 	public AudioClip[] audioGameStart;
@@ -19,7 +21,10 @@ public class Player : Singleton<Player>
 	public AudioClip[] audioHyperJumpFail;
 	
 	private Vector3 direction = Vector3.zero;
+	public float maxThrust = 400f;
+	public float thrust {get; private set;}
 	private Vector3 targetPosition = Vector3.zero;
+	private float startZ;
 	private bool hyperJump = false;
 	private int hyperMatter = 0; 
 	private int newHyperMatter = 0;
@@ -42,25 +47,70 @@ public class Player : Singleton<Player>
 	IEnumerator Start () 
 	{
 		targetPosition = transform.position;
+		startZ = transform.position.z;
 		hyperSpaceEffect = transform.FindChild("HyperSpaceEffect").particleSystem;
-		
+		controlEnabled = false;
 		PlayRandomSound(audioGameStart, transform.position);
 		StartCoroutine( HyperDustPickupQueue() );
 		yield return new WaitForSeconds(0.3f);
 		StartCoroutine( HyperJump() );
+		controlEnabled = true;
+		// 2D: keep the ship on the track
+		
+		
 	}
 	
 
 	void Update () 
 	{
-		if (isDead || hyperJump)
+		if (isDead || hyperJump || !controlEnabled)
 			return;
-		
-		MovementUpdate();
+
 		WeaponUpdate();
 	}
 	
+	void FixedUpdate() 
+	{
+		if (isDead || hyperJump || !controlEnabled)
+			return;
+		MovementUpdate();
+	}
+	
 	void MovementUpdate()
+	{
+		float accFactor = CubeMaster.Instance.cubeSpeed/CubeMaster.Instance.InitialCubeSpeed;
+		
+		// ship thrust
+		if (Input.GetButton("ThrustUp")) 
+		{
+			thrust += acceleration * accFactor;
+			thrust = Mathf.Min(thrust, maxThrust);
+		}
+		else if (Input.GetButton("ThrustDown"))
+		{
+			thrust -= acceleration * accFactor;
+			thrust = Mathf.Max(thrust, -maxThrust);
+		}
+		else
+		{
+			thrust *= 0.75f;
+		}
+		
+		// corrective Z (forward/back) 
+		float error = startZ - transform.position.z;
+		Vector3 correction = Vector3.forward * error;
+		
+		Vector3 force = Vector3.up * thrust * rigidbody.drag * rigidbody.mass;
+		rigidbody.AddForce(Vector3.up * thrust + correction);
+		
+		// ship rotation
+		Vector3 vel = rigidbody.velocity;
+		vel += Vector3.forward * CubeMaster.Instance.cubeSpeed;
+		Quaternion forward = Quaternion.LookRotation(vel);
+		transform.rotation = Quaternion.Lerp(transform.rotation, forward, Time.deltaTime);
+	}
+	
+	void MovementUpdate3D()
 	{
 		// decide which input to take
 		// read mouse axis and other axis inputs
@@ -117,7 +167,8 @@ public class Player : Singleton<Player>
 		{
 			BroadcastMessage("Fire");
 		}
-		if (Input.GetKeyDown(KeyCode.Space))
+		
+		if (Input.GetButtonDown("Fire2"))
 		{
 			if (!hyperJump && hyperMatter == maxHyperMatter)
 			{
@@ -150,7 +201,7 @@ public class Player : Singleton<Player>
 		hyperSpaceEffect.playbackSpeed = hyperSpaceEffect.duration/CubeMaster.Instance.CubeTravelTime;
 		hyperSpaceEffect.Play();
 		transform.rotation = Quaternion.identity;
-		yield return new WaitForSeconds(CubeMaster.Instance.CubeTravelTime);
+		yield return new WaitForSeconds(CubeMaster.Instance.CubeTravelTime * 1.5f);
 		ScoreBoard.CurrentScore += Mathf.RoundToInt(100000f/CubeMaster.Instance.CubeTravelTime);
 		CubeMaster.Instance.HyperJump = false;
 		PlayRandomSound(audioHyperJumpExit, transform.position);
@@ -160,6 +211,7 @@ public class Player : Singleton<Player>
 		LevelGenerator.Unlock();
 		LevelGenerator.Obstacles = true;
 		collider.enabled = true;
+		direction = Vector3.zero;
 		hyperJump = false;
 	}	
 	
@@ -170,6 +222,10 @@ public class Player : Singleton<Player>
 			if (!isDead) StartCoroutine( Death() );
 		}
 		ScreenShake.Instance.Shake(0.75f,3f);
+		Vector3 force = col.relativeVelocity * 2f;
+		Vector3 point = col.contacts[0].point;
+		Instantiate(deathsplosion, point, transform.rotation);
+		rigidbody.AddForceAtPosition(force, point, ForceMode.Impulse);
 	}
 	
 	void OnTriggerEnter(Collider col)
