@@ -7,7 +7,7 @@ public class GameManager : Singleton<GameManager>
 {
 	private Rect windowSize = new Rect();
 	private GUISkin menuSkin;
-	private string buildDate = "unknown";
+	private string releaseDate = "Thursday 26th June 2014";
 	
 	private enum GameState
 	{
@@ -210,6 +210,12 @@ public class GameManager : Singleton<GameManager>
 		GUILayout.Label(ScoreBoard.CurrentScore.ToString(), menuSkin.label);
 		GUILayout.EndHorizontal();
 		
+		if (GUILayout.Button("HTTP://SUPERCORE.CO.UK", menuSkin.button))
+			Application.OpenURL("HTTP://SUPERCORE.CO.UK");
+		
+		GUILayout.Space (10);
+		
+		
 		if (GUILayout.Button("AGAIN", menuSkin.button))
 		{
 			PlayerPrefs.SetString("playerName", playerName);
@@ -311,17 +317,21 @@ public class GameManager : Singleton<GameManager>
 	void wCredits(int windowID)
 	{
 		GUILayout.Space(menuSkin.window.fontSize);
-		GUILayout.Label("Build date: " + buildDate, menuSkin.label);
+		GUILayout.Label("Release date: " + releaseDate, menuSkin.label);
 		GUILayout.Space(Screen.height/8);
 		if (GUILayout.Button("MAIN MENU", menuSkin.button))
 			gui = GUIState.MainMenu;
 		GUILayout.Space (20f);
+		GUILayout.Label("Matt \"explosivose\" Blickem\n " +
+		 				"Sami Tanbouz\n " +
+		 				"Dan \"faemir\" Cohen", menuSkin.label);
 		if (GUILayout.Button("HTTP://SUPERCORE.CO.UK", menuSkin.button))
 			Application.OpenURL("HTTP://SUPERCORE.CO.UK");
-		GUILayout.Label("Laser Sounds by Michel Baradari apollo-music.de", menuSkin.label);
-		GUILayout.Label ("Menu Music: 'The Life and Death of a Certain K. Zabriskie, Patriarch'" +
-		                 " by Chris Zabriskie", menuSkin.label);
-		GUILayout.Label ("Font 'Akashi' by Ten by Twenty", menuSkin.label);
+		GUILayout.Space (20f);
+		GUILayout.Label("Laser Sounds by Michel Baradari apollo-music.de\n" +
+						"Menu Music: 'The Life and Death of a Certain K. Zabriskie, Patriarch'" +
+		                 " by Chris Zabriskie\n" +
+						"Font 'Akashi' by Ten by Twenty", menuSkin.label);
 
 	}
 
