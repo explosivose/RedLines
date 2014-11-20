@@ -7,7 +7,6 @@ public class GameManager : Singleton<GameManager>
 {
 	private Rect windowSize = new Rect();
 	private GUISkin menuSkin;
-	private string releaseDate = "Thursday 26th June 2014";
 	
 	private enum GameState
 	{
@@ -26,28 +25,11 @@ public class GameManager : Singleton<GameManager>
 		}
 	}
 	
-	private string playerName;
 	private float musicVolume;
 	private float masterVolume;
-	private int hints;
+	public int hints;
 	
-	void LoadSettings()
-	{
-		playerName = PlayerPrefs.GetString("playerName", "mingebag");
-		musicVolume = PlayerPrefs.GetFloat("musicVolume", 0.75f);
-		masterVolume = PlayerPrefs.GetFloat("audioVolume", 0.75f);
-		hints = PlayerPrefs.GetInt("hints", 1);
-		
-		Camera.main.audio.volume = musicVolume;
-		AudioListener.volume = masterVolume;
-	}
-	void SaveSettings()
-	{
-		PlayerPrefs.SetString("playerName", playerName);
-		PlayerPrefs.SetFloat("musicVolume", musicVolume);
-		PlayerPrefs.SetFloat("audioVolume", masterVolume);
-		PlayerPrefs.SetInt("hints", hints);
-	}
+
 	
 	public bool ShowHints
 	{
@@ -92,7 +74,7 @@ public class GameManager : Singleton<GameManager>
 	{
 		DontDestroyOnLoad(this);
 		menuSkin = (GUISkin)Resources.Load("Menus", typeof(GUISkin));
-		LoadSettings();
+		Options.LoadSettings();
 		// unfortunately this code doesnt work or even fail safely with a Unity Webplayer build :-((
 		//DateTime buildTime = RetrieveLinkerTimestamp();
 		//buildDate = String.Format("{0:d/M/yyyy HH:mm:ss}", buildTime);
@@ -163,26 +145,26 @@ public class GameManager : Singleton<GameManager>
 		
 		if (state == GameState.Paused)
 		{
-			if (GUILayout.Button("RESUME", menuSkin.button))
+			if (GUILayout.Button(Strings.guiResume, menuSkin.button))
 				UnPause();
 			GUILayout.Space(20);
 		}
 		
-		if (GUILayout.Button ("START", menuSkin.button))
+		if (GUILayout.Button (Strings.guiStart, menuSkin.button))
 			StartGame();
 		
-		if (GUILayout.Button("SCOREBOARD", menuSkin.button))
+		if (GUILayout.Button(Strings.guiScoreboard, menuSkin.button))
 			gui = GUIState.Scores;
 			
-		if (GUILayout.Button("OPTIONS", menuSkin.button))
+		if (GUILayout.Button(Strings.guiOptions, menuSkin.button))
 			gui = GUIState.Options;
 			
-		if (GUILayout.Button("CREDITS", menuSkin.button))
+		if (GUILayout.Button(Strings.guiCredits, menuSkin.button))
 			gui = GUIState.Credits;
 			
 		if (!Application.isWebPlayer)
 		{
-			if (GUILayout.Button("QUIT", menuSkin.button))
+			if (GUILayout.Button(Strings.guiQuit, menuSkin.button))
 				Application.Quit();
 		}
 	}
@@ -193,32 +175,32 @@ public class GameManager : Singleton<GameManager>
 		GUILayout.Space(menuSkin.window.fontSize);
 		GUILayout.Space(Screen.height/8f);
 		
-		if (GUILayout.Button("MAIN MENU", menuSkin.button))
+		if (GUILayout.Button(Strings.guiMainMenu, menuSkin.button))
 		{
-			PlayerPrefs.SetString("playerName", playerName);
+			PlayerPrefs.SetString(Options.keyPlayerName, Options.playerName);
 			ScoreBoard.SaveAndClearCurrentScore();
 			gui = GUIState.MainMenu;
 		}
 		
 		GUILayout.BeginHorizontal();
-		GUILayout.Label("PILOTNAME:", menuSkin.label);
-		playerName = GUILayout.TextField(playerName, 16, menuSkin.textField);
+		GUILayout.Label(Strings.guiPilotName, menuSkin.label);
+		Options.playerName = GUILayout.TextField(Options.playerName, 16, menuSkin.textField);
 		GUILayout.EndHorizontal();
 		
 		GUILayout.BeginHorizontal();
-		GUILayout.Label("SCORE:", menuSkin.label);
+		GUILayout.Label(Strings.guiScore, menuSkin.label);
 		GUILayout.Label(ScoreBoard.CurrentScore.ToString(), menuSkin.label);
 		GUILayout.EndHorizontal();
 		
-		if (GUILayout.Button("HTTP://SUPERCORE.CO.UK", menuSkin.button))
-			Application.OpenURL("HTTP://SUPERCORE.CO.UK");
+		if (GUILayout.Button(Strings.website, menuSkin.button))
+			Application.OpenURL(Strings.website);
 		
 		GUILayout.Space (10);
 		
 		
-		if (GUILayout.Button("AGAIN", menuSkin.button))
+		if (GUILayout.Button(Strings.guiAgain, menuSkin.button))
 		{
-			PlayerPrefs.SetString("playerName", playerName);
+			PlayerPrefs.SetString(Options.keyPlayerName, Options.playerName);
 			ScoreBoard.SaveAndClearCurrentScore();
 			StartGame();
 		}
@@ -232,17 +214,17 @@ public class GameManager : Singleton<GameManager>
 		GUILayout.Space(menuSkin.window.fontSize);
 		GUILayout.Space(Screen.height/8f);
 		
-		if (GUILayout.Button("RESUME", menuSkin.button))
+		if (GUILayout.Button(Strings.guiResume, menuSkin.button))
 			UnPause();
 			
 		GUILayout.Space (10);
 		
-		if (GUILayout.Button("MAIN MENU", menuSkin.button))
+		if (GUILayout.Button(Strings.guiMainMenu, menuSkin.button))
 			gui = GUIState.MainMenu;
 		
 		if (!Application.isWebPlayer)
 		{
-			if (GUILayout.Button("QUIT", menuSkin.button))
+			if (GUILayout.Button(Strings.guiQuit, menuSkin.button))
 				Application.Quit();
 		}
 	}
@@ -253,7 +235,7 @@ public class GameManager : Singleton<GameManager>
 		GUILayout.Space(menuSkin.window.fontSize);
 		GUILayout.Space(Screen.height/8f);
 		
-		if (GUILayout.Button("MAIN MENU", menuSkin.button))
+		if (GUILayout.Button(Strings.guiMainMenu, menuSkin.button))
 			gui = GUIState.MainMenu;
 		
 		List<Score> scores = ScoreBoard.GetScores();
@@ -266,7 +248,7 @@ public class GameManager : Singleton<GameManager>
 			GUILayout.EndHorizontal();
 		}
 		
-		if (GUILayout.Button("WIPE SCORES", menuSkin.button))
+		if (GUILayout.Button(Strings.guiWipeScores, menuSkin.button))
 			ScoreBoard.DeleteSavedScores();
 	}
 	
@@ -282,30 +264,30 @@ public class GameManager : Singleton<GameManager>
 		GUILayout.Space(Screen.height/8f);
 		
 		
-		if (GUILayout.Button("MAIN MENU", menuSkin.button))
+		if (GUILayout.Button(Strings.guiMainMenu, menuSkin.button))
 		{
 			if (state == GameState.Paused) AudioListener.volume = 0f;
-			SaveSettings();
+			Options.SaveSettings();
 			gui = GUIState.MainMenu;
 		}
 		
 		GUILayout.BeginHorizontal();
-		GUILayout.Label("PILOTNAME:", menuSkin.label);
-		playerName = GUILayout.TextField(playerName, 16, menuSkin.textField);
+		GUILayout.Label(Strings.guiPilotName, menuSkin.label);
+		Options.playerName = GUILayout.TextField(Options.playerName, 16, menuSkin.textField);
 		GUILayout.EndHorizontal();
 		
 		GUILayout.BeginHorizontal();
-		GUILayout.Label("MASTERVOLUME:", menuSkin.label);
+		GUILayout.Label(Strings.guiMasterVolume, menuSkin.label);
 		masterVolume = GUILayout.HorizontalSlider(masterVolume, 0f, 1f, menuSkin.horizontalSlider, menuSkin.horizontalSliderThumb);
 		GUILayout.EndHorizontal();
 		
 		GUILayout.BeginHorizontal();
-		GUILayout.Label("MUSIC:", menuSkin.label);
+		GUILayout.Label(Strings.guiMusicVolume, menuSkin.label);
 		musicVolume = GUILayout.HorizontalSlider(musicVolume, 0f, 1f, menuSkin.horizontalSlider, menuSkin.horizontalSliderThumb);
 		GUILayout.EndHorizontal();
 		
 		GUILayout.BeginHorizontal();
-		GUILayout.Label("GAME HINTS:", menuSkin.label);
+		GUILayout.Label(Strings.guiGameHints, menuSkin.label);
 		h = GUILayout.Toggle(h, "", menuSkin.toggle);
 		GUILayout.EndHorizontal();
 		
@@ -317,21 +299,17 @@ public class GameManager : Singleton<GameManager>
 	void wCredits(int windowID)
 	{
 		GUILayout.Space(menuSkin.window.fontSize);
-		GUILayout.Label("Release date: " + releaseDate, menuSkin.label);
+		GUILayout.Label(Strings.guiReleaseDate + ": " + Strings.releaseDate, menuSkin.label);
 		GUILayout.Space(Screen.height/8);
-		if (GUILayout.Button("MAIN MENU", menuSkin.button))
+		if (GUILayout.Button(Strings.guiMainMenu, menuSkin.button))
 			gui = GUIState.MainMenu;
 		GUILayout.Space (20f);
-		GUILayout.Label("Matt \"explosivose\" Blickem\n " +
-		 				"Sami Tanbouz\n " +
-		 				"Dan \"faemir\" Cohen", menuSkin.label);
-		if (GUILayout.Button("HTTP://SUPERCORE.CO.UK", menuSkin.button))
-			Application.OpenURL("HTTP://SUPERCORE.CO.UK");
+		GUILayout.Label(Strings.creators, menuSkin.label);
+		GUILayout.Label(Strings.worksUsed, menuSkin.label);
+		if (GUILayout.Button(Strings.website, menuSkin.button))
+			Application.OpenURL(Strings.website);
 		GUILayout.Space (20f);
-		GUILayout.Label("Laser Sounds by Michel Baradari apollo-music.de\n" +
-						"Menu Music: 'The Life and Death of a Certain K. Zabriskie, Patriarch'" +
-		                 " by Chris Zabriskie\n" +
-						"Font 'Akashi' by Ten by Twenty", menuSkin.label);
+		GUILayout.Label(Strings.acknowledgements, menuSkin.label);
 
 	}
 
@@ -370,22 +348,22 @@ public class GameManager : Singleton<GameManager>
 		switch ( gui )
 		{
 		case GUIState.MainMenu:
-			GUILayout.Window (1, windowSize, wMainMenu, "REDLINES", menuSkin.window);
+			GUILayout.Window (1, windowSize, wMainMenu, Strings.gameTitle, menuSkin.window);
 			break;
 		case GUIState.DeathMenu:
-			GUILayout.Window (1, windowSize, wDeathMenu, "HYPERDUMP!", menuSkin.window);
+			GUILayout.Window (1, windowSize, wDeathMenu, Strings.guiGameOver, menuSkin.window);
 			break;
 		case GUIState.PauseMenu:
-			GUILayout.Window (1, windowSize, wPauseMenu, "PAUSED", menuSkin.window);
+			GUILayout.Window (1, windowSize, wPauseMenu, Strings.guiPaused, menuSkin.window);
 			break;
 		case GUIState.Scores:
-			GUILayout.Window (1, windowSize, wScoreBoard, "SCORES", menuSkin.window);
+			GUILayout.Window (1, windowSize, wScoreBoard, Strings.guiScore, menuSkin.window);
 			break;
 		case GUIState.Credits:
-			GUILayout.Window (1, windowSize, wCredits, "CREDITS", menuSkin.window);
+			GUILayout.Window (1, windowSize, wCredits, Strings.guiCredits, menuSkin.window);
 			break;
 		case GUIState.Options:
-			GUILayout.Window (1, windowSize, wOptions, "OPTIONS", menuSkin.window);
+			GUILayout.Window (1, windowSize, wOptions, Strings.guiOptions, menuSkin.window);
 			break;
 		case GUIState.NoWindows:
 			break;

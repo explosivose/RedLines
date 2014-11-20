@@ -8,6 +8,7 @@ public class Player : Singleton<Player>
 	public float acceleration = 10f;
 	public float hyperJumpSpeedChange = 2f;
 	public Transform deathsplosion;
+	public Transform collideSparks;
 	public bool isDead = false;
 	public bool controlEnabled = false;
 	public int maxHyperMatter = 16;
@@ -98,7 +99,7 @@ public class Player : Singleton<Player>
 		
 		// corrective Z (forward/back) 
 		float error = startZ - transform.position.z;
-		Vector3 correction = Vector3.forward * error;
+		Vector3 correction = Vector3.forward * error * 10f;
 		
 		Vector3 force = Vector3.up * thrust * rigidbody.drag * rigidbody.mass;
 		rigidbody.AddForce(Vector3.up * thrust + correction);
@@ -209,23 +210,53 @@ public class Player : Singleton<Player>
 		if (firstJump) Time.timeScale = 1f;
 		yield return new WaitForSeconds(0.5f);
 		LevelGenerator.Unlock();
-		LevelGenerator.Obstacles = true;
 		collider.enabled = true;
 		direction = Vector3.zero;
 		hyperJump = false;
+		yield return new WaitForSeconds(1f);
+		LevelGenerator.Obstacles = true;
+
 	}	
 	
 	void OnCollisionEnter(Collision col)
 	{
-		if (col.gameObject.tag == "Death" && !isDead)
+		Vector3 cubeVelocity = CubeMaster.Instance.cubeSpeed * Vector3.back;
+		Vector3 collisionNormal = col.contacts[0].normal;
+		float impact = Vector3.Dot (cubeVelocity, collisionNormal);
+		if (col.transform.tag == "Death" && !isDead) {
+			if (impact > CubeMaster.Instance.InitialCubeSpeed * 0.75f) {
+				if (!isDead) StartCoroutine( Death() );
+			}
+		}
+
+		
+		Vector3 relativeVelocity = col.relativeVelocity;
+		relativeVelocity += impact * Vector3.back;
+		
+		/*
+		if (col.relativeVelocity.magnitude > 10f && !isDead)
 		{
 			if (!isDead) StartCoroutine( Death() );
-		}
+		}*/
 		ScreenShake.Instance.Shake(0.75f,3f);
-		Vector3 force = col.relativeVelocity * 2f;
+		Vector3 force = relativeVelocity;
 		Vector3 point = col.contacts[0].point;
-		Instantiate(deathsplosion, point, transform.rotation);
 		rigidbody.AddForceAtPosition(force, point, ForceMode.Impulse);
+		if (!isDead)
+			Instantiate(collideSparks, point, transform.rotation);
+		
+	}
+	
+	public void AddHyperDust() 
+	{
+		if (hyperMatter + newHyperMatter < maxHyperMatter) 
+		{
+			newHyperMatter++;
+		}
+		else 
+		{
+			PlayRandomSound(audioHyperDustPickupFail, transform.position);
+		}
 	}
 	
 	void OnTriggerEnter(Collider col)
@@ -233,20 +264,14 @@ public class Player : Singleton<Player>
 		if (isDead) return;
 		if (col.gameObject.tag == "HyperDust")
 		{
-			if (hyperMatter + newHyperMatter < maxHyperMatter) 
-			{
-				newHyperMatter++;
-			}
-			else 
-			{
-				PlayRandomSound(audioHyperDustPickupFail, col.transform.position);
-			}
+			col.SendMessage("Collect");
 		}
 	}
 	
 	IEnumerator Death()
 	{
 		isDead = true;
+		rigidbody.freezeRotation = false;
 		float t = PlayRandomSound(audioDeath, transform.position);
 		yield return new WaitForSeconds(t);
 		Instantiate(deathsplosion, transform.position, transform.rotation);

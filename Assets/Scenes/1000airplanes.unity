@@ -1284,7 +1284,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: a89eb78faab2f0046b97a1f32ab30c05, type: 2}
       propertyPath: m_RootOrder
-      value: 1
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: a89eb78faab2f0046b97a1f32ab30c05, type: 2}
       propertyPath: maxTime
@@ -2578,7 +2578,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 0
 --- !u!1 &223179265
 GameObject:
   m_ObjectHideFlags: 0
@@ -2692,7 +2692,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 2a268f74c22b1624a81ea8411c8aaaf8, type: 2}
       propertyPath: m_RootOrder
-      value: 5
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2a268f74c22b1624a81ea8411c8aaaf8, type: 2}
@@ -2884,7 +2884,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 5
 --- !u!1 &356194514
 GameObject:
   m_ObjectHideFlags: 0
@@ -2912,7 +2912,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 4
 --- !u!114 &356194517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3241,7 +3241,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 1
 --- !u!1 &863444901
 GameObject:
   m_ObjectHideFlags: 0
@@ -3914,6 +3914,7 @@ GameObject:
   - 54: {fileID: 1570846206}
   - 65: {fileID: 1570846207}
   - 82: {fileID: 1570846209}
+  - 135: {fileID: 1570846210}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -3937,7 +3938,7 @@ Transform:
   - {fileID: 1222791429}
   - {fileID: 1408427299}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 2
 --- !u!54 &1570846206
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3984,6 +3985,7 @@ MonoBehaviour:
   acceleration: 15
   hyperJumpSpeedChange: 5
   deathsplosion: {fileID: 400018, guid: e64860351235eb34cb278fe95e7f1966, type: 2}
+  collideSparks: {fileID: 400000, guid: 6ef3f6afedc7f5544a987f94d2cc0c29, type: 2}
   isDead: 0
   controlEnabled: 0
   maxHyperMatter: 8
@@ -4008,7 +4010,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 88ac01c608cce7d4091b9cee7fd94644, type: 3}
   - {fileID: 8300000, guid: 884ceaf50cc78b7428ed58f2ce72e208, type: 3}
   - {fileID: 8300000, guid: 6d1f0fe6fc205384e8813556dc8634c4, type: 3}
-  maxThrust: 500
+  maxThrust: 1000
 --- !u!82 &1570846209
 AudioSource:
   m_ObjectHideFlags: 0
@@ -4068,6 +4070,18 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
+--- !u!135 &1570846210
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1570846204}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 2
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &1594012850
 Prefab:
   m_ObjectHideFlags: 0
@@ -4875,13 +4889,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2014355457}
-  m_LocalRotation: {x: 0, y: -.459376127, z: 0, w: .888241887}
-  m_LocalPosition: {x: 13.8180895, y: 0, z: -46.7617683}
+  m_LocalRotation: {x: .124423198, y: .170387268, z: -.61635989, w: .75867492}
+  m_LocalPosition: {x: -.525791168, y: 1.99416566, z: .445129395}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1970668977}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 3
 --- !u!114 &2014355459
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5087,6 +5101,10 @@ Prefab:
     - target: {fileID: 11400000, guid: 10257334a22b0014895c07821a6b44e4, type: 2}
       propertyPath: gap
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 10257334a22b0014895c07821a6b44e4, type: 2}
+      propertyPath: m_RootOrder
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 10257334a22b0014895c07821a6b44e4, type: 2}
