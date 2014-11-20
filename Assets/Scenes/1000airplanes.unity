@@ -3988,7 +3988,7 @@ MonoBehaviour:
   collideSparks: {fileID: 400000, guid: 6ef3f6afedc7f5544a987f94d2cc0c29, type: 2}
   isDead: 0
   controlEnabled: 0
-  maxHyperMatter: 8
+  maxHyperMatter: 16
   audioGameStart:
   - {fileID: 8300000, guid: 1005f9f249342ea4691c405e756f7491, type: 3}
   audioDeath:

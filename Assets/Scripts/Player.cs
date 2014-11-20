@@ -190,7 +190,7 @@ public class Player : Singleton<Player>
 		if (firstJump) Time.timeScale = 3f;
 		hyperJumpCount++;
 		hyperMatter = 0;
-		maxHyperMatter += hyperJumpCount;
+		//maxHyperMatter += hyperJumpCount;
 		PlayRandomSound(audioHyperJumpEnter, transform.position);
 		LevelGenerator.Reset(transform.position);
 		LevelGenerator.LockPosition();
@@ -262,10 +262,7 @@ public class Player : Singleton<Player>
 	void OnTriggerEnter(Collider col)
 	{
 		if (isDead) return;
-		if (col.gameObject.tag == "HyperDust")
-		{
-			col.SendMessage("Collect");
-		}
+
 	}
 	
 	IEnumerator Death()

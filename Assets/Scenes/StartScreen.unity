@@ -102,6 +102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16b7cb8b7d6c5624199f0e5a0af2a535, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hints: 0
   mainMenu:
     DesignHeight: 100
     HeightIs: 0

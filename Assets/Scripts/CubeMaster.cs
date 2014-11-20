@@ -204,7 +204,7 @@ public class CubeMaster : Singleton<CubeMaster>
 			else
 			{
 				float error = targetCubeSpeed - cubeSpeed;
-				float k = 2f;
+				float k = 1.75f;
 				overshootCubeSpeed = (cubeSpeed + error * k);
 				yield return new WaitForSeconds(1f);
 			}
