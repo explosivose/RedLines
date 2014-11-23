@@ -4,14 +4,13 @@ using System.Collections;
 [RequireComponent(typeof(BoxCollider))]
 public class UIelement : MonoBehaviour {
 
+	public bool useLocalizedString = true;
 	public Strings.guiIndex localizedString;
-	protected string finalText;
+	public string finalText;
 	public bool typeEffect;
 	public bool overrideTextColor;
 	public Color textColor;
 	public Color textHoverColor;
-	
-	
 	
 	public int width {
 		get {
@@ -64,7 +63,8 @@ public class UIelement : MonoBehaviour {
 	
 	protected virtual void Awake()
 	{
-		finalText = Strings.guiTable[(int)localizedString];
+		if (useLocalizedString)
+			finalText = Strings.guiTable[(int)localizedString];
 		boxCollider = GetComponent<BoxCollider>();
 		initialPosition = transform.localPosition;
 		textMesh = transform.Find("text").GetComponent<TextMesh>();
@@ -74,6 +74,16 @@ public class UIelement : MonoBehaviour {
 			textColor = UI.fontColor;
 			textHoverColor = UI.fontHighlightColor;
 		}
+	}
+	
+	protected virtual void Start()
+	{
+	
+	}
+	
+	protected virtual void Update()
+	{
+	
 	}
 	
 	protected virtual void OnEnable()

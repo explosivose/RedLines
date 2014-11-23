@@ -4,8 +4,8 @@ using System.Collections;
 public static class UI 
 {
 	public static Font font = Resources.Load<Font>("Akashi");
-	public static Color fontColor;
-	public static Color fontHighlightColor;
+	public static Color fontColor = Color.white;
+	public static Color fontHighlightColor = Color.red;
 	
 	public static Transform mainMenuPrefab = Resources.Load<Transform>("UI/MainMenu");
 	public static Transform pauseMenuPrefab = Resources.Load<Transform>("UI/PauseMenu");

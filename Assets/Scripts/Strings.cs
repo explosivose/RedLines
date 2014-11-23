@@ -3,10 +3,10 @@ using System.Collections;
 
 public static class Strings {
 
-	public const string gameTitle = "REDLINES 1000";
-	public const string gameVersion = "001-dev";
+	public const string gameTitle = "REDLINES 1K";
+	public const string gameVersion = "v001-dev";
 	
-	public const string releaseDate = "Saturday 22nd November 2014";
+	public const string releaseDate = "Sunday 23rd November 2014";
 	
 	public const string website = "http://supercore.co.uk";
 	
@@ -47,19 +47,59 @@ public static class Strings {
 	public static string guiGameHints = "GAME HINTS";
 	
 	public enum guiIndex {
-		guiReleaseDate 		= 0,
-		guiMainMenu 		= 1,
-		guiStart			= 2,
-		guiPaused 			= 3,
-		guiResume			= 4
+		gameTitle,
+		gameVersion,
+		guiReleaseDate,
+		releaseDate,
+		website,
+		creators,
+		worksUsed,
+		acknowledgements,
+		playerName,
+		guiMainMenu,
+		guiStart,
+		guiPaused,
+		guiResume,
+		guiScoreboard,
+		guiOptions,
+		guiCredits,			
+		guiQuit,
+		guiGameOver,
+		guiPilotName,
+		guiScore,
+		guiAgain,
+		guiWipeScores,
+		guiMasterVolume,
+		guiMusicVolume,
+		guiGameHints
 		
 	}
 	
 	public static string[] guiTable = new string[] {
-		"Release Date", 	// 0
-		"MAIN MENU",		// 1
-		"START",			// 2
-		"PAUSED",			// 3
-		"RESUME"			// 4
+		gameTitle,
+		gameVersion,
+		guiReleaseDate,
+		releaseDate,
+		website,
+		creators,
+		worksUsed,
+		acknowledgements,
+		Options.defaultPlayerName,
+		guiMainMenu,
+		guiStart,
+		guiPaused,
+		guiResume,
+		guiScoreboard,
+		guiOptions,
+		guiCredits,			
+		guiQuit,
+		guiGameOver,
+		guiPilotName,
+		guiScore,
+		guiAgain,
+		guiWipeScores,
+		guiMasterVolume,
+		guiMusicVolume,
+		guiGameHints		
 	};
 }

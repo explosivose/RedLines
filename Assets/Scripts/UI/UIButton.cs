@@ -9,35 +9,16 @@ public class UIButton : UIelement {
 		StartGame,
 		ResumeGame,
 		QuitApplication,
+		OpenWebsite,
+		gameOverRestart,
+		gameOverQuit
 	}
 	public Action action;
 	public Transform containerPrefab;
 	private Transform containerInstance;
 	private Transform previousContainer;
 	
-	protected override void Awake ()
-	{
-		base.Awake ();
-		switch (action)
-		{
-		case Action.UIContainer:
-			// NOT SURE YET (data is in Strings.gui* format... bleh)
-			break;
-		case Action.UIBack:
-			text = Strings.guiMainMenu;
-			break;
-		case Action.StartGame:
-			text = Strings.guiStart;
-			break;
-		case Action.ResumeGame:
-			text = Strings.guiResume;
-			break;
-		case Action.QuitApplication:
-			text = Strings.guiQuit;
-			break;
-		}
-		
-	}
+
 	
 	protected override void OnDisable ()
 	{
@@ -79,6 +60,21 @@ public class UIButton : UIelement {
 		case Action.QuitApplication:
 			GameManager.Instance.QuitGame();
 			break;
+		case Action.OpenWebsite:
+			Application.OpenURL(Strings.website);
+			break;
+		 case Action.gameOverRestart:
+			PlayerPrefs.SetString(Options.keyPlayerName, Options.playerName);
+			ScoreBoard.SaveAndClearCurrentScore();
+			UI.HideGameOver();
+			GameManager.Instance.StartGame();
+		 	break;
+		 case Action.gameOverQuit:
+			PlayerPrefs.SetString(Options.keyPlayerName, Options.playerName);
+			ScoreBoard.SaveAndClearCurrentScore();
+			UI.HideGameOver();
+			UI.ShowMainMenu();
+		 	break;
 		}
 	}
 	

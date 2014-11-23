@@ -60,14 +60,15 @@ public class GameManager : Singleton<GameManager>
 		state = GameState.Playing;
 		UI.HidePauseMenu();
 		//gui = GUIState.NoWindows;
-		AudioListener.volume = masterVolume;
+		AudioListener.volume = Options.masterVolume;
 	}
 	
 	public void GameOver()
 	{
 		Screen.lockCursor = false;
 		state = GameState.GameOver;
-		gui = GUIState.DeathMenu;
+		UI.ShowGameOver();
+		//gui = GUIState.DeathMenu;
 		AudioListener.volume = 0f;
 		CubeMaster.Instance.cubeSpeed = 0.5f;
 	}
@@ -83,8 +84,6 @@ public class GameManager : Singleton<GameManager>
 		DontDestroyOnLoad(this);
 		menuSkin = (GUISkin)Resources.Load("Menus", typeof(GUISkin));
 		Options.LoadSettings();
-		UI.fontColor = Color.gray;
-		UI.fontHighlightColor = Color.white;
 		UI.ShowMainMenu();
 		// unfortunately this code doesnt work or even fail safely with a Unity Webplayer build :-((
 		//DateTime buildTime = RetrieveLinkerTimestamp();
