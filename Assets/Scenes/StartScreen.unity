@@ -775,6 +775,10 @@ Prefab:
       propertyPath: m_RootOrder
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: a49c76d5371497d489dcd7f65bf8d960, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a49c76d5371497d489dcd7f65bf8d960, type: 2}
   m_RootGameObject: {fileID: 1108662481}
@@ -2006,7 +2010,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &603279123
 Transform:
   m_ObjectHideFlags: 0
@@ -3875,7 +3879,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1108662482
 Transform:
   m_ObjectHideFlags: 0
@@ -5114,33 +5118,33 @@ ParticleSystem:
           rgba: 4293067007
         key1:
           serializedVersion: 2
-          rgba: 4294901906
+          rgba: 4278232063
         key2:
           serializedVersion: 2
-          rgba: 16736512
+          rgba: 6422272
         key3:
           serializedVersion: 2
-          rgba: 16776960
+          rgba: 65479
         key4:
           serializedVersion: 2
-          rgba: 6422272
+          rgba: 10171391
         key5:
           serializedVersion: 2
-          rgba: 65479
+          rgba: 16774144
         key6:
           serializedVersion: 2
-          rgba: 41983
+          rgba: 16731136
         key7:
           serializedVersion: 2
-          rgba: 255
+          rgba: 460798
         ctime0: 0
-        ctime1: 9445
-        ctime2: 17733
-        ctime3: 23901
-        ctime4: 31611
-        ctime5: 36815
-        ctime6: 42791
-        ctime7: 60716
+        ctime1: 4241
+        ctime2: 19082
+        ctime3: 31611
+        ctime4: 35273
+        ctime5: 38550
+        ctime6: 52428
+        ctime7: 58018
         atime0: 0
         atime1: 65535
         atime2: 0
@@ -8068,6 +8072,10 @@ Prefab:
     - target: {fileID: 400006, guid: def4735f439e5604faa81d75584a74be, type: 2}
       propertyPath: m_RootOrder
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 100006, guid: def4735f439e5604faa81d75584a74be, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: def4735f439e5604faa81d75584a74be, type: 2}
