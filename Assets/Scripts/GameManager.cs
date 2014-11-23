@@ -36,7 +36,7 @@ public class GameManager : Singleton<GameManager>
 		get { return (hints != 0); }
 	}
 	
-	void StartGame()
+	public void StartGame()
 	{
 		LevelGenerator.Reset();
 		Application.LoadLevel("1000airplanes");
@@ -47,7 +47,8 @@ public class GameManager : Singleton<GameManager>
 	{
 		Screen.lockCursor = false;
 		state = GameState.Paused;
-		gui = GUIState.PauseMenu;
+		UI.ShowPauseMenu();
+		//gui = GUIState.PauseMenu;
 		AudioListener.volume = 0f;
 		Time.timeScale = 0f;
 	}
@@ -57,7 +58,8 @@ public class GameManager : Singleton<GameManager>
 		Time.timeScale = 1f;
 		Screen.lockCursor = true;
 		state = GameState.Playing;
-		gui = GUIState.NoWindows;
+		UI.HidePauseMenu();
+		//gui = GUIState.NoWindows;
 		AudioListener.volume = masterVolume;
 	}
 	
@@ -70,11 +72,20 @@ public class GameManager : Singleton<GameManager>
 		CubeMaster.Instance.cubeSpeed = 0.5f;
 	}
 	
+	public void QuitGame()
+	{
+		Options.SaveSettings();
+		Application.Quit();
+	}
+	
 	void Awake()
 	{
 		DontDestroyOnLoad(this);
 		menuSkin = (GUISkin)Resources.Load("Menus", typeof(GUISkin));
 		Options.LoadSettings();
+		UI.fontColor = Color.gray;
+		UI.fontHighlightColor = Color.white;
+		UI.ShowMainMenu();
 		// unfortunately this code doesnt work or even fail safely with a Unity Webplayer build :-((
 		//DateTime buildTime = RetrieveLinkerTimestamp();
 		//buildDate = String.Format("{0:d/M/yyyy HH:mm:ss}", buildTime);
@@ -135,7 +146,7 @@ public class GameManager : Singleton<GameManager>
 		Options,
 		Credits
 	}
-	private GUIState gui = GUIState.MainMenu;
+	private GUIState gui = GUIState.NoWindows;
 	
 	public GUIWindow mainMenu = new GUIWindow();
 	void wMainMenu(int windowID)

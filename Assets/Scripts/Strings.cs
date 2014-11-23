@@ -46,5 +46,20 @@ public static class Strings {
 	public static string guiMusicVolume = "MUSIC VOLUME";
 	public static string guiGameHints = "GAME HINTS";
 	
+	public enum guiIndex {
+		guiReleaseDate 		= 0,
+		guiMainMenu 		= 1,
+		guiStart			= 2,
+		guiPaused 			= 3,
+		guiResume			= 4
+		
+	}
 	
+	public static string[] guiTable = new string[] {
+		"Release Date", 	// 0
+		"MAIN MENU",		// 1
+		"START",			// 2
+		"PAUSED",			// 3
+		"RESUME"			// 4
+	};
 }
