@@ -24,11 +24,6 @@ public class Laser : MonoBehaviour {
 				
 		PlayRandomSound(audioFire, transform.position);
 		
-		int i = Random.Range(0, audioLoop.Length);
-		audio.clip = audioLoop[i];
-		audio.loop = true;
-		audio.Play();
-		
 		Transform projectiletr = Instantiate(
 			laserProjectilePrefab,
 			transform.position,
@@ -36,20 +31,20 @@ public class Laser : MonoBehaviour {
 		LaserProjectile projectile = projectiletr.GetComponent<LaserProjectile>();
 		
 		// ensure at least two points are fired
-		projectile.AddPoint(transform.position);
-		ScreenShake.Instance.Shake(0.2f, 1.5f);
+		projectile.AddPoint(transform.position, transform.rotation);
+		ScreenShake.Instance.Shake(0.4f, 1.5f);
 		yield return new WaitForSeconds(1f/sprayrate);
-		projectile.AddPoint(transform.position);
+		projectile.AddPoint(transform.position, transform.rotation);
 		ScreenShake.Instance.Shake(0.2f, 1.5f);
 		
 		// continue adding points while button is held down;
 		while (Input.GetButton("Fire1") && GameManager.Instance.IsPlaying && Time.time < startTime + maxTime) {
 			yield return new WaitForSeconds(1f/sprayrate);
 			ScreenShake.Instance.Shake(0.2f, 1.5f);
-			projectile.AddPoint(transform.position);
+			projectile.AddPoint(transform.position, transform.rotation);
 		}
-		audio.Stop();
-		yield return new WaitForSeconds(1f);
+		
+		yield return new WaitForSeconds(0.35f);
 		PlayRandomSound(audioStop, transform.position);
 		firing = false;
 	}

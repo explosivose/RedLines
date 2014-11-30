@@ -40,8 +40,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d64ef7ace83ff46ac711c18f9835e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 60
+  speed: 120
   linePointPrefab: {fileID: 400000, guid: c8cb5d6c6ac015b48954b578f25983cc, type: 2}
+  laserHitPrefab: {fileID: 400000, guid: 76214154f716de440ad2a2ad2aa46d05, type: 2}
 --- !u!120 &12000000
 LineRenderer:
   m_ObjectHideFlags: 1

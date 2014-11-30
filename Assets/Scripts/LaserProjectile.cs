@@ -7,7 +7,7 @@ public class LaserProjectile : MonoBehaviour {
 
 	public float speed = 10f;
 	public Transform linePointPrefab;
-	
+	public Transform laserHitPrefab;
 	// keep track of our points
 	private List<Transform> _points = new List<Transform>();
 	private LineRenderer _line;
@@ -20,12 +20,13 @@ public class LaserProjectile : MonoBehaviour {
 		StartCoroutine(CleanUp());
 	}
 	
-	public void AddPoint(Vector3 position) {
+	public void AddPoint(Vector3 position, Quaternion rotation) {
 		Transform instance = Instantiate(
 			linePointPrefab, 
 			position, 
-			transform.rotation) as Transform;
+			rotation) as Transform;
 		instance.parent = transform;
+		instance.light.color = new Color(1f, Random.value, Random.value);
 		_points.Add(instance);
 		_line.SetVertexCount(_points.Count);
 		for(int i = 1; i < _points.Count; i++) {
@@ -50,6 +51,7 @@ public class LaserProjectile : MonoBehaviour {
 			if (Physics.Linecast(_points[i].position, _points[i-1].position, out hit)) {
 				if (hit.transform.tag == "HyperMatter")
 					hit.transform.BroadcastMessage("Explode");
+				Instantiate(laserHitPrefab, hit.point, Quaternion.LookRotation(hit.normal));
 			}
 		}
 	}
