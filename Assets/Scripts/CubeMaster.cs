@@ -11,6 +11,12 @@ public class CubeMeta
 	public Vector3 targetPosition;
 	public Vector3 layerCenter;
 	public int layerIndex;
+	public Vector3 offsetDirection {get; private set;}
+	public CubeMeta() 
+	{
+		offsetDirection = (targetPosition - layerCenter).normalized * 2f;
+		offsetDirection += Random.onUnitSphere;
+	}
 }
 
 // speed data is sampled every fixed update
@@ -199,12 +205,12 @@ public class CubeMaster : Singleton<CubeMaster>
 		{
 			if (HyperJump)
 			{
-				overshootCubeSpeed = targetCubeSpeed * 2f;
+				overshootCubeSpeed = targetCubeSpeed * 2.5f;
 			}
 			else
 			{
 				float error = targetCubeSpeed - cubeSpeed;
-				float k = 1.75f;
+				float k = 1.5f;
 				overshootCubeSpeed = (cubeSpeed + error * k);
 				yield return new WaitForSeconds(1f);
 			}
@@ -259,9 +265,8 @@ public class CubeMaster : Singleton<CubeMaster>
 				m.currentPosition.x = m.targetPosition.x;
 				m.currentPosition.y = m.targetPosition.y;
 				m.currentPosition.z = masterSpawnOffset.z - distance;
-				Vector3 offset = m.targetPosition - m.layerCenter;
 				hyperTime = (Time.time - hyperJumpEnterTime) * 4f;
-				m.currentPosition += offset * hyperTime;
+				m.currentPosition += m.offsetDirection * hyperTime;
 				break;
 			case cubeMasterState.hyperSpaceExit:
 				// lerp current position to target position

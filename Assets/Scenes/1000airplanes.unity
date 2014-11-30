@@ -3142,7 +3142,7 @@ MonoBehaviour:
   maxSpeed: 20
   turnSpeed: 100
   acceleration: 15
-  hyperJumpSpeedChange: 5
+  hyperJumpSpeedChange: 4
   deathsplosion: {fileID: 400018, guid: e64860351235eb34cb278fe95e7f1966, type: 2}
   collideSparks: {fileID: 400000, guid: 6ef3f6afedc7f5544a987f94d2cc0c29, type: 2}
   isDead: 0

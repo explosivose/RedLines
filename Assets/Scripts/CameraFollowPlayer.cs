@@ -6,7 +6,8 @@ public class CameraFollowPlayer : MonoBehaviour
 	public Vector3 offset;
 	public Vector3 defaultRotation;
 	
-	
+	private Vector3 hyperoffset;
+	private bool hyperoffsetReady;
 	
 	void Update () 
 	{
@@ -18,8 +19,12 @@ public class CameraFollowPlayer : MonoBehaviour
 		}
 		else if (CubeMaster.Instance.HyperJumpEnter)
 		{
-			Vector3 target = playertr.position + Vector3.back * 2f + Vector3.right * 0.5f;
-			Vector3 look = new Vector3(0f,0f,-90f);
+			if (!hyperoffsetReady) {
+				hyperoffset = Random.onUnitSphere - playertr.forward;
+				hyperoffsetReady = true;
+			}
+			Vector3 target = playertr.position + hyperoffset + Random.insideUnitSphere * 0.25f;
+			Vector3 look = new Vector3(0f, 0f, hyperoffset.magnitude * 360f);
 			Quaternion targetrot = Quaternion.Euler(look);
 			
 			transform.position = Vector3.Slerp(
@@ -34,6 +39,7 @@ public class CameraFollowPlayer : MonoBehaviour
 		}
 		else
 		{
+			hyperoffsetReady = false;
 			Vector3 target = playertr.position + offset;
 
 			transform.position = Vector3.Slerp(
