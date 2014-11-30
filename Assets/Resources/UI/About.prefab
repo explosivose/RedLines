@@ -499,7 +499,7 @@ TextMesh:
   m_Text: REDLINES 1K
   m_OffsetZ: 0
   m_CharacterSize: 1
-  m_LineSpacing: 2
+  m_LineSpacing: 1
   m_Anchor: 4
   m_Alignment: 1
   m_TabSize: 4
@@ -520,7 +520,7 @@ TextMesh:
   m_Text: CREDITS
   m_OffsetZ: 0
   m_CharacterSize: 1
-  m_LineSpacing: 2
+  m_LineSpacing: 1
   m_Anchor: 4
   m_Alignment: 1
   m_TabSize: 4
@@ -583,7 +583,7 @@ TextMesh:
   m_Text: MAIN MENU
   m_OffsetZ: 0
   m_CharacterSize: 1
-  m_LineSpacing: 2
+  m_LineSpacing: 1
   m_Anchor: 4
   m_Alignment: 1
   m_TabSize: 4
