@@ -3173,6 +3173,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 88ac01c608cce7d4091b9cee7fd94644, type: 3}
   - {fileID: 8300000, guid: 884ceaf50cc78b7428ed58f2ce72e208, type: 3}
   - {fileID: 8300000, guid: 6d1f0fe6fc205384e8813556dc8634c4, type: 3}
+  audioCollide:
+  - {fileID: 8300000, guid: 78828c91cc1e9e34586632b0f7fb3bd8, type: 3}
+  - {fileID: 8300000, guid: 4495c5ec14f06864d8de44665fc17210, type: 3}
   maxThrust: 1000
 --- !u!82 &1570846209
 AudioSource:
@@ -3449,6 +3452,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1773440368}
   - 114: {fileID: 1773440366}
+  - 82: {fileID: 1773440367}
   m_Layer: 0
   m_Name: Laser
   m_TagString: Untagged
@@ -3472,6 +3476,74 @@ MonoBehaviour:
     type: 2}
   sprayrate: 16
   maxTime: 1.5
+  audioFire:
+  - {fileID: 8300000, guid: d1f67567ff77c3646b35798a21d99d34, type: 3}
+  - {fileID: 8300000, guid: 6d1122f84b5865141a3bd0759bd8b35c, type: 3}
+  - {fileID: 8300000, guid: 712a5bafb4f0c404b8e96467db6772b1, type: 3}
+  - {fileID: 8300000, guid: 6a12f3d630762914087b2928298d655f, type: 3}
+  audioLoop:
+  - {fileID: 8300000, guid: e89be4bc57cff8c4bb0fb40f9cf67767, type: 3}
+  - {fileID: 8300000, guid: de1456d669e952e4f9b13e4595680f9b, type: 3}
+  audioStop:
+  - {fileID: 8300000, guid: 6373dd3ffe71eae49a783d7041d3a9fe, type: 3}
+--- !u!82 &1773440367
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1773440365}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 30
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
 --- !u!4 &1773440368
 Transform:
   m_ObjectHideFlags: 0

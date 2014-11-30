@@ -28,6 +28,10 @@ public class LaserProjectile : MonoBehaviour {
 		instance.parent = transform;
 		_points.Add(instance);
 		_line.SetVertexCount(_points.Count);
+		for(int i = 1; i < _points.Count; i++) {
+			_line.SetPosition(i, _points[i].position);
+			_line.SetPosition(i-1, _points[i-1].position);
+		}
 	}
 	
 	// move point rigidbodies

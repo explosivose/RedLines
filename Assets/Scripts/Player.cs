@@ -20,6 +20,7 @@ public class Player : Singleton<Player>
 	public AudioClip[] audioHyperJumpEnter;
 	public AudioClip[] audioHyperJumpExit;
 	public AudioClip[] audioHyperJumpFail;
+	public AudioClip[] audioCollide;
 	
 	private Vector3 direction = Vector3.zero;
 	public float maxThrust = 400f;
@@ -242,6 +243,7 @@ public class Player : Singleton<Player>
 		Vector3 force = relativeVelocity;
 		Vector3 point = col.contacts[0].point;
 		rigidbody.AddForceAtPosition(force, point, ForceMode.Impulse);
+		PlayRandomSound(audioCollide, point);
 		if (!isDead)
 			Instantiate(collideSparks, point, transform.rotation);
 		
