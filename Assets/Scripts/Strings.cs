@@ -4,9 +4,9 @@ using System.Collections;
 public static class Strings {
 
 	public const string gameTitle = "REDLINES 1K";
-	public const string gameVersion = "v001-dev";
+	public const string gameVersion = "v002-a";
 	
-	public const string releaseDate = "Sunday 23rd November 2014";
+	public const string releaseDate = "Monday 1st December 2014";
 	
 	public const string website = "http://supercore.co.uk";
 	
